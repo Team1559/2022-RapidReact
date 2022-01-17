@@ -10,6 +10,7 @@ public class VisionData {
     public double br;
     public Integer hoopStatus;
     public Integer ballStatus;
+    public boolean waitForOtherRobot;
 
     public boolean isHoopValid(){
         if(hoopStatus!=1){

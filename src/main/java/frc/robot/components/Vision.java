@@ -10,6 +10,7 @@ public class Vision {
     double ballCameraYOffset = 0;
     double ballCameraXOffset = 0;
     double ballCameraROffset = 0;
+	
 	public Vision() {
 		client = new UDPClient();
 		VData = new VisionData();
@@ -33,7 +34,7 @@ public class Vision {
 			if(in != null) {
 				String[] parameters = in.split(" ");
 
-				if(parameters.length >= 4){
+				if(parameters.length >= 9) {
 					NewData.hx = -(Double.parseDouble(parameters[0])-hoopCameraXOffset);
 					NewData.hy = Double.parseDouble(parameters[1])-hoopCameraYOffset;
 					NewData.hr = Double.parseDouble(parameters[2])-hoopCameraROffset;
@@ -42,6 +43,13 @@ public class Vision {
                     NewData.br =Double.parseDouble(parameters[5])-ballCameraYOffset;
 					NewData.hoopStatus = Integer.parseInt(parameters[6]);
                     NewData.ballStatus = Integer.parseInt(parameters[7]);
+					if(Integer.parseInt(parameters[8]) == 1) {
+						NewData.waitForOtherRobot = true;
+					}
+					else {
+						NewData.waitForOtherRobot = false;
+					}
+
 
 				}	
 			}
