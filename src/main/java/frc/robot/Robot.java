@@ -60,8 +60,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     if(FeatureFlags.doVision && FeatureFlags.visionInitalized){
-      vData = vision.getData();
-      vData.Print();
+      visionControl.auto();
     }
   }
 
@@ -75,8 +74,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     if(FeatureFlags.doVision && FeatureFlags.visionInitalized){
-      vData = vision.getData();
-      vData.Print();
+      visionControl.main();
     }
   }
 
@@ -100,7 +98,7 @@ public class Robot extends TimedRobot {
     if(FeatureFlags.doVision && !FeatureFlags.visionInitalized){
       vision = new Vision();
       vision.VisionInit();
-      visionControl = new VisionControl(oi);//chassis, shooter);
+      visionControl = new VisionControl(vision, vData, oi);//chassis, shooter);
       FeatureFlags.visionInitalized = true;
     }
 
