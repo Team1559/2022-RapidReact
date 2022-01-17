@@ -7,9 +7,12 @@ public class Vision {
     UDPClient client;
 	
 	private  VisionData VData; 
-	double cameraYOffset = 11.6;
-	double cameraXOffset = 9;//5.0;
-	double cameraROffset = -9;
+	double hoopCameraYOffset = 0;
+	double hoopCameraXOffset = 0;//5.0;
+	double hoopCameraROffset = 0;
+    double ballCameraYOffset = 0;
+    double ballCameraXOffset = 0;
+    double ballCameraROffset = 0;
 	public Vision() {
 		client = new UDPClient();
 		VData = new VisionData();
@@ -32,10 +35,13 @@ public class Vision {
 				String[] parameters = in.split(" ");
 
 				if(parameters.length >= 4){
-					NewData.x = -(Double.parseDouble(parameters[0])-cameraXOffset);
-					NewData.y = Double.parseDouble(parameters[1])-cameraYOffset;
-					NewData.r = Double.parseDouble(parameters[2])-cameraROffset;
-					NewData.status = Integer.parseInt(parameters[3]);
+					NewData.hx = -(Double.parseDouble(parameters[0])-hoopCameraXOffset);
+					NewData.hy = Double.parseDouble(parameters[1])-hoopCameraYOffset;
+					NewData.hr = Double.parseDouble(parameters[2])-hoopCameraROffset;
+                    NewData.bx = -(Double.parseDouble(parameters[3])-ballCameraXOffset);
+                    NewData.by = Double.parseDouble(parameters[4])-ballCameraYOffset;
+                    NewData.br =Double.parseDouble(parameters[5])-ballCameraYOffset;
+					NewData.status = Integer.parseInt(parameters[6]);
 				}	
 			}
 			VData = NewData;
@@ -47,6 +53,7 @@ public class Vision {
 	}
 
 	public VisionData getData() {
+        update();
 		return VData;
 	}
 
@@ -59,4 +66,5 @@ public class Vision {
 
 		return instance;
 	}
+
 }
