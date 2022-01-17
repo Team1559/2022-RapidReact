@@ -20,4 +20,8 @@ public interface Constants {
 	// Controllers
 	public static final int PILOT_JOYSTICK = 0;
 	public static final int COPILOT_JOYSTICK = 1;
+	//Buttons
+	//auto buttons
+	public static final int autoShoot = Buttons.A;
+	public static final int autoCollect = Buttons.X;
 }

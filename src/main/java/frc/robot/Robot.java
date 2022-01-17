@@ -5,8 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import frc.robot.subsystems.Vision;
-import frc.robot.components.VisionData;
+import frc.robot.subsystems.*;
+import frc.robot.components.*;
 
 
 /**
@@ -20,6 +20,7 @@ public class Robot extends TimedRobot {
 
   public OperatorInterface oi = new OperatorInterface();
   public Vision vision;
+  public VisionControl visionControl;
   VisionData vData;
 
   /**
@@ -99,6 +100,7 @@ public class Robot extends TimedRobot {
     if(FeatureFlags.doVision && !FeatureFlags.visionInitalized){
       vision = new Vision();
       vision.VisionInit();
+      visionControl = new VisionControl(oi);//chassis, shooter);
       FeatureFlags.visionInitalized = true;
     }
 

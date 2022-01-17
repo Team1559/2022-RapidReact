@@ -1,7 +1,4 @@
-package frc.robot.subsystems;
-
-import frc.robot.components.VisionData;
-import frc.robot.components.UDPClient;
+package frc.robot.components;
 
 public class Vision {
     UDPClient client;
@@ -23,7 +20,7 @@ public class Vision {
 	public void VisionInit() {
 	//client.run();
 	}
-    
+
 	public void update() {
 		try {
 			VisionData NewData = new VisionData();
