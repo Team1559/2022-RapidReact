@@ -19,10 +19,11 @@ public class Vision {
 		VData.hoopStatus = 0;
 		VData.ballStatus = 0;
 	}
-	public void VisionInit()
-	{
+
+	public void VisionInit() {
 	//client.run();
 	}
+    
 	public void update() {
 		try {
 			VisionData NewData = new VisionData();
