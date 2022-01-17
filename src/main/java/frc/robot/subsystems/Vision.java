@@ -48,7 +48,6 @@ public class Vision {
 				}	
 			}
 			VData = NewData;
-			VData.Print();
         } 
         catch (NumberFormatException | NullPointerException e) {
 			//System.err.println(e.toString());
