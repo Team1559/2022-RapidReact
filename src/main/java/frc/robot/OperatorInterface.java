@@ -12,6 +12,9 @@ import edu.wpi.first.wpilibj.Joystick;
 public class OperatorInterface {
     public Joystick pilot, copilot;
     private DTButton[] pilotButtons, copilotButtons, cocopilotButtons;
+    private static boolean isPilotDPadPressed = false;
+    private static boolean isCopilotDPadPressed = false;
+
 
     public OperatorInterface() {
         pilot = new Joystick(Constants.PILOT_JOYSTICK);
@@ -75,12 +78,38 @@ public class OperatorInterface {
         return (copilot.getRawAxis(axis) == 1);
     }
 
-    public int DPadPilot()
+    public int getRawDPadPilot()
     {
         return pilot.getPOV(0);
     }
-    public int DPadCopilot()
+    public int getRawDPadCopilot()
     {
         return copilot.getPOV(0);
+    }
+    public int getDPadPilotPress()
+    {
+        if(!isPilotDPadPressed){
+            isPilotDPadPressed = true;
+            return pilot.getPOV(0);
+        }
+        else{
+            if(pilot.getPOV(0) == 0){
+                isPilotDPadPressed = false;
+            }
+            return 0;
+        }
+    } 
+    public int getDPadCopilotPress()
+    {
+        if(!isCopilotDPadPressed){
+            isCopilotDPadPressed = true;
+            return copilot.getPOV(0);
+        }
+        else{
+            if(copilot.getPOV(0) == 0){
+                isCopilotDPadPressed = false;
+            }
+            return 0;
+        }
     } 
 }

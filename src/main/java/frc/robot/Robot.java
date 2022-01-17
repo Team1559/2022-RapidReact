@@ -5,6 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import frc.robot.subsystems.Vision;
+import frc.robot.components.VisionData;
 
 
 /**
@@ -14,7 +16,11 @@ import edu.wpi.first.wpilibj.TimedRobot;
  * project.
  */
 public class Robot extends TimedRobot {
+  
+
   public OperatorInterface oi = new OperatorInterface();
+  public Vision vision;
+  VisionData vData;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -22,7 +28,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-
   }
 
   /**
@@ -47,22 +52,32 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-
+    initialize();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-
+    if(FeatureFlags.doVision && FeatureFlags.visionInitalized){
+      vData = vision.getData();
+      vData.Print();
+    }
   }
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    initialize();
+  }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    if(FeatureFlags.doVision && FeatureFlags.visionInitalized){
+      vData = vision.getData();
+      vData.Print();
+    }
+  }
 
   /** This function is called once when the robot is disabled. */
   @Override
@@ -79,4 +94,13 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
+
+  public void initialize(){
+    if(FeatureFlags.doVision && !FeatureFlags.visionInitalized){
+      vision = new Vision();
+      vision.VisionInit();
+      FeatureFlags.visionInitalized = true;
+    }
+
+  }
 }
