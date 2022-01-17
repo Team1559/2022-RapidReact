@@ -16,8 +16,8 @@ public class Vision {
 	public Vision() {
 		client = new UDPClient();
 		VData = new VisionData();
-		VData.status = 0;
-		
+		VData.hoopStatus = 0;
+		VData.ballStatus = 0;
 	}
 	public void VisionInit()
 	{
@@ -26,7 +26,8 @@ public class Vision {
 	public void update() {
 		try {
 			VisionData NewData = new VisionData();
-			NewData.status = 2;
+			NewData.hoopStatus = 2;
+            NewData.ballStatus = 2;
 
 			String in = client.get();
 			//System.out.println(in);
@@ -41,7 +42,9 @@ public class Vision {
                     NewData.bx = -(Double.parseDouble(parameters[3])-ballCameraXOffset);
                     NewData.by = Double.parseDouble(parameters[4])-ballCameraYOffset;
                     NewData.br =Double.parseDouble(parameters[5])-ballCameraYOffset;
-					NewData.status = Integer.parseInt(parameters[6]);
+					NewData.hoopStatus = Integer.parseInt(parameters[6]);
+                    NewData.ballStatus = Integer.parseInt(parameters[7]);
+
 				}	
 			}
 			VData = NewData;

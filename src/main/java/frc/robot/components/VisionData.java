@@ -8,10 +8,18 @@ public class VisionData {
     public double bx;
     public double by;
     public double br;
-    public Integer status;
+    public Integer hoopStatus;
+    public Integer ballStatus;
 
-    public boolean IsValid(){
-        if(status!=1){
+    public boolean isHoopValid(){
+        if(hoopStatus!=1){
+            return false;
+        }
+        else
+            return true;
+    }
+    public boolean isBallValid(){
+        if(ballStatus!=1){
             return false;
         }
         else
@@ -19,6 +27,6 @@ public class VisionData {
     }
 
     public void Print() {
-        System.out.printf("%3.1f %3.1f  %3.1f  %d\n", hx, hy, hr, bx, by, br, status);
+        System.out.printf("%3.1f %3.1f %3.1f %3.1f %3.1f %3.1f %d %d\n", hx, hy, hr, bx, by, br, hoopStatus, ballStatus);
     }
 }
