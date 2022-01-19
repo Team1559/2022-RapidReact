@@ -12,11 +12,11 @@ public class VisionData {
     public Integer ballStatus;
 
     public boolean isHoopValid() {
-        return this.hoopStatus == 1;
+        return hoopStatus == 1;
     }
 
     public boolean isBallValid() {
-        return this.ballStatus == 1;
+        return ballStatus == 1;
     }
 
     public void print() {
