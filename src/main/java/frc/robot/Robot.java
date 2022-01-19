@@ -17,8 +17,8 @@ import frc.robot.components.VisionData;
  */
 public class Robot extends TimedRobot {
     private final OperatorInterface operatorInterface;
-    public Vision            vision;
-    VisionData               vData;
+    public Vision                   vision;
+    VisionData                      vData;
 
     public Robot() {
         super();
