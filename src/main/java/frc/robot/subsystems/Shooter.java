@@ -3,8 +3,8 @@ package frc.robot.subsystems;
 import frc.robot.OperatorInterface;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
-import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.*;
+
 
 public class Shooter {
     
@@ -13,12 +13,19 @@ public class Shooter {
     private double shooter_kP = .007;
     private double shooter_kD = 0;
     private double shooter_kI = 0.00000;// 1e-6
-    //private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(true, 100, 20, 1000);
+    private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(true, 100, 20, 1000);
     private TalonFX shooter;
     private double shooterRpms = 98;
+
+    private final int TIMEOUT = 0;
+    private final double cLR = 0.1;
+
+
     public void init(OperatorInterface operatorinterface){
         oi = operatorinterface;
         // Shooter Motor Config
+
+        
         shooter.set(TalonFXControlMode.Velocity, 0);
         shooter.configClosedloopRamp(cLR, TIMEOUT);
         shooter.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder); //shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
