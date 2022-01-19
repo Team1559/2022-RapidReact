@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Vision;
 import frc.robot.components.VisionData;
 
@@ -21,6 +22,8 @@ public class Robot extends TimedRobot {
   public OperatorInterface oi = new OperatorInterface();
   public Vision vision;
   VisionData vData;
+
+  private Shooter shooter = new Shooter();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -62,6 +65,9 @@ public class Robot extends TimedRobot {
       vData = vision.getData();
       vData.Print();
     }
+
+
+
   }
 
   /** This function is called once when teleop is enabled. */
@@ -77,6 +83,8 @@ public class Robot extends TimedRobot {
       vData = vision.getData();
       vData.Print();
     }
+
+    shooter.shoot();
   }
 
   /** This function is called once when the robot is disabled. */
@@ -93,7 +101,10 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+
+
+  }
 
   public void initialize(){
     if(FeatureFlags.doVision && !FeatureFlags.visionInitalized){
@@ -103,4 +114,6 @@ public class Robot extends TimedRobot {
     }
 
   }
+
+
 }

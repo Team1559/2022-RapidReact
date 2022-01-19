@@ -13,7 +13,7 @@ public class Wiring
     
 
 //Cargo
-
+public static final int shooterMotor = 24;
     
 //Climber
 

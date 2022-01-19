@@ -5,11 +5,10 @@ import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
 import frc.robot.*;
 
-
 public class Shooter {
-    
+
     private OperatorInterface oi;
-    private double shooter_kF = 0; 
+    private double shooter_kF = 0;
     private double shooter_kP = .007;
     private double shooter_kD = 0;
     private double shooter_kI = 0.00000;// 1e-6
@@ -20,15 +19,15 @@ public class Shooter {
     private final int TIMEOUT = 0;
     private final double cLR = 0.1;
 
-
-    public void init(OperatorInterface operatorinterface){
+    public void init(OperatorInterface operatorinterface) {
         oi = operatorinterface;
         // Shooter Motor Config
+        shooter = new TalonFX(Wiring.shooterMotor);
 
-        
         shooter.set(TalonFXControlMode.Velocity, 0);
+
         shooter.configClosedloopRamp(cLR, TIMEOUT);
-        shooter.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder); //shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+        shooter.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder); // shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
         shooter.config_kF(0, shooter_kF);
         shooter.config_kP(0, shooter_kP);
         shooter.config_kD(0, shooter_kD);
@@ -39,6 +38,23 @@ public class Shooter {
         shooter.configPeakOutputReverse(-1, TIMEOUT);
         shooter.setNeutralMode(NeutralMode.Coast);
         shooter.configSupplyCurrentLimit(shooterLimit);
-        
+
+    }
+
+    public void startShooter() {
+        shooter.set(ControlMode.Velocity, shooterRpms);
+    }
+
+    public void stopShooter() {
+        shooter.set(ControlMode.Velocity, 0);
+    }
+
+    public void shoot() {
+        if (oi.pilot.getRawButton(Buttons.A)) {
+            startShooter();
+        }
+        else{
+            stopShooter();
+        }
     }
 }
