@@ -46,7 +46,7 @@ public class VisionControl {
             update();
 
             visionData.Print();
-            if (oi.pilot.getRawButton(Buttons.autoShoot)) { // Move the chassis so it is alligned, aim the shooter, and fire the cargo
+            if (oi.pilot.getAButton()) { // Move the chassis so it is alligned, aim the shooter, and fire the cargo
                 double error = 0;
 
                 // shooter.setAngle(desiredAngle);
@@ -56,7 +56,7 @@ public class VisionControl {
                 }
                 // shooter.shoot();
 
-            } else if (oi.pilot.getRawButton(Buttons.autoCollect)) { // go collect the nearest cargo
+            } else if (oi.pilot.getXButton()) { // go collect the nearest cargo
 
                 // shooter.gather();
             } else {
