@@ -1,21 +1,21 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
-//Mike, this one's for you to handle
 
 public class DTButton {
+    private final Joystick joystick;
+    private final int      buttonID;
 
-    private boolean old, current;
-    private Joystick stick;
-    private int button;
+    private boolean old;
+    private boolean current;
 
-    public DTButton(Joystick stick, int button) {
-        this.stick = stick;
-        this.button = button;
+    public DTButton(Joystick j, int buttonID) {
+        this.joystick = j;
+        this.buttonID = buttonID;
     }
 
     public void update() {
-        update(stick.getRawButton(button));
+        update(joystick.getRawButton(buttonID));
     }
 
     public void update(boolean b) {

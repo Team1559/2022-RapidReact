@@ -17,4 +17,8 @@ public class Wiring
     
     //Climber
 
+    // Cargo
+
+    // Climber
+
 }

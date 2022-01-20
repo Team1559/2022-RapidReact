@@ -1,6 +1,7 @@
 package frc.robot;
 
 public final class Buttons {
+    private Buttons() {}
 
     // Buttons
     public static final int A = 1;

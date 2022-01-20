@@ -15,15 +15,19 @@ public class VisionData {
     public boolean isHoopValid() {
         if (hoopStatus != 1) {
             return false;
-        } else
+        } 
+        else {
             return true;
+        }
     }
 
     public boolean isBallValid() {
         if (ballStatus != 1) {
             return false;
-        } else
+        } 
+        else{
             return true;
+        }
     }
 
     public void Print() {
