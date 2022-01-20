@@ -11,10 +11,10 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class OperatorInterface {
-    public static final int PILOT_JOYSTICK   = 0;
+    public static final int PILOT_JOYSTICK = 0;
     public static final int COPILOT_JOYSTICK = 1;
 
-    public static final double FULL_PRESS_MARGIN = 0.99D;
+    public static final double FULL_PRESS_MARGIN = 0.9D;
 
     private boolean isPilotDPadPressed;
     private boolean isCopilotDPadPressed;
@@ -132,7 +132,8 @@ public class OperatorInterface {
         if (!isPilotDPadPressed) {
             isPilotDPadPressed = true;
             return pilot.getPOV(0);
-        } else {
+        } 
+        else {
             if (pilot.getPOV(0) == 0) {
                 isPilotDPadPressed = false;
             }
@@ -144,7 +145,8 @@ public class OperatorInterface {
         if (!isCopilotDPadPressed) {
             isCopilotDPadPressed = true;
             return copilot.getPOV(0);
-        } else {
+        } 
+        else {
             if (copilot.getPOV(0) == 0) {
                 isCopilotDPadPressed = false;
             }
@@ -155,7 +157,8 @@ public class OperatorInterface {
     public static double squareKeepSign(double d) {
         if (d > 0D) {
             return Math.pow(d, 2);
-        } else {
+        } 
+        else {
             return -Math.pow(d, 2);
         }
     }
