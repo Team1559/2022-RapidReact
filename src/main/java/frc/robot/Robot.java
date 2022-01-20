@@ -21,8 +21,6 @@ public class Robot extends TimedRobot {
   public OperatorInterface oi = new OperatorInterface();
   public Vision vision;
   public VisionControl visionControl;
-  VisionData vData;
-
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
