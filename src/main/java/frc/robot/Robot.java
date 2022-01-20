@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import frc.robot.subsystems.DriveChassis;
 import frc.robot.subsystems.Vision;
 import frc.robot.components.VisionData;
 
@@ -21,6 +22,8 @@ public class Robot extends TimedRobot {
   public OperatorInterface oi = new OperatorInterface();
   public Vision vision;
   VisionData vData;
+
+  public DriveChassis drive;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -77,6 +80,8 @@ public class Robot extends TimedRobot {
       vData = vision.getData();
       vData.Print();
     }
+
+    drive.driveCartesian(oi.getPilotX(), oi.getPilotY(), oi.getPilotZ());
   }
 
   /** This function is called once when the robot is disabled. */
