@@ -22,4 +22,10 @@ public final class Buttons {
     public static final int Dpad_right = 90;
     public static final int Dpad_down = 180;
     public static final int Dpad_left = 270;
+
+
+
+    //auto buttons
+	public static final int autoShoot = A;
+	public static final int autoCollect = X;
 }
