@@ -91,7 +91,7 @@ public class Robot extends TimedRobot {
     if (FeatureFlags.doVision && FeatureFlags.visionInitalized) {
       visionControl.main();
     }
-
+  }
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
@@ -119,31 +119,5 @@ public class Robot extends TimedRobot {
       visionControl = new VisionControl(vision, vData, oi);// chassis, shooter);
       FeatureFlags.visionInitalized = true;
     }
-
-    /** This function is called periodically when disabled. */
-    @Override
-    public void disabledPeriodic() {
-        //
-    }
-
-    /** This function is called once when test mode is enabled. */
-    @Override
-    public void testInit() {
-        //
-    }
-
-    /** This function is called periodically during test mode. */
-    @Override
-    public void testPeriodic() {
-        //
-    }
-
-    public void initialize() {
-        if (FeatureFlags.doVision && !FeatureFlags.visionInitalized) {
-            vision = new Vision();
-            vision.VisionInit();
-            FeatureFlags.visionInitalized = true;
-        }
-
-    }
+  }
 }

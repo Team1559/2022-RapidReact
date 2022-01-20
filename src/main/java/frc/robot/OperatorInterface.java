@@ -47,42 +47,42 @@ public class OperatorInterface {
      * Gets the left joystick x-value on the pilot controller
      */
     public double pilotLeftStickX() {
-        return pilot.getRawAxis(Buttons.LEFT_JOYSTICK_X);
+        return pilot.getRawAxis(Buttons.leftJoystick_x);
     }
 
     /**
      * Gets the left joystick y-value on the pilot controller
      */
     public double pilotLeftStickY() {
-        return pilot.getRawAxis(Buttons.LEFT_JOYSTICK_Y);
+        return pilot.getRawAxis(Buttons.leftJoystick_y);
     }
 
     /**
      * Gets the right joystick x-value on the pilot controller
      */
     public double pilotRightStickX() {
-        return pilot.getRawAxis(Buttons.RIGHT_JOYSTICK_X);
+        return pilot.getRawAxis(Buttons.rightJoystick_x);
     }
 
     /**
      * Gets the right joystick y-value on the pilot controller
      */
     public double pilotRightStickY() {
-        return pilot.getRawAxis(Buttons.RIGHT_JOYSTICK_Y);
+        return pilot.getRawAxis(Buttons.rightJoystick_y);
     }
 
     /**
      * Gets the value of the left trigger on the pilot controller
      */
     public double pilotLeftTrigger() {
-        return pilot.getRawAxis(Buttons.LEFT_TRIGGER);
+        return pilot.getRawAxis(Buttons.leftTrigger);
     }
 
     /**
      * Gets the value of the right trigger on the pilot controller
      */
     public double pilotRightTrigger() {
-        return pilot.getRawAxis(Buttons.RIGHT_TRIGGER);
+        return pilot.getRawAxis(Buttons.rightTrigger);
     }
 
     public double getPilotX() {
