@@ -15,101 +15,98 @@ public class OperatorInterface {
     private static boolean isPilotDPadPressed = false;
     private static boolean isCopilotDPadPressed = false;
 
-
     public OperatorInterface() {
         pilot = new Joystick(Constants.PILOT_JOYSTICK);
         copilot = new Joystick(Constants.COPILOT_JOYSTICK);
         copilotButtons = new DTButton[20];
-        for(int i = 0; i < copilotButtons.length; i++) {
+        for (int i = 0; i < copilotButtons.length; i++) {
             copilotButtons[i] = new DTButton(copilot, i + 1);
         }
         pilotButtons = new DTButton[20];
-        for(int i = 0; i < pilotButtons.length; i++) {
+        for (int i = 0; i < pilotButtons.length; i++) {
             pilotButtons[i] = new DTButton(pilot, i + 1);
         }
     }
 
     public double getPilotX() {
-        //gets the x axis on the ps4 contoller (side to side) 
-        if((pilot.getRawAxis(0))/(Math.abs(pilot.getRawAxis(0))) == 1) {
-            return (Math.pow(pilot.getRawAxis(0), 2));//robot with bad grabber and stepper is inverted in the second statement 
+        // gets the x axis on the ps4 contoller (side to side)
+        if ((pilot.getRawAxis(0)) / (Math.abs(pilot.getRawAxis(0))) == 1) {
+            return (Math.pow(pilot.getRawAxis(0), 2));// robot with bad grabber and stepper is inverted in the second
+                                                      // statement
         }
-            return (-1)*(Math.pow(pilot.getRawAxis(0), 2));
+        return (-1) * (Math.pow(pilot.getRawAxis(0), 2));
     }
 
     public double getPilotY() {
-        //gets the y axis on the ps4 controller (forward and back)
-        if((pilot.getRawAxis(1))/(Math.abs(pilot.getRawAxis(1))) == 1) {
-            return (-1)*(Math.pow(pilot.getRawAxis(1), 2));
+        // gets the y axis on the ps4 controller (forward and back)
+        if ((pilot.getRawAxis(1)) / (Math.abs(pilot.getRawAxis(1))) == 1) {
+            return (-1) * (Math.pow(pilot.getRawAxis(1), 2));
         }
-            return (Math.pow(pilot.getRawAxis(1), 2));
+        return (Math.pow(pilot.getRawAxis(1), 2));
     }
 
     public double getPilotZ() {
-        //gets the z axis on the ps4 controller (rotation)
-        if((pilot.getRawAxis(4))/(Math.abs(pilot.getRawAxis(4))) == 1) {
+        // gets the z axis on the ps4 controller (rotation)
+        if ((pilot.getRawAxis(4)) / (Math.abs(pilot.getRawAxis(4))) == 1) {
             return (Math.pow(pilot.getRawAxis(4), 2));
         }
-            return (-1)*(Math.pow(pilot.getRawAxis(4), 2));
+        return (-1) * (Math.pow(pilot.getRawAxis(4), 2));
     }
 
     public DTButton getCopilotButton(int num) {
-        //this gets the id number of the button on the copilot box
+        // this gets the id number of the button on the copilot box
         return copilotButtons[num];
     }
 
     public boolean coButtonIsPressed(int button) {
-        //this will tell us if a button is pressed on the copilot box and return true
+        // this will tell us if a button is pressed on the copilot box and return true
         return copilot.getRawButton(button);
     }
 
     public double getCopilotAxis(int num) {
-        //gets the axis on the copilot box
+        // gets the axis on the copilot box
         return copilot.getRawAxis(num);
     }
 
     public DTButton getCocopilotButton(int num) {
-        //returns the id num of the copilot box
+        // returns the id num of the copilot box
         return cocopilotButtons[num];
     }
 
     public boolean axisToButtonIsPressed(int axis) {
-        //returns true if the axis button is pressed
+        // returns true if the axis button is pressed
         return (copilot.getRawAxis(axis) == 1);
     }
 
-    public int getRawDPadPilot()
-    {
+    public int getRawDPadPilot() {
         return pilot.getPOV(0);
     }
-    public int getRawDPadCopilot()
-    {
+
+    public int getRawDPadCopilot() {
         return copilot.getPOV(0);
     }
-    public int getDPadPilotPress()
-    {
-        if(!isPilotDPadPressed){
+
+    public int getDPadPilotPress() {
+        if (!isPilotDPadPressed) {
             isPilotDPadPressed = true;
             return pilot.getPOV(0);
-        }
-        else{
-            if(pilot.getPOV(0) == 0){
+        } else {
+            if (pilot.getPOV(0) == 0) {
                 isPilotDPadPressed = false;
             }
             return 0;
         }
-    } 
-    public int getDPadCopilotPress()
-    {
-        if(!isCopilotDPadPressed){
+    }
+
+    public int getDPadCopilotPress() {
+        if (!isCopilotDPadPressed) {
             isCopilotDPadPressed = true;
             return copilot.getPOV(0);
-        }
-        else{
-            if(copilot.getPOV(0) == 0){
+        } else {
+            if (copilot.getPOV(0) == 0) {
                 isCopilotDPadPressed = false;
             }
             return 0;
         }
-    } 
+    }
 }
