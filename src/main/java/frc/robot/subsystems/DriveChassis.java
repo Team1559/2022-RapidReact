@@ -88,5 +88,17 @@ public class DriveChassis
 		drive.driveCartesian(ySpeed, xSpeed, zRotation);
 	}
 }
-
+/*        /\
+ *        ||
+ *         
+ *   _____________
+ *   (|         |)
+ *  |-|         |-|
+ *  | |         | |     Chassis top view (don't ask why)
+ *  |-|         |-|
+ *   (|_________|)
+ * 
+ * 
+ * 
+ */
 
