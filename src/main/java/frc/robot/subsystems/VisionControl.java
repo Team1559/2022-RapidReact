@@ -4,7 +4,6 @@ import frc.robot.components.*;
 import frc.robot.*;
 
 public class VisionControl {
-    private OperatorInterface oi;
     private Vision vision;
     private VisionData visionData;
     private double hoopx = visionData.hx;
@@ -28,8 +27,7 @@ public class VisionControl {
     // private Chassis chassis;
     // private Shooter shooter;
 
-    public VisionControl(Vision vision, VisionData visionData, OperatorInterface oi) {// , Chassis chassis, Shooter shooter}) {
-        this.oi = oi;
+    public VisionControl(Vision vision, VisionData visionData) {// , Chassis chassis, Shooter shooter}) {
         this.vision = vision;
         this.visionData = visionData;
         // this.chassis = chassis;
@@ -46,7 +44,7 @@ public class VisionControl {
             update();
 
             visionData.Print();
-            if (oi.pilot.getAButton()) { // Move the chassis so it is alligned, aim the shooter, and fire the cargo
+            if (Buttons.autoCollectButton()) { // Move the chassis so it is alligned, aim the shooter, and fire the cargo
                 double error = 0;
 
                 // shooter.setAngle(desiredAngle);
@@ -56,7 +54,7 @@ public class VisionControl {
                 }
                 // shooter.shoot();
 
-            } else if (oi.pilot.getXButton()) { // go collect the nearest cargo
+            } else if (Buttons.autoShootButton()) { // go collect the nearest cargo
 
                 // shooter.gather();
             } else {

@@ -4,12 +4,12 @@ public class Vision {
     UDPClient client;
 
     private VisionData VData;
-    double             hoopCameraYOffset = 0;
-    double             hoopCameraXOffset = 0;// 5.0;
-    double             hoopCameraROffset = 0;
-    double             ballCameraYOffset = 0;
-    double             ballCameraXOffset = 0;
-    double             ballCameraROffset = 0;
+    double hoopCameraYOffset = 0;
+    double hoopCameraXOffset = 0;// 5.0;
+    double hoopCameraROffset = 0;
+    double ballCameraYOffset = 0;
+    double ballCameraXOffset = 0;
+    double ballCameraROffset = 0;
 
     public Vision() {
         client = new UDPClient();

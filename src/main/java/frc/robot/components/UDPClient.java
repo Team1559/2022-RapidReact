@@ -16,12 +16,12 @@ public class UDPClient implements Runnable {
     // 169.254.227.6
     private static final int PORT = 5801;
 
-    Thread  clientThread;
+    Thread clientThread;
     boolean running;
 
-    String         data;
+    String data;
     DatagramSocket socket;
-    byte[]         receive;
+    byte[] receive;
 
     public UDPClient() {
         clientThread = new Thread(this);
