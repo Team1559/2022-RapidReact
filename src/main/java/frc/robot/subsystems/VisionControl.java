@@ -51,7 +51,7 @@ public class VisionControl {
             update();
 
             visionData.Print();
-            if (oi.pilot.getRawButton(Buttons.autoShoot)) { // Move the chassis so it is alligned, aim the shooter, and fire the cargo
+            if (oi.autoShootButton())) { // Move the chassis so it is alligned, aim the shooter, and fire the cargo
                 if(visionData.isHoopValid()){
                     double error = 0;
 
@@ -66,7 +66,7 @@ public class VisionControl {
                     System.out.println("Invalid data... aborting");
                 }
             } 
-            else if (oi.pilot.getRawButton(Buttons.autoCollect)) { // go collect the nearest cargo
+            else if (oi.autoCollectButton()) { // go collect the nearest cargo
                 if(visionData.isBallValid()){
                     // shooter.gather();
                 }
