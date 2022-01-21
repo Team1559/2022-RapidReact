@@ -8,22 +8,30 @@ public class DTXboxController extends XboxController {
     }
 
     public boolean isDpadUp() {
-        return getPOV() == 0;
+        int pov = getPOV();
+        return pov == 315 || pov == 0 || pov == 45;
     }
 
     public boolean isDpadRight() {
-        return getPOV() == 90;
+        int pov = getPOV();
+        return pov == 45 || pov == 90 || pov == 135;
     }
 
     public boolean isDpadDown() {
-        return getPOV() == 180;
+        int pov = getPOV();
+        return pov == 135 || pov == 180 || pov == 225;
     }
 
     public boolean isDpadLeft() {
-        return getPOV() == 270;
+        int pov = getPOV();
+        return pov == 225 || pov == 270 || pov == 315;
     }
 
     public boolean isDpadPressed() {
         return getPOV() != -1;
+    }
+
+    public int getDpad() {
+        return getPOV();
     }
 }
