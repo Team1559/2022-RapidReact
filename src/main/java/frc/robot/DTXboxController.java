@@ -3,7 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class DTXboxController extends XboxController {
-    public static boolean isDPadPressed = false;
+    public boolean isDPadPressed = false;
     public DTXboxController(int port) {
         super(port);
     }
