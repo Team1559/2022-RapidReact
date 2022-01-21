@@ -3,35 +3,60 @@ package frc.robot;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class DTXboxController extends XboxController {
+    public static boolean isDPadPressed = false;
     public DTXboxController(int port) {
         super(port);
     }
 
-    public boolean isDpadUp() {
+    public boolean getDpad(int angle) {
         int pov = getPOV();
-        return pov == 315 || pov == 0 || pov == 45;
+        if(angle == -1 && pov != -1) {
+            return true;
+        }
+        else if(pov == angle){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
-
-    public boolean isDpadRight() {
-        int pov = getPOV();
-        return pov == 45 || pov == 90 || pov == 135;
-    }
-
-    public boolean isDpadDown() {
-        int pov = getPOV();
-        return pov == 135 || pov == 180 || pov == 225;
-    }
-
-    public boolean isDpadLeft() {
-        int pov = getPOV();
-        return pov == 225 || pov == 270 || pov == 315;
+    public int getRawDPad(){
+        return getPOV();
     }
 
     public boolean isDpadPressed() {
         return getPOV() != -1;
     }
 
-    public int getDpad() {
-        return getPOV();
+    public boolean getDPadPress(int angle) {
+        if (!isDPadPressed) {
+            isDPadPressed = true;
+            if(angle == -1 && getPOV() != -1) {
+                return true;
+            }
+            if(getPOV() == angle){
+                return true;
+            }
+            else{
+                return false;
+            }
+        } else {
+            if (getPOV() == -1) {
+                isDPadPressed = false;
+            }
+            return false;
+        }
+    }
+
+    public int getRawDPadPress() {
+        if (!isDPadPressed) {
+            isDPadPressed = true;
+            return getPOV();
+        } else {
+            if (getPOV() == -1) {
+                isDPadPressed = false;
+            }
+            return -1;
+        }
     }
 }
