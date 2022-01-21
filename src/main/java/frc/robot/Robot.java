@@ -29,7 +29,9 @@ public class Robot extends TimedRobot {
      * used for any initialization code.
      */
     @Override
-    public void robotInit() {}
+    public void robotInit() {
+        initialize();
+    }
 
     /**
      * This function is called every robot packet, no matter the mode. Use this
@@ -55,7 +57,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        initialize();
+        
     }
 
     /** This function is called periodically during autonomous. */
@@ -69,7 +71,6 @@ public class Robot extends TimedRobot {
     /** This function is called once when teleop is enabled. */
     @Override
     public void teleopInit() {
-        initialize();
     }
 
     /** This function is called periodically during operator control. */
