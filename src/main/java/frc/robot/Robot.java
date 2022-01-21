@@ -19,7 +19,6 @@ public class Robot extends TimedRobot {
 
     private OperatorInterface oi = new OperatorInterface();
     // auto classes
-    private Buttons buttons = new Buttons(oi);
     private VisionControl visionControl;
     private Vision        vision;
     private VisionData    vData;
@@ -101,7 +100,7 @@ public class Robot extends TimedRobot {
         if (FeatureFlags.doVision && !FeatureFlags.visionInitalized) {
             vision = new Vision();
             vision.VisionInit();
-            visionControl = new VisionControl(vision, vData);// chassis, // shooter);
+            visionControl = new VisionControl(vision, vData, oi);// chassis, // shooter);
             FeatureFlags.visionInitalized = true;
         }
     }
