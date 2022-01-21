@@ -8,7 +8,7 @@ public class Buttons {
         this.oi = oi;
     }
     public static boolean autoShootButton(){
-        return oi.pilot.getAButton();
+        return oi.pilot.getXButton();
     }
     public static boolean autoCollectButton(){
         return oi.pilot.getAButton();
