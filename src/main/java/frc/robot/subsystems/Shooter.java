@@ -50,7 +50,7 @@ public class Shooter {
     }
 
     public void shoot() {
-        if (oi.pilot.getRawButton(Buttons.A)) {
+        if (oi.autoShootButton()) {
             startShooter();
         }
         else{
