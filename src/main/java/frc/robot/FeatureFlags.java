@@ -1,12 +1,10 @@
 package frc.robot;
 
-public class FeatureFlags {
+public final class FeatureFlags {
 
-    //Modify these values
+    // Modify these values
     public static boolean doVision = false;
-    
-    
-    //Leave these values alone
-    public static boolean visionInitalized = false;
 
+    // Leave these values alone
+    public static boolean visionInitalized = false;
 }
