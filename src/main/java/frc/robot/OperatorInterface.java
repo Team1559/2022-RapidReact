@@ -19,4 +19,5 @@ public class OperatorInterface {
     public boolean autoCollectButton(){
         return pilot.getAButton();
     }
+
 }

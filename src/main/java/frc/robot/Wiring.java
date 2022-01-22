@@ -14,6 +14,7 @@ public class Wiring
 
 //Cargo
 public static final int shooterMotor = 0;
+public static final int intakeMotor = 3;
     
 //Climber
 

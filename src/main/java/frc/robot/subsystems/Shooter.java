@@ -17,15 +17,17 @@ public class Shooter {
     private double                          shooterRpms  = 98;
     private boolean                         dPadPressed  = false;
     private double                          shooterSpeed = -0.2;
-    private int pov = oi.pilot.getPOV();
-
-    private final int    TIMEOUT = 0;
-    private final double cLR     = 0.1;
+    private TalonSRX                        intake;
+    private int                             pov;
+    private final int                       TIMEOUT      = 0;
+    private final double                    cLR          = 0.1;
 
     public void init(OperatorInterface operatorinterface) {
         oi = operatorinterface;
+        pov = oi.pilot.getPOV();
         // Shooter Motor Config
         shooter = new TalonFX(Wiring.shooterMotor);
+        intake = new TalonSRX(Wiring.intakeMotor);
 
         shooter.set(TalonFXControlMode.PercentOutput, 0);
 
@@ -50,6 +52,14 @@ public class Shooter {
 
     public void stopShooter() {
         shooter.set(TalonFXControlMode.PercentOutput, 0);
+    }
+
+    public void startIntake() {
+        intake.set(TalonSRXControlMode.PercentOutput, .2);
+    }
+
+    public void stopIntake() {
+        intake.set(TalonSRXControlMode.PercentOutput, 0);
     }
 
     public void shoot() {
@@ -80,6 +90,14 @@ public class Shooter {
             dPadPressed = true;
         } else {
             dPadPressed = false;
+        }
+    }
+
+    public void runIntake() {
+        if (oi.autoCollectButton()) {
+            startIntake();
+        } else {
+            stopIntake();
         }
     }
 }

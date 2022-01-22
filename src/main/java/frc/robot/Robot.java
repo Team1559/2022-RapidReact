@@ -6,7 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.subsystems.Shooter;
-//import frc.robot.subsystems.Vision;
+// import frc.robot.subsystems.Vision;
 import frc.robot.components.VisionData;
 
 import frc.robot.subsystems.*;
@@ -26,13 +26,15 @@ public class Robot extends TimedRobot {
     private VisionControl visionControl;
     private Vision        vision;
     private VisionData    vData;
-    private Shooter shooter = new Shooter();
+    private Shooter       shooter = new Shooter();
+
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
     @Override
     public void robotInit() {
+
         initialize();
         shooter.init(oi);
     }
@@ -61,7 +63,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        
+
     }
 
     /** This function is called periodically during autonomous. */
@@ -74,8 +76,7 @@ public class Robot extends TimedRobot {
 
     /** This function is called once when teleop is enabled. */
     @Override
-    public void teleopInit() {
-    }
+    public void teleopInit() {}
 
     /** This function is called periodically during operator control. */
     @Override
@@ -83,9 +84,8 @@ public class Robot extends TimedRobot {
         if (FeatureFlags.doVision && FeatureFlags.visionInitalized) {
             visionControl.main();
         }
-        if(oi.autoShootButton()){
-            shooter.shoot();
-        }
+        shooter.shoot();
+        shooter.runIntake();
     }
 
     /** This function is called once when the robot is disabled. */
@@ -108,7 +108,8 @@ public class Robot extends TimedRobot {
         if (FeatureFlags.doVision && !FeatureFlags.visionInitalized) {
             vision = new Vision();
             vision.VisionInit();
-            visionControl = new VisionControl(vision, vData, oi);// chassis, // shooter);
+            visionControl = new VisionControl(vision, vData, oi);// chassis, //
+                                                                 // shooter);
             FeatureFlags.visionInitalized = true;
         }
     }
