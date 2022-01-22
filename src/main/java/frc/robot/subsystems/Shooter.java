@@ -7,17 +7,20 @@ import frc.robot.*;
 
 public class Shooter {
 
-    private OperatorInterface oi;
-    private double shooter_kF = 0;
-    private double shooter_kP = .007;
-    private double shooter_kD = 0;
-    private double shooter_kI = 0.00000;// 1e-6
+    private OperatorInterface               oi;
+    private double                          shooter_kF   = 0;
+    private double                          shooter_kP   = .007;
+    private double                          shooter_kD   = 0;
+    private double                          shooter_kI   = 0.00000;                                                 // 1e-6
     private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(true, 100, 20, 1000);
-    private TalonFX shooter;
-    private double shooterRpms = 98;
+    private TalonFX                         shooter;
+    private double                          shooterRpms  = 98;
+    private boolean                         dPadPressed  = false;
+    private double                          shooterSpeed = -0.2;
+    private int pov = oi.pilot.getPOV();
 
-    private final int TIMEOUT = 0;
-    private final double cLR = 0.1;
+    private final int    TIMEOUT = 0;
+    private final double cLR     = 0.1;
 
     public void init(OperatorInterface operatorinterface) {
         oi = operatorinterface;
@@ -42,7 +45,7 @@ public class Shooter {
     }
 
     public void startShooter() {
-        shooter.set(TalonFXControlMode.PercentOutput, -0.5);
+        shooter.set(TalonFXControlMode.PercentOutput, shooterSpeed);
     }
 
     public void stopShooter() {
@@ -52,9 +55,31 @@ public class Shooter {
     public void shoot() {
         if (oi.autoShootButton()) {
             startShooter();
-        }
-        else{
+        } else {
             stopShooter();
+        }
+
+        if (pov != -1) {
+            if (!dPadPressed) {
+                if (pov == 0) {
+                    shooterSpeed -= 0.05;
+                } else if (pov == 180) {
+                    shooterSpeed += 0.05;
+                } else if (pov == 90) {
+                    shooterSpeed -= 0.01;
+                } else if (pov == 270) {
+                    shooterSpeed += 0.01;
+                }
+                if (shooterSpeed < -1D) {
+                    shooterSpeed = -1D;
+                } else if (shooterSpeed > 0D) {
+                    shooterSpeed = 0D;
+                }
+                System.out.println(shooterSpeed);
+            }
+            dPadPressed = true;
+        } else {
+            dPadPressed = false;
         }
     }
 }

@@ -83,6 +83,9 @@ public class Robot extends TimedRobot {
         if (FeatureFlags.doVision && FeatureFlags.visionInitalized) {
             visionControl.main();
         }
+        if(oi.autoShootButton()){
+            shooter.shoot();
+        }
     }
 
     /** This function is called once when the robot is disabled. */
