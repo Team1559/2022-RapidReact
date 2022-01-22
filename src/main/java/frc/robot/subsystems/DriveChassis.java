@@ -7,6 +7,11 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import frc.robot.*;
 
 import frc.robot.subsystems.*;
@@ -15,71 +20,96 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
 
 public class DriveChassis 
 {
+	private static final int FL_motor = 1;
+	private static final int FR_motor = 2;
+	private static final int RL_motor = 3;
+	private static final int RR_motor = 4;
+	public CANSparkMax CANSparkMax1;
+	public CANSparkMax CANSparkMax2;
+	public CANSparkMax CANSparkMax3;
+	public CANSparkMax CANSparkMax4;
+	private SparkMaxPIDController FL_pidController;
+	private SparkMaxPIDController FR_pidController;
+	private SparkMaxPIDController RL_pidController;
+	private SparkMaxPIDController RR_pidController;
+	private RelativeEncoder FL_encoder;
+	private RelativeEncoder FR_encoder;
+	private RelativeEncoder RL_encoder;
+	private RelativeEncoder RR_encoder;
 	private static final int TIMEOUT = 0;
 	public static final double WHEEL_RADIUS_INCHES_MECANUM = 3;
 	public static final double MAX_SPEED_FPS_TRACTION = 9.67 * 1.01;
 	public static final double MAX_TICKS_PER_100MS = MAX_SPEED_FPS_TRACTION * 4096.0 / (Math.PI * WHEEL_RADIUS_INCHES_MECANUM * 2.0 / 12.0) / 10.0;
 	private static DevilDrive drive;
-	public WPI_TalonSRX FL_TALON, RL_TALON, FR_TALON, RR_TALON;
-	private static final double kF = 0.14614285; //F-gain = (100% X 1023) / 7350 F-gain = 0.139183673 - (7350 is max speed)
+  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
+
+	/**private static final double kF = 0.14614285; //F-gain = (100% X 1023) / 7350 F-gain = 0.139183673 - (7350 is max speed)
 	private static final double kP = 0.475; // P-gain = (.1*1023)/(155) = 0.66 - (350 is average error)
 	private static final double kD = (5.0*kP);
-	private static final double cLR = 0.1;
-
+	private static final double cLR = 0.1;       This was ctrl c ctrl v'd from 2020. I don't now what these values mean so I don't want to delete them.
+*/
 
 	public DriveChassis() 
 	{
-		FL_TALON = new WPI_TalonSRX(Wiring.FRONT_LEFT_MOTOR);
-		RL_TALON = new WPI_TalonSRX(Wiring.REAR_LEFT_MOTOR);
-		FR_TALON = new WPI_TalonSRX(Wiring.FRONT_RIGHT_MOTOR);
-		RR_TALON = new WPI_TalonSRX(Wiring.REAR_RIGHT_MOTOR);
+		CANSparkMax1 = new CANSparkMax(FL_motor, MotorType.kBrushless);
+		CANSparkMax2 = new CANSparkMax(FR_motor, MotorType.kBrushless);
+		CANSparkMax3 = new CANSparkMax(RL_motor, MotorType.kBrushless);
+		CANSparkMax4 = new CANSparkMax(RR_motor, MotorType.kBrushless);
 
-		FL_TALON.set(ControlMode.Velocity, 0);	
-		FL_TALON.configClosedloopRamp(cLR, TIMEOUT);
-		FL_TALON.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-		FL_TALON.config_kF(0, kF);
-		FL_TALON.config_kP(0, kP);
-		FL_TALON.config_kD(0, kD);
-		FL_TALON.configNominalOutputForward(0, TIMEOUT);
-		FL_TALON.configNominalOutputReverse(0, TIMEOUT);
-		FL_TALON.configPeakOutputForward(+1, TIMEOUT);
-		FL_TALON.configPeakOutputReverse(-1, TIMEOUT);
+		CANSparkMax1.restoreFactoryDefaults();
+		CANSparkMax2.restoreFactoryDefaults();
+		CANSparkMax3.restoreFactoryDefaults();
+		CANSparkMax4.restoreFactoryDefaults();
 
-		FR_TALON.set(ControlMode.Velocity, 0);
-		FR_TALON.configClosedloopRamp(cLR, TIMEOUT);
-		FR_TALON.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);	
-		FR_TALON.config_kF(0, kF);
-		FR_TALON.config_kP(0, kP);
-		FR_TALON.config_kD(0, kD);
-		FR_TALON.configNominalOutputForward(0, TIMEOUT);
-		FR_TALON.configNominalOutputReverse(0, TIMEOUT);
-		FR_TALON.configPeakOutputForward(+1, TIMEOUT);
-		FR_TALON.configPeakOutputReverse(-1, TIMEOUT);
+		FL_pidController = CANSparkMax1.getPIDController();
+		FR_pidController = CANSparkMax2.getPIDController();
+		RL_pidController = CANSparkMax3.getPIDController();
+		RR_pidController = CANSparkMax4.getPIDController();
 
-		RL_TALON.set(ControlMode.Velocity, 0);
-		RL_TALON.configClosedloopRamp(cLR, TIMEOUT);
-		RL_TALON.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);	
-		RL_TALON.config_kF(0, kF);
-		RL_TALON.config_kP(0, kP);
-		RL_TALON.config_kD(0, kD);
-		RL_TALON.configNominalOutputForward(0, TIMEOUT);
-		RL_TALON.configNominalOutputReverse(0, TIMEOUT);
-		RL_TALON.configPeakOutputForward(+1, TIMEOUT);
-		RL_TALON.configPeakOutputReverse(-1, TIMEOUT);
+		FL_encoder = CANSparkMax1.getEncoder();
+		FR_encoder = CANSparkMax1.getEncoder();
+		RL_encoder = CANSparkMax1.getEncoder();
+		RR_encoder = CANSparkMax1.getEncoder();
 
-		RR_TALON.set(ControlMode.Velocity, 0);
-		RR_TALON.configClosedloopRamp(cLR, TIMEOUT);
-		RR_TALON.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);	
-		RR_TALON.config_kF(0, kF);
-		RR_TALON.config_kP(0, kP);
-		RR_TALON.config_kD(0, kD);
-		RR_TALON.configNominalOutputForward(0, TIMEOUT);
-		RR_TALON.configNominalOutputReverse(0, TIMEOUT);
-		RR_TALON.configPeakOutputForward(+1, TIMEOUT);
-		RR_TALON.configPeakOutputReverse(-1, TIMEOUT);
+		kP = 6e-5; 
+    	kI = 0;
+    	kD = 0; 
+    	kIz = 0; 
+    	kFF = 0.000015; 
+    	kMaxOutput = 1; 
+    	kMinOutput = -1;
+    	maxRPM = 5700;
 
-		drive = new DevilDrive(FL_TALON, RL_TALON, FR_TALON, RR_TALON);
-		drive.setMaxOutput(7000);
+		FL_pidController.setP(kP);
+    	FL_pidController.setI(kI);
+    	FL_pidController.setD(kD);
+    	FL_pidController.setIZone(kIz);
+    	FL_pidController.setFF(kFF);
+    	FL_pidController.setOutputRange(kMinOutput, kMaxOutput);
+
+		FR_pidController.setP(kP);
+    	FR_pidController.setI(kI);
+    	FR_pidController.setD(kD);
+    	FR_pidController.setIZone(kIz);
+    	FR_pidController.setFF(kFF);
+    	FR_pidController.setOutputRange(kMinOutput, kMaxOutput);
+
+		RL_pidController.setP(kP);
+    	RL_pidController.setI(kI);
+    	RL_pidController.setD(kD);
+    	RL_pidController.setIZone(kIz);
+    	RL_pidController.setFF(kFF);
+    	RL_pidController.setOutputRange(kMinOutput, kMaxOutput);
+
+		RR_pidController.setP(kP);
+    	RR_pidController.setI(kI);
+    	RR_pidController.setD(kD);
+    	RR_pidController.setIZone(kIz);
+    	RR_pidController.setFF(kFF);
+    	RR_pidController.setOutputRange(kMinOutput, kMaxOutput);
+
+		drive = new DevilDrive(CANSparkMax1, CANSparkMax2, CANSparkMax3, CANSparkMax4);
+		
 
 	}
 
