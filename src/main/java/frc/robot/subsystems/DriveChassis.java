@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-// import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 
 public class DriveChassis {
@@ -28,11 +27,6 @@ public class DriveChassis {
     private SparkMaxPIDController FR_pidController;
     private SparkMaxPIDController RL_pidController;
     private SparkMaxPIDController RR_pidController;
-
-    // private RelativeEncoder FL_encoder;
-    // private RelativeEncoder FR_encoder;
-    // private RelativeEncoder RL_encoder;
-    // private RelativeEncoder RR_encoder;
 
     public final double kP;
     public final double kI;
@@ -67,11 +61,6 @@ public class DriveChassis {
         FR_pidController = CANSparkMax2.getPIDController();
         RL_pidController = CANSparkMax3.getPIDController();
         RR_pidController = CANSparkMax4.getPIDController();
-
-        // FL_encoder = CANSparkMax1.getEncoder();
-        // FR_encoder = CANSparkMax1.getEncoder();
-        // RL_encoder = CANSparkMax1.getEncoder();
-        // RR_encoder = CANSparkMax1.getEncoder();
 
         kP = 6e-5;
         kI = 0;
