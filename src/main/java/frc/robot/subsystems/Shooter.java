@@ -24,10 +24,10 @@ public class Shooter {
         // Shooter Motor Config
         shooter = new TalonFX(Wiring.shooterMotor);
 
-        shooter.set(TalonFXControlMode.Velocity, 0);
+        shooter.set(TalonFXControlMode.PercentOutput, 0);
 
         shooter.configClosedloopRamp(cLR, TIMEOUT);
-        shooter.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder); // shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+        shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor); // shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
         shooter.config_kF(0, shooter_kF);
         shooter.config_kP(0, shooter_kP);
         shooter.config_kD(0, shooter_kD);
@@ -42,11 +42,11 @@ public class Shooter {
     }
 
     public void startShooter() {
-        shooter.set(ControlMode.Velocity, shooterRpms);
+        shooter.set(TalonFXControlMode.PercentOutput, -0.5);
     }
 
     public void stopShooter() {
-        shooter.set(ControlMode.Velocity, 0);
+        shooter.set(TalonFXControlMode.PercentOutput, 0);
     }
 
     public void shoot() {
