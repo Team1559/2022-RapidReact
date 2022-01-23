@@ -3,13 +3,14 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController;
+import frc.robot.components.DevilDrive;
+import frc.robot.OperatorInterface;
 
-public class DriveChassis {
-    private static final int   TIMEOUT                     = 0;
+public class Chassis {
+    private static final int TIMEOUT = 0;
     public static final double WHEEL_RADIUS_INCHES_MECANUM = 3;
-    public static final double MAX_SPEED_FPS_TRACTION      = 9.67 * 1.01;
-    public static final double MAX_TICKS_PER_100MS         = MAX_SPEED_FPS_TRACTION * 4096.0
-            / (Math.PI * WHEEL_RADIUS_INCHES_MECANUM * 2.0 / 12.0) / 10.0;
+    public static final double MAX_SPEED_FPS_TRACTION = 9.67 * 1.01;
+    public static final double MAX_TICKS_PER_100MS = MAX_SPEED_FPS_TRACTION * 4096.0 / (Math.PI * WHEEL_RADIUS_INCHES_MECANUM * 2.0 / 12.0) / 10.0;
 
     private static final int FL_motor = 1;
     private static final int FR_motor = 2;
@@ -22,6 +23,8 @@ public class DriveChassis {
     public CANSparkMax CANSparkMax2;
     public CANSparkMax CANSparkMax3;
     public CANSparkMax CANSparkMax4;
+
+    private OperatorInterface oi;
 
     private SparkMaxPIDController FL_pidController;
     private SparkMaxPIDController FR_pidController;
@@ -46,7 +49,8 @@ public class DriveChassis {
      * these values mean so I don't want to delete them.
      */
 
-    public DriveChassis() {
+    public Chassis(OperatorInterface oi) {
+        this.oi = oi;
         CANSparkMax1 = new CANSparkMax(FL_motor, MotorType.kBrushless);
         CANSparkMax2 = new CANSparkMax(FR_motor, MotorType.kBrushless);
         CANSparkMax3 = new CANSparkMax(RL_motor, MotorType.kBrushless);
@@ -100,6 +104,9 @@ public class DriveChassis {
         RR_pidController.setOutputRange(kMinOutput, kMaxOutput);
 
         drive = new DevilDrive(CANSparkMax1, CANSparkMax2, CANSparkMax3, CANSparkMax4);
+    }
+    public void main(){
+        driveCartesian(oi.pilot.getLeftX(), oi.pilot.getLeftY(), oi.pilot.getRightX());
     }
 
     public void driveCartesian(double ySpeed, double xSpeed, double zRotation) {

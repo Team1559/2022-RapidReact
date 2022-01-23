@@ -5,7 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import frc.robot.subsystems.DriveChassis;
+import frc.robot.subsystems.Chassis;
 import frc.robot.components.Vision;
 import frc.robot.components.VisionData;
 
@@ -18,10 +18,10 @@ import frc.robot.components.VisionData;
  */
 public class Robot extends TimedRobot {
     public OperatorInterface oi = new OperatorInterface();
-    public Vision            vision;
-    VisionData               vData;
+    public Vision vision;
+    VisionData vData;
 
-    public DriveChassis drive;
+    public Chassis chassis;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -79,8 +79,10 @@ public class Robot extends TimedRobot {
             vData = vision.getData();
             vData.Print();
         }
+        if (FeatureFlags.doChassis && FeatureFlags.chassisInitalized) {
+            chassis.main();
+        }
 
-        drive.driveCartesian(oi.pilot.getLeftX(), oi.pilot.getLeftY(), oi.pilot.getRightX());
     }
 
     /** This function is called once when the robot is disabled. */
@@ -105,6 +107,12 @@ public class Robot extends TimedRobot {
             vision.VisionInit();
             FeatureFlags.visionInitalized = true;
         }
+        if (FeatureFlags.doChassis && !FeatureFlags.chassisInitalized) {
+            chassis = new Chassis(oi);
+            vision.VisionInit();
+            FeatureFlags.visionInitalized = true;
+        }
+
 
     }
 }
