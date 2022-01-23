@@ -4,6 +4,8 @@ import frc.robot.OperatorInterface;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
 import frc.robot.*;
+import com.revrobotics.*;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class Shooter {
 
@@ -17,7 +19,8 @@ public class Shooter {
     private double                          shooterRpms  = 98;
     private boolean                         dPadPressed  = false;
     private double                          shooterSpeed = -0.2;
-    private TalonSRX                        intake;
+    private CANSparkMax                     feeder;
+    private double                          feederSpeed  = .2;
     private int                             pov;
     private final int                       TIMEOUT      = 0;
     private final double                    cLR          = 0.1;
@@ -27,9 +30,10 @@ public class Shooter {
         pov = oi.pilot.getPOV();
         // Shooter Motor Config
         shooter = new TalonFX(Wiring.shooterMotor);
-        intake = new TalonSRX(Wiring.intakeMotor);
+        feeder = new CANSparkMax(Wiring.feederMotor, MotorType.kBrushless);
 
         shooter.set(TalonFXControlMode.PercentOutput, 0);
+        feeder.set(0);
 
         shooter.configClosedloopRamp(cLR, TIMEOUT);
         shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor); // shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
@@ -44,22 +48,6 @@ public class Shooter {
         shooter.setNeutralMode(NeutralMode.Coast);
         shooter.configSupplyCurrentLimit(shooterLimit);
 
-    }
-
-    public void startShooter() {
-        shooter.set(TalonFXControlMode.PercentOutput, shooterSpeed);
-    }
-
-    public void stopShooter() {
-        shooter.set(TalonFXControlMode.PercentOutput, 0);
-    }
-
-    public void startIntake() {
-        intake.set(TalonSRXControlMode.PercentOutput, .2);
-    }
-
-    public void stopIntake() {
-        intake.set(TalonSRXControlMode.PercentOutput, 0);
     }
 
     public void shoot() {
@@ -93,11 +81,24 @@ public class Shooter {
         }
     }
 
-    public void runIntake() {
-        if (oi.autoCollectButton()) {
-            startIntake();
+    public void startShooter() {
+        shooter.set(TalonFXControlMode.PercentOutput, shooterSpeed);
+        if (oi.feederButton()) {
+            feeder.set(feederSpeed);
         } else {
-            stopIntake();
+            feeder.set(0);
         }
     }
+
+    public void stopShooter() {
+        shooter.set(TalonFXControlMode.PercentOutput, 0);
+    }
+
+    /*public void runFeeder(){
+        if(oi.feederButton())
+            feeder.set(feederSpeed);
+        else
+            feeder.set(0);
+    }*/
+
 }

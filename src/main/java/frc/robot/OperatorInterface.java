@@ -11,13 +11,34 @@ public class OperatorInterface {
         pilot = new DTXboxController(PILOT_PORT);
         copilot = new DTXboxController(COPILOT_PORT);
     }
-    // Use this class to label each button sowe don't accidentily assign the same button to 2 different functions
+    // Use this class to label each button so we don't accidentally assign the same button to 2 different functions
     
+
+    //Vision
     public boolean autoShootButton(){
         return pilot.getXButton();
     }
     public boolean autoCollectButton(){
         return pilot.getAButton();
     }
+    //DriveTrain
+
+
+
+    //Shooter/Intake
+
+    //Going to have to switch these to co-pilot at some point
+    public boolean shootButon(){
+        return pilot.getRightBumper();
+    }
+
+    public boolean feederButton(){
+        return pilot.getLeftBumper();
+    }
+
+    //Climber
+
+
+    
 
 }

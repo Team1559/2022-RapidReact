@@ -37,6 +37,7 @@ public class Robot extends TimedRobot {
 
         initialize();
         shooter.init(oi);
+        
     }
 
     /**
@@ -85,7 +86,7 @@ public class Robot extends TimedRobot {
             visionControl.main();
         }
         shooter.shoot();
-        shooter.runIntake();
+        //shooter.runFeeder();
     }
 
     /** This function is called once when the robot is disabled. */

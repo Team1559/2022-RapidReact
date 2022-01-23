@@ -12,9 +12,9 @@ public class Wiring
 //Drivetrain
     
 
-//Cargo
+//Shooter/Intake
 public static final int shooterMotor = 0;
-public static final int intakeMotor = 3;
+public static final int feederMotor = 16;
     
 //Climber
 
