@@ -5,8 +5,9 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import frc.robot.subsystems.*;
-import frc.robot.components.*;
+import frc.robot.subsystems.Chassis;
+import frc.robot.components.Vision;
+import frc.robot.components.VisionData;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -16,21 +17,18 @@ import frc.robot.components.*;
  * project.
  */
 public class Robot extends TimedRobot {
+    public OperatorInterface oi = new OperatorInterface();
+    public Vision vision;
+    VisionData vData;
 
-    private OperatorInterface oi = new OperatorInterface();
-    // auto classes
-    private VisionControl visionControl;
-    private Vision        vision;
-    private VisionData    vData;
+    public Chassis chassis;
 
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
     @Override
-    public void robotInit() {
-        initialize();
-    }
+    public void robotInit() {}
 
     /**
      * This function is called every robot packet, no matter the mode. Use this
@@ -56,28 +54,35 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        
+        initialize();
     }
 
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
         if (FeatureFlags.doVision && FeatureFlags.visionInitalized) {
-            visionControl.auto();
+            vData = vision.getData();
+            vData.Print();
         }
     }
 
     /** This function is called once when teleop is enabled. */
     @Override
     public void teleopInit() {
+        initialize();
     }
 
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
         if (FeatureFlags.doVision && FeatureFlags.visionInitalized) {
-            visionControl.main();
+            vData = vision.getData();
+            vData.Print();
         }
+        if (FeatureFlags.doChassis && FeatureFlags.chassisInitalized) {
+            chassis.main();
+        }
+
     }
 
     /** This function is called once when the robot is disabled. */
@@ -100,8 +105,14 @@ public class Robot extends TimedRobot {
         if (FeatureFlags.doVision && !FeatureFlags.visionInitalized) {
             vision = new Vision();
             vision.VisionInit();
-            visionControl = new VisionControl(vision, vData, oi);// chassis, // shooter);
             FeatureFlags.visionInitalized = true;
         }
+        if (FeatureFlags.doChassis && !FeatureFlags.chassisInitalized) {
+            chassis = new Chassis(oi);
+            vision.VisionInit();
+            FeatureFlags.visionInitalized = true;
+        }
+
+
     }
 }
