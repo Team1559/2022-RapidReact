@@ -5,10 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import frc.robot.subsystems.Chassis;
-import frc.robot.components.Vision;
-import frc.robot.components.VisionData;
-
+import frc.robot.subsystems.*;
+import frc.robot.components.*;
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
@@ -17,9 +15,10 @@ import frc.robot.components.VisionData;
  * project.
  */
 public class Robot extends TimedRobot {
-    public OperatorInterface oi = new OperatorInterface();
-    public Vision vision;
-    VisionData vData;
+    private OperatorInterface oi = new OperatorInterface();
+    private Vision vision;
+    private VisionData vData;
+    private VisionControl vc;
 
     public Chassis chassis;
 
@@ -105,6 +104,7 @@ public class Robot extends TimedRobot {
         if (FeatureFlags.doVision && !FeatureFlags.visionInitalized) {
             vision = new Vision();
             vision.VisionInit();
+            vc = new VisionControl(vision, vData, oi, chassis);
             FeatureFlags.visionInitalized = true;
         }
         if (FeatureFlags.doChassis && !FeatureFlags.chassisInitalized) {

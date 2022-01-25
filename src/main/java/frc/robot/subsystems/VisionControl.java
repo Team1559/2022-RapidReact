@@ -22,17 +22,20 @@ public class VisionControl {
     private double desiredAngle;// angle of the shooter in degrees
     private double desiredPower;// desired shooter power in RPMS
     // chassis variables
-    private double forward_speed = 0; // speed front to back between 0-1
-    private double sidespeed = 0; // straife speed between 0-1
-    private double rotation = 0; // rotation speed between 0-1
-    // private Chassis chassis;
+    private double hoop_forward_speed = 0; // speed front to back between 0-1
+    private double hoop_sidespeed = 0; // straife speed between 0-1
+    private double hoop_rotation = 0; // rotation speed between 0-1
+    private double ball_forward_speed = 0; // speed front to back between 0-1
+    private double ball_sidespeed = 0; // straife speed between 0-1
+    private double ball_rotation = 0; // rotation speed between 0-1
+    private Chassis chassis;
     // private Shooter shooter;
 
-    public VisionControl(Vision vision, VisionData visionData, OperatorInterface oi) {// , Chassis chassis, Shooter shooter}) {
+    public VisionControl(Vision vision, VisionData visionData, OperatorInterface oi, Chassis chassis) {// , Shooter shooter}) {
         this.oi = oi;
         this.vision = vision;
         this.visionData = visionData;
-        // this.chassis = chassis;
+        this.chassis = chassis;
         // this.shooter = shooter;
     }
 
@@ -51,16 +54,25 @@ public class VisionControl {
             update();
 
             visionData.Print();
-            if (oi.autoShootButton())) { // Move the chassis so it is alligned, aim the shooter, and fire the cargo
+            if (oi.autoShootButton()) { // Move the chassis so it is alligned, aim the shooter, and fire the cargo
                 if(visionData.isHoopValid()){
                     double error = 0;
 
                     // shooter.setAngle(desiredAngle);
                     // Shooter.setPower(desiredPower);
                     if (Math.abs(error) > chassisThreshold) {
-                        // chassis.drive(forward_speed, sidespeed, rotation);
+                        chassis.drive(hoop_forward_speed, hoop_sidespeed, hoop_rotation);
                     }
-                    // shooter.shoot();
+                    else{
+                        // shooter.shoot();
+                        try{
+                            wait(1);
+                        }
+                        catch(InterruptedException e){
+                            continue;
+                        }
+                        break;
+                    }
                 }
                 else{
                     System.out.println("Invalid data... aborting");
@@ -69,6 +81,7 @@ public class VisionControl {
             else if (oi.autoCollectButton()) { // go collect the nearest cargo
                 if(visionData.isBallValid()){
                     // shooter.gather();
+                    chassis.drive(ball_forward_speed, ball_sidespeed, ball_rotation);
                 }
                 else{
                     System.out.println("Invalid data... aborting");
@@ -97,9 +110,14 @@ public class VisionControl {
 
     }
 
-    private void calculateChassis() {
-        // forward_speed = __calculated_forward_speed__;
-        // sidespeed = __calculated_side_speed__;
-        // rotation = __calculated_rotation__;
+    private void calculateHoopChassis() {
+        // hoop_forward_speed = __calculated_forward_speed__;
+        // hoop_sidespeed = __calculated_side_speed__;
+        // hoop_rotation = __calculated_rotation__;
+    }
+    private void calculateballChassis() {
+        // ball_forward_speed = __calculated_forward_speed__;
+        // ball_sidespeed = __calculated_side_speed__;
+        // ball_rotation = __calculated_rotation__;
     }
 }

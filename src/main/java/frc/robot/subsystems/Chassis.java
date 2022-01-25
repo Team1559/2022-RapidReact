@@ -63,10 +63,10 @@ public class Chassis {
         drive = new DevilDrive(CANSparkMax1, CANSparkMax2, CANSparkMax3, CANSparkMax4);
     }
     public void main(){
-        driveCartesian(oi.pilot.getLeftX(), oi.pilot.getLeftY(), oi.pilot.getRightX());
+        drive(oi.pilot.getLeftX(), oi.pilot.getLeftY(), oi.pilot.getRightX());
     }
 
-    public void driveCartesian(double ySpeed, double xSpeed, double zRotation) {
+    public void drive(double ySpeed, double xSpeed, double zRotation) {
         drive.driveCartesian(ySpeed, xSpeed, zRotation);
     }
 }
