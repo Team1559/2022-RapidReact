@@ -11,12 +11,12 @@ public class Shooter {
 
     private OperatorInterface               oi;
     private double                          shooter_kF   = 0;
-    private double                          shooter_kP   = .007;
-    private double                          shooter_kD   = 0;
-    private double                          shooter_kI   = 0.00000;                                                 // 1e-6
-    private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(true, 100, 20, 1000);
+    private double                          shooter_kP   = 1;
+    private double                          shooter_kD   = .02;
+    private double                          shooter_kI   = 0.001;                                                 // 1e-6
+    private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(true, 20, 20, 0);
     private TalonFX                         shooter;
-    private double                          shooterRpms  = 98;
+    private double                          shooterRpms  = -4500;
     private boolean                         dPadPressed  = false;
     private double                          shooterSpeed = -0.2;
     private CANSparkMax                     feeder;
@@ -45,13 +45,13 @@ public class Shooter {
         shooter.configNominalOutputReverse(0, TIMEOUT);
         shooter.configPeakOutputForward(+1, TIMEOUT);
         shooter.configPeakOutputReverse(-1, TIMEOUT);
-        shooter.setNeutralMode(NeutralMode.Coast);
+        shooter.setNeutralMode(NeutralMode.Brake);
         shooter.configSupplyCurrentLimit(shooterLimit);
 
     }
 
     public void shoot() {
-        if (oi.autoShootButton()) {
+        if (oi.shootButon()) {
             startShooter();
         } else {
             stopShooter();
@@ -82,7 +82,7 @@ public class Shooter {
     }
 
     public void startShooter() {
-        shooter.set(TalonFXControlMode.PercentOutput, shooterSpeed);
+        shooter.set(TalonFXControlMode.Velocity, shooterRpms);
         if (oi.feederButton()) {
             feeder.set(feederSpeed);
         } else {
