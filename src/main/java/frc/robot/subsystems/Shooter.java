@@ -10,13 +10,13 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 public class Shooter {
 
     private OperatorInterface               oi;
-    private double                          shooter_kF   = 0;
-    private double                          shooter_kP   = 1;
-    private double                          shooter_kD   = .02;
-    private double                          shooter_kI   = 0.001;                                                 // 1e-6
+    private double                          shooter_kF   = 0.045;
+    private double                          shooter_kP   = 0.4;
+    private double                          shooter_kD   = 0;
+    private double                          shooter_kI   = 0.000;                                                 // 1e-6
     private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(true, 20, 20, 0);
     private TalonFX                         shooter;
-    private double                          shooterRpms  = -4500;
+    private double                          shooterRpms  = -7500;
     private boolean                         dPadPressed  = false;
     private double                          shooterSpeed = -0.2;
     private CANSparkMax                     feeder;
@@ -32,7 +32,7 @@ public class Shooter {
         shooter = new TalonFX(Wiring.shooterMotor);
         feeder = new CANSparkMax(Wiring.feederMotor, MotorType.kBrushless);
 
-        shooter.set(TalonFXControlMode.PercentOutput, 0);
+        //shooter.set(TalonFXControlMode.PercentOutput, 0);
         feeder.set(0);
 
         shooter.configClosedloopRamp(cLR, TIMEOUT);
@@ -45,12 +45,13 @@ public class Shooter {
         shooter.configNominalOutputReverse(0, TIMEOUT);
         shooter.configPeakOutputForward(+1, TIMEOUT);
         shooter.configPeakOutputReverse(-1, TIMEOUT);
-        shooter.setNeutralMode(NeutralMode.Brake);
+        shooter.setNeutralMode(NeutralMode.Coast);
         shooter.configSupplyCurrentLimit(shooterLimit);
 
     }
 
     public void shoot() {
+        System.out.println(shooter.getSelectedSensorVelocity());
         if (oi.shootButon()) {
             startShooter();
         } else {
@@ -83,6 +84,7 @@ public class Shooter {
 
     public void startShooter() {
         shooter.set(TalonFXControlMode.Velocity, shooterRpms);
+        //shooter.set(TalonFXControlMode.PercentOutput, -.5);
         if (oi.feederButton()) {
             feeder.set(feederSpeed);
         } else {
