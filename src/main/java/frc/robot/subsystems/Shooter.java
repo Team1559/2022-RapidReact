@@ -7,30 +7,39 @@ import frc.robot.*;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.Solenoid;
+
 public class Shooter {
 
     private OperatorInterface               oi;
-    private double                          shooter_kF   = 0.045;
-    private double                          shooter_kP   = 0.4;
-    private double                          shooter_kD   = 0;
-    private double                          shooter_kI   = 0.000;                                                 // 1e-6
     private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(true, 20, 20, 0);
-    private TalonFX                         shooter;
-    private double                          shooterRpms  = -7500;
-    private boolean                         dPadPressed  = false;
-    private double                          shooterSpeed = -0.2;
-    private CANSparkMax                     feeder;
-    private double                          feederSpeed  = .2;
-    private int                             pov;
     private final int                       TIMEOUT      = 0;
     private final double                    cLR          = 0.1;
 
+
+    private double                          shooter_kF   = 0.045;
+    private double                          shooter_kP   = 0.4;
+    private double                          shooter_kD   = 0;
+    private double                          shooter_kI   = 0.000;
+    private double                          shooterRpms  = -7500;
+    
+    private double                          shooterSpeed = -0.2;
+    private double                          feederSpeed  = .2;
+
+    private TalonFX                         shooter;
+    private CANSparkMax                     feeder;
+    private Solenoid                        lowerIntake;
+    private TalonSRX                        intake;
+
+    
+
     public void init(OperatorInterface operatorinterface) {
         oi = operatorinterface;
-        pov = oi.pilot.getPOV();
-        // Shooter Motor Config
+
+        //MotorController Config
         shooter = new TalonFX(Wiring.shooterMotor);
         feeder = new CANSparkMax(Wiring.feederMotor, MotorType.kBrushless);
+        lowerIntake = new Solenoid(Wiring.lowerIntake);
 
         //shooter.set(TalonFXControlMode.PercentOutput, 0);
         feeder.set(0);
@@ -52,40 +61,19 @@ public class Shooter {
 
     public void shoot() {
         System.out.println(shooter.getSelectedSensorVelocity());
-        if (oi.shootButon()) {
+        if (oi.runFlyWheelButton()) {
             startShooter();
         } else {
             stopShooter();
         }
 
-        if (pov != -1) {
-            if (!dPadPressed) {
-                if (pov == 0) {
-                    shooterSpeed -= 0.05;
-                } else if (pov == 180) {
-                    shooterSpeed += 0.05;
-                } else if (pov == 90) {
-                    shooterSpeed -= 0.01;
-                } else if (pov == 270) {
-                    shooterSpeed += 0.01;
-                }
-                if (shooterSpeed < -1D) {
-                    shooterSpeed = -1D;
-                } else if (shooterSpeed > 0D) {
-                    shooterSpeed = 0D;
-                }
-                System.out.println(shooterSpeed);
-            }
-            dPadPressed = true;
-        } else {
-            dPadPressed = false;
-        }
+    
     }
 
     public void startShooter() {
         shooter.set(TalonFXControlMode.Velocity, shooterRpms);
         //shooter.set(TalonFXControlMode.PercentOutput, -.5);
-        if (oi.feederButton()) {
+        if (oi.shootButton()) {
             feeder.set(feederSpeed);
         } else {
             feeder.set(0);
@@ -95,12 +83,5 @@ public class Shooter {
     public void stopShooter() {
         shooter.set(TalonFXControlMode.PercentOutput, 0);
     }
-
-    /*public void runFeeder(){
-        if(oi.feederButton())
-            feeder.set(feederSpeed);
-        else
-            feeder.set(0);
-    }*/
 
 }

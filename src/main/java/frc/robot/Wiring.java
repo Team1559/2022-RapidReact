@@ -15,6 +15,8 @@ public class Wiring
 //Shooter/Intake
 public static final int shooterMotor = 0;
 public static final int feederMotor = 16;
+
+public static final int lowerIntake = 0;
     
 //Climber
 

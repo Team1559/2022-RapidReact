@@ -28,12 +28,28 @@ public class OperatorInterface {
     //Shooter/Intake
 
     //Going to have to switch these to co-pilot at some point
-    public boolean shootButon(){
+    //Currently thinking that the co pilot controls intake and flywheel with one button
+    // And pilot shoots(runs feeder motor) At the moment, going to use seperate buttons for testing purposes
+    public boolean runFlyWheelButton(){
+        return pilot.getLeftBumper();
+    }
+
+    public boolean shootButton(){
         return pilot.getRightBumper();
     }
 
-    public boolean feederButton(){
-        return pilot.getLeftBumper();
+    public boolean lowerIntakeButton(){
+        if(pilot.getLeftTriggerAxis() > .5)
+            return true;
+        else
+            return false;
+    }
+
+    public boolean intakeButton(){
+        if(pilot.getRightTriggerAxis() > .5)
+            return true;
+        else
+            return false;
     }
 
     //Climber
