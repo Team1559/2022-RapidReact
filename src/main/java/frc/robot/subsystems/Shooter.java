@@ -6,7 +6,8 @@ import com.ctre.phoenix.motorcontrol.can.*;
 import frc.robot.*;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
+import frc.robot.*;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class Shooter {
@@ -39,7 +40,7 @@ public class Shooter {
         //MotorController Config
         shooter = new TalonFX(Wiring.shooterMotor);
         feeder = new CANSparkMax(Wiring.feederMotor, MotorType.kBrushless);
-        lowerIntake = new Solenoid(Wiring.lowerIntake);
+        lowerIntake = new Solenoid(PneumaticsModuleType.CTREPCM, Wiring.lowerIntake); // use for PneumaticsModuleType.CTREPCM for ctre stuff or PneumaticsModuleType.REVPH for the rev stuff
 
         //shooter.set(TalonFXControlMode.PercentOutput, 0);
         feeder.set(0);
