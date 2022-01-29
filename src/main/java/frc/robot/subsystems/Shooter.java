@@ -17,33 +17,45 @@ public class Shooter {
     private final int                       TIMEOUT      = 0;
     private final double                    cLR          = 0.1;
 
+    private double shooter_kF  = 0.045;
+    private double shooter_kP  = 0.4;
+    private double shooter_kD  = 0;
+    private double shooter_kI  = 0.000;
+    private double shooterRpms = 7500;
 
-    private double                          shooter_kF   = 0.045;
-    private double                          shooter_kP   = 0.4;
-    private double                          shooter_kD   = 0;
-    private double                          shooter_kI   = 0.000;
-    private double                          shooterRpms  = -7500;
-    
-    private double                          shooterSpeed = -0.2;
-    private double                          feederSpeed  = .2;
+    private double shooterSpeed = -0.2;
+    private double feederSpeed  = .2;
+    private double intakeSpeed  = .5;
 
-    private TalonFX                         shooter;
-    private CANSparkMax                     feeder;
-    private Solenoid                        lowerIntake;
-    private TalonSRX                        intake;
-
-    
+    private TalonFX     shooter;
+    private CANSparkMax feeder;
+    private Solenoid    lowerIntake;
+    private TalonSRX    intake;
 
     public void init(OperatorInterface operatorinterface) {
         oi = operatorinterface;
 
-        //MotorController Config
+        // MotorController Config
         shooter = new TalonFX(Wiring.shooterMotor);
         feeder = new CANSparkMax(Wiring.feederMotor, MotorType.kBrushless);
-        lowerIntake = new Solenoid(PneumaticsModuleType.CTREPCM, Wiring.lowerIntake); // use for PneumaticsModuleType.CTREPCM for ctre stuff or PneumaticsModuleType.REVPH for the rev stuff
+        lowerIntake = new Solenoid(PneumaticsModuleType.CTREPCM, Wiring.lowerIntake); // use
+                                                                                      // for
+                                                                                      // PneumaticsModuleType.CTREPCM
+                                                                                      // for
+                                                                                      // ctre
+                                                                                      // stuff
+                                                                                      // or
+                                                                                      // PneumaticsModuleType.REVPH
+                                                                                      // for
+                                                                                      // the
+                                                                                      // rev
+                                                                                      // stuff
+        intake = new TalonSRX(Wiring.intake);
 
-        //shooter.set(TalonFXControlMode.PercentOutput, 0);
+        // shooter.set(TalonFXControlMode.PercentOutput, 0);
         feeder.set(0);
+        lowerIntake.set(false);
+        intake.set(ControlMode.PercentOutput, 0);
 
         shooter.configClosedloopRamp(cLR, TIMEOUT);
         shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor); // shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
@@ -60,20 +72,31 @@ public class Shooter {
 
     }
 
-    public void shoot() {
-        System.out.println(shooter.getSelectedSensorVelocity());
+    public void runShooter() {
+        // System.out.println(shooter.getSelectedSensorVelocity());
         if (oi.runFlyWheelButton()) {
             startShooter();
         } else {
             stopShooter();
         }
 
-    
+        if (oi.lowerIntakeButton()) {
+            lowerIntake();
+        } else {
+            raiseIntake();
+        }
+
+        if (oi.intakeButton()) {
+            startIntake();
+        } else {
+            stopIntake();
+        }
+
     }
 
     public void startShooter() {
-        shooter.set(TalonFXControlMode.Velocity, shooterRpms);
-        //shooter.set(TalonFXControlMode.PercentOutput, -.5);
+        shooter.set(TalonFXControlMode.Velocity, -shooterRpms);
+        // shooter.set(TalonFXControlMode.PercentOutput, -.5);
         if (oi.shootButton()) {
             feeder.set(feederSpeed);
         } else {
@@ -83,6 +106,22 @@ public class Shooter {
 
     public void stopShooter() {
         shooter.set(TalonFXControlMode.PercentOutput, 0);
+    }
+
+    public void lowerIntake() {
+        lowerIntake.set(true);
+    }
+
+    public void raiseIntake() {
+        lowerIntake.set(false);
+    }
+
+    public void startIntake() {
+        intake.set(TalonSRXControlMode.PercentOutput, intakeSpeed);
+    }
+
+    public void stopIntake() {
+        intake.set(TalonSRXControlMode.PercentOutput, 0);
     }
 
 }

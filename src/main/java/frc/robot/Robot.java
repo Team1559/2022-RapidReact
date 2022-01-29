@@ -26,7 +26,7 @@ public class Robot extends TimedRobot {
     private VisionControl visionControl;
     private Vision        vision;
     private VisionData    vData;
-    private Shooter       shooter = new Shooter();
+    private Shooter       shooter;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -36,8 +36,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
 
         initialize();
-        shooter.init(oi);
-        
+
     }
 
     /**
@@ -85,8 +84,10 @@ public class Robot extends TimedRobot {
         if (FeatureFlags.doVision && FeatureFlags.visionInitalized) {
             visionControl.main();
         }
-        shooter.shoot();
-        //shooter.runFeeder();
+
+        if (FeatureFlags.shooterEnabled && FeatureFlags.shooterInitalized) {
+            shooter.runShooter();
+        }
     }
 
     /** This function is called once when the robot is disabled. */
@@ -113,5 +114,12 @@ public class Robot extends TimedRobot {
                                                                  // shooter);
             FeatureFlags.visionInitalized = true;
         }
+
+        if (FeatureFlags.shooterEnabled && !FeatureFlags.shooterInitalized) {
+            shooter = new Shooter();
+            shooter.init(oi);
+            FeatureFlags.visionInitalized = true;
+        }
+
     }
 }
