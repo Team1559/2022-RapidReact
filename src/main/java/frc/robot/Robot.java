@@ -36,6 +36,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
 
         initialize();
+        //FeatureFlags.visionInitalized = true;
 
     }
 
@@ -85,9 +86,9 @@ public class Robot extends TimedRobot {
             visionControl.main();
         }
 
-        if (FeatureFlags.shooterEnabled && FeatureFlags.shooterInitalized) {
-            shooter.runShooter();
-        }
+        //if (FeatureFlags.shooterEnabled && FeatureFlags.shooterInitalized) {
+        shooter.runShooter();
+        //}
     }
 
     /** This function is called once when the robot is disabled. */
@@ -116,9 +117,8 @@ public class Robot extends TimedRobot {
         }
 
         if (FeatureFlags.shooterEnabled && !FeatureFlags.shooterInitalized) {
-            shooter = new Shooter();
-            shooter.init(oi);
-            FeatureFlags.visionInitalized = true;
+            shooter = new Shooter(oi);
+            FeatureFlags.shooterInitalized = true;
         }
 
     }

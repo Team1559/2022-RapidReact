@@ -11,9 +11,10 @@ public class Wiring {
     public static final int shooterMotor = 0;
     public static final int feederMotor  = 16;
 
-    public static final int lowerIntake = 0;
-    public static final int intake      = 5; // CANID IS TEMP
+    //public static final int lowerIntake = 0;
+    public static final int intake      = 3; 
 
     // Climber
 
 }
+   

@@ -25,20 +25,20 @@ public class Shooter {
 
     private double shooterSpeed = -0.2;
     private double feederSpeed  = .2;
-    private double intakeSpeed  = .5;
+    private double intakeSpeed  = .4;
 
     private TalonFX     shooter;
     private CANSparkMax feeder;
-    private Solenoid    lowerIntake;
+    //private Solenoid    lowerIntake;
     private TalonSRX    intake;
 
-    public void init(OperatorInterface operatorinterface) {
+    public Shooter (OperatorInterface operatorinterface) {
         oi = operatorinterface;
 
         // MotorController Config
         shooter = new TalonFX(Wiring.shooterMotor);
         feeder = new CANSparkMax(Wiring.feederMotor, MotorType.kBrushless);
-        lowerIntake = new Solenoid(PneumaticsModuleType.CTREPCM, Wiring.lowerIntake); // use
+        //lowerIntake = new Solenoid(PneumaticsModuleType.CTREPCM, Wiring.lowerIntake); // use
                                                                                       // for
                                                                                       // PneumaticsModuleType.CTREPCM
                                                                                       // for
@@ -54,8 +54,8 @@ public class Shooter {
 
         // shooter.set(TalonFXControlMode.PercentOutput, 0);
         feeder.set(0);
-        lowerIntake.set(false);
-        intake.set(ControlMode.PercentOutput, 0);
+        //lowerIntake.set(false);
+        intake.set(TalonSRXControlMode.PercentOutput, 0);
 
         shooter.configClosedloopRamp(cLR, TIMEOUT);
         shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor); // shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
@@ -80,11 +80,11 @@ public class Shooter {
             stopShooter();
         }
 
-        if (oi.lowerIntakeButton()) {
+        /*if (oi.lowerIntakeButton()) {
             lowerIntake();
         } else {
             raiseIntake();
-        }
+        }*/
 
         if (oi.intakeButton()) {
             startIntake();
@@ -109,11 +109,11 @@ public class Shooter {
     }
 
     public void lowerIntake() {
-        lowerIntake.set(true);
+        //lowerIntake.set(true);
     }
 
     public void raiseIntake() {
-        lowerIntake.set(false);
+        //lowerIntake.set(false);
     }
 
     public void startIntake() {
