@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import frc.robot.OperatorInterface;
+import frc.robot.components.CompressorControl;
+
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
 import frc.robot.*;
@@ -29,8 +31,8 @@ public class Shooter {
 
     private TalonFX     shooter;
     private CANSparkMax feeder;
-    // private Solenoid lowerIntakeLeft;
-    // private Solenoid lowerIntakeRight;
+
+    private Solenoid lowerIntake;
 
     private TalonSRX intake;
 
@@ -38,14 +40,12 @@ public class Shooter {
         oi = operatorinterface;
 
         // MotorController Config
+
         shooter = new TalonFX(Wiring.shooterMotor);
         feeder = new CANSparkMax(Wiring.feederMotor, MotorType.kBrushless);
-        // lowerIntakeLeft = new Solenoid(PneumaticsModuleType.CTREPCM,
-        // Wiring.lowerIntake);
-        // lowerIntakeRight = new Solenoid(PneumaticsModuleType.CTREPCM,
-        // Wiring.lowerIntake);
+        lowerIntake = new Solenoid(PneumaticsModuleType.REVPH, Wiring.lowerIntake);
 
-        //use for
+        // use for
         // PneumaticsModuleType.CTREPCM
         // for
         // ctre
@@ -60,7 +60,9 @@ public class Shooter {
 
         // shooter.set(TalonFXControlMode.PercentOutput, 0);
         feeder.set(0);
-        // lowerIntake.set(false);
+        
+        lowerIntake.set(false);
+
         intake.set(TalonSRXControlMode.PercentOutput, 0);
 
         shooter.configClosedloopRamp(cLR, TIMEOUT);
@@ -79,21 +81,18 @@ public class Shooter {
     }
 
     public void runShooter() {
-        // System.out.println(shooter.getSelectedSensorVelocity());
+        System.out.println(shooter.getSelectedSensorVelocity());
         if (oi.runFlyWheelButton()) {
             startShooter();
         } else {
             stopShooter();
         }
 
-        /*
-         * if (oi.lowerIntakeButton()) { 
-         * lowerIntake(); 
-         * } 
-         * else {
-         *  raiseIntake();
-         * }
-         */
+        if (oi.lowerIntakeButton()) {
+            lowerIntake();
+        } else {
+            raiseIntake();
+        }
 
         if (oi.intakeButton()) {
             startIntake();
@@ -118,13 +117,11 @@ public class Shooter {
     }
 
     public void lowerIntake() {
-        //lowerIntakeLeft.set(true);
-        //lowerIntakeRight.set(true);
+        lowerIntake.set(true);
     }
 
     public void raiseIntake() {
-        // lowerIntakeRight.set(false);
-        // lowerIntakeLeft.set(true);
+        lowerIntake.set(false);
     }
 
     public void startIntake() {

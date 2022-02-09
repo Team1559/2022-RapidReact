@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.subsystems.Shooter;
 // import frc.robot.subsystems.Vision;
@@ -27,6 +29,8 @@ public class Robot extends TimedRobot {
     private Vision        vision;
     private VisionData    vData;
     private Shooter       shooter;
+
+    private CompressorControl compressorControl;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -86,14 +90,23 @@ public class Robot extends TimedRobot {
             visionControl.main();
         }
 
-        //if (FeatureFlags.shooterEnabled && FeatureFlags.shooterInitalized) {
-        shooter.runShooter();
-        //}
+        if(FeatureFlags.compressorEnable && FeatureFlags.compressorInitialized){
+            compressorControl.run();
+        }
+
+        if (FeatureFlags.shooterEnabled && FeatureFlags.shooterInitalized) {
+            shooter.runShooter();
+        }
     }
 
     /** This function is called once when the robot is disabled. */
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+
+        if(FeatureFlags.compressorEnable && FeatureFlags.compressorInitialized){
+            compressorControl.disable();
+          }
+    }
 
     /** This function is called periodically when disabled. */
     @Override
@@ -119,6 +132,12 @@ public class Robot extends TimedRobot {
         if (FeatureFlags.shooterEnabled && !FeatureFlags.shooterInitalized) {
             shooter = new Shooter(oi);
             FeatureFlags.shooterInitalized = true;
+        }
+
+        if (FeatureFlags.compressorEnable && !FeatureFlags.compressorInitialized) {
+            compressorControl = new CompressorControl();
+            compressorControl.init();
+            FeatureFlags.compressorInitialized = true;
         }
 
     }
