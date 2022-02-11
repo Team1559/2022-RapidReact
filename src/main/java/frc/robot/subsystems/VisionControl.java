@@ -33,6 +33,7 @@ public class VisionControl {
     public boolean usingAuto = false;
     private int invalid_ball_counter = 0;    
     private final int invalid_ball_counter_threshold = 20;
+    private final boolean SQUARE_DRIVER_INPUTS = true;
     // private Shooter shooter;
 
     public VisionControl(Vision vision, VisionData visionData, OperatorInterface oi, Chassis chassis) {// , Shooter shooter}) {
@@ -89,7 +90,11 @@ public class VisionControl {
                     // shooter.gather();
                     calculateBallChassis();
                     printData();
-                    chassis.drive(-oi.pilot.getLeftY(), 0 , ball_rotation, false);
+                    double ySpeed = -oi.pilot.getLeftY();
+                    if(SQUARE_DRIVER_INPUTS){
+                        ySpeed = Math.copySign(ySpeed * ySpeed, ySpeed);
+                    }
+                    chassis.drive(ySpeed, 0 , ball_rotation, false);
                 }
                 else{
                     System.out.println("Invalid data... remaining in manual control");
