@@ -6,6 +6,9 @@ package frc.robot.components;
 
 import static java.util.Objects.requireNonNull;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkMaxPIDController;
+
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
@@ -61,10 +64,12 @@ import edu.wpi.first.wpilibj.drive.Vector2d;
 public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseable {
   private static int instances;
 
-  private final SpeedController m_frontLeftMotor;
-  private final SpeedController m_rearLeftMotor;
-  private final SpeedController m_frontRightMotor;
-  private final SpeedController m_rearRightMotor;
+  private final CANSparkMax m_frontLeftMotor;
+  private final CANSparkMax m_rearLeftMotor;
+  private final CANSparkMax m_frontRightMotor;
+  private final CANSparkMax m_rearRightMotor;
+  private final double m_deadband;
+  private final double m_maxOutput = 5700;
 
   private boolean m_reported;
 
@@ -103,12 +108,14 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
    * @param rearLeftMotor The motor on the rear-left corner.
    * @param frontRightMotor The motor on the front-right corner.
    * @param rearRightMotor The motor on the rear-right corner.
+   * @param m_deadband
    */
   public DevilDrive(
-      SpeedController frontLeftMotor,
-      SpeedController rearLeftMotor,
-      SpeedController frontRightMotor,
-      SpeedController rearRightMotor) {
+    CANSparkMax frontLeftMotor,
+    CANSparkMax rearLeftMotor,
+    CANSparkMax frontRightMotor,
+    CANSparkMax rearRightMotor,
+      double deadband) {
     requireNonNull(frontLeftMotor, "Front-left motor cannot be null");
     requireNonNull(rearLeftMotor, "Rear-left motor cannot be null");
     requireNonNull(frontRightMotor, "Front-right motor cannot be null");
@@ -118,6 +125,30 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
     m_rearLeftMotor = rearLeftMotor;
     m_frontRightMotor = frontRightMotor;
     m_rearRightMotor = rearRightMotor;
+    m_deadband = deadband;
+    SendableRegistry.addChild(this, m_frontLeftMotor);
+    SendableRegistry.addChild(this, m_rearLeftMotor);
+    SendableRegistry.addChild(this, m_frontRightMotor);
+    SendableRegistry.addChild(this, m_rearRightMotor);
+    instances++;
+    SendableRegistry.addLW(this, "MecanumDrive", instances);
+  }
+
+  public DevilDrive(
+    CANSparkMax frontLeftMotor,
+    CANSparkMax rearLeftMotor,
+    CANSparkMax frontRightMotor,
+    CANSparkMax rearRightMotor) {
+    requireNonNull(frontLeftMotor, "Front-left motor cannot be null");
+    requireNonNull(rearLeftMotor, "Rear-left motor cannot be null");
+    requireNonNull(frontRightMotor, "Front-right motor cannot be null");
+    requireNonNull(rearRightMotor, "Rear-right motor cannot be null");
+
+    m_frontLeftMotor = frontLeftMotor;
+    m_rearLeftMotor = rearLeftMotor;
+    m_frontRightMotor = frontRightMotor;
+    m_rearRightMotor = rearRightMotor;
+    m_deadband = 0.0;
     SendableRegistry.addChild(this, m_frontLeftMotor);
     SendableRegistry.addChild(this, m_rearLeftMotor);
     SendableRegistry.addChild(this, m_frontRightMotor);
@@ -167,16 +198,25 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
           tResourceType.kResourceType_RobotDrive, tInstances.kRobotDrive2_MecanumCartesian, 4);
       m_reported = true;
     }
-
+    
     ySpeed = MathUtil.applyDeadband(ySpeed, m_deadband);
     xSpeed = MathUtil.applyDeadband(xSpeed, m_deadband);
 
     var speeds = driveCartesianIK(ySpeed, xSpeed, zRotation, gyroAngle);
+    SparkMaxPIDController frontLeftPid = m_frontLeftMotor.getPIDController();
+    SparkMaxPIDController frontRightPid = m_frontRightMotor.getPIDController();
+    SparkMaxPIDController rearLeftPid = m_rearLeftMotor.getPIDController();
+    SparkMaxPIDController rearRightPid = m_rearRightMotor.getPIDController();
+    
+    frontLeftPid.setReference(speeds.frontLeft * m_maxOutput, CANSparkMax.ControlType.kVelocity);
+    frontRightPid.setReference(speeds.frontRight * m_maxOutput, CANSparkMax.ControlType.kVelocity);
+    rearLeftPid.setReference(speeds.rearLeft * m_maxOutput, CANSparkMax.ControlType.kVelocity);
+    rearRightPid.setReference(speeds.rearRight * m_maxOutput, CANSparkMax.ControlType.kVelocity);
 
-    m_frontLeftMotor.set(speeds.frontLeft * m_maxOutput);
-    m_frontRightMotor.set(speeds.frontRight * m_maxOutput);
-    m_rearLeftMotor.set(speeds.rearLeft * m_maxOutput);
-    m_rearRightMotor.set(speeds.rearRight * m_maxOutput);
+    // m_frontLeftMotor.set(speeds.frontLeft * m_maxOutput);
+    // m_frontRightMotor.set(speeds.frontRight * m_maxOutput);
+    // m_rearLeftMotor.set(speeds.rearLeft * m_maxOutput);
+    // m_rearRightMotor.set(speeds.rearRight * m_maxOutput);
 
     feed();
   }

@@ -60,10 +60,14 @@ public class Chassis {
         CANSparkMax3 = initMotor(CANSparkMax3, Wiring.blMotor);
         CANSparkMax4 = initMotor(CANSparkMax4, Wiring.brMotor);
 
-        drive = new DevilDrive(CANSparkMax1, CANSparkMax2, CANSparkMax3, CANSparkMax4);
+        CANSparkMax2.setInverted(true);
+        CANSparkMax4.setInverted(true);
+
+        drive = new DevilDrive(CANSparkMax1, CANSparkMax3, CANSparkMax2, CANSparkMax4);
     }
     public void main(){
-        drive(oi.pilot.getLeftX(), oi.pilot.getLeftY(), oi.pilot.getRightX());
+        // System.out.println("forward "+ 0.5 * oi.pilot.getLeftY() +" strafe "+ 0.5 * oi.pilot.getLeftX() +" rotate "+ 0.5 * oi.pilot.getRightX());
+        drive(0.5 * oi.pilot.getLeftY(), -0.5 * oi.pilot.getLeftX(), -0.5 * oi.pilot.getRightX());
     }
 
     public void drive(double ySpeed, double xSpeed, double zRotation) {

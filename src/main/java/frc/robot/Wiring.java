@@ -10,10 +10,10 @@ public class Wiring
    
     
 //Drivetrain
-public static final int flMotor = 1;
-public static final int frMotor = 2;
-public static final int blMotor = 3;
-public static final int brMotor = 4; 
+public static final int flMotor = 11;
+public static final int frMotor = 13;
+public static final int blMotor = 15;
+public static final int brMotor = 16; 
 
 //Cargo
 
