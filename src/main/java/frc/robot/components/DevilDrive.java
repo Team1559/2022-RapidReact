@@ -174,8 +174,8 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
    *     positive.
    */
   @SuppressWarnings("ParameterName")
-  public void driveCartesian(double ySpeed, double xSpeed, double zRotation) {
-    driveCartesian(ySpeed, xSpeed, zRotation, 0.0);
+  public void driveCartesian(double ySpeed, double xSpeed, double zRotation, boolean squaredInputs) {
+    driveCartesian(ySpeed, xSpeed, zRotation, 0.0, squaredInputs);
   }
 
   /**
@@ -192,13 +192,17 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
    *     to implement field-oriented controls.
    */
   @SuppressWarnings("ParameterName")
-  public void driveCartesian(double ySpeed, double xSpeed, double zRotation, double gyroAngle) {
+  public void driveCartesian(double ySpeed, double xSpeed, double zRotation, double gyroAngle, boolean squareInputs) {
     if (!m_reported) {
       HAL.report(
           tResourceType.kResourceType_RobotDrive, tInstances.kRobotDrive2_MecanumCartesian, 4);
       m_reported = true;
     }
-    
+    if (squareInputs) {
+      ySpeed = Math.copySign(ySpeed * ySpeed, ySpeed);
+      xSpeed = Math.copySign(xSpeed * xSpeed, xSpeed);
+      zRotation = Math.copySign(zRotation * zRotation, zRotation);
+    }
     ySpeed = MathUtil.applyDeadband(ySpeed, m_deadband);
     xSpeed = MathUtil.applyDeadband(xSpeed, m_deadband);
 
@@ -207,7 +211,7 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
     SparkMaxPIDController frontRightPid = m_frontRightMotor.getPIDController();
     SparkMaxPIDController rearLeftPid = m_rearLeftMotor.getPIDController();
     SparkMaxPIDController rearRightPid = m_rearRightMotor.getPIDController();
-    
+
     frontLeftPid.setReference(speeds.frontLeft * m_maxOutput, CANSparkMax.ControlType.kVelocity);
     frontRightPid.setReference(speeds.frontRight * m_maxOutput, CANSparkMax.ControlType.kVelocity);
     rearLeftPid.setReference(speeds.rearLeft * m_maxOutput, CANSparkMax.ControlType.kVelocity);
@@ -233,7 +237,7 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
    *     positive.
    */
   @SuppressWarnings("ParameterName")
-  public void drivePolar(double magnitude, double angle, double zRotation) {
+  public void drivePolar(double magnitude, double angle, double zRotation, boolean squaredInputs) {
     if (!m_reported) {
       HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDrive2_MecanumPolar, 4);
       m_reported = true;
@@ -243,7 +247,8 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
         magnitude * Math.cos(angle * (Math.PI / 180.0)),
         magnitude * Math.sin(angle * (Math.PI / 180.0)),
         zRotation,
-        0.0);
+        0.0,
+        squaredInputs);
   }
 
   /**
