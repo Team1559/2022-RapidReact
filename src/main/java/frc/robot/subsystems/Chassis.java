@@ -71,6 +71,9 @@ public class Chassis {
     }
 
     public void drive(double ySpeed, double xSpeed, double zRotation) {
-        drive.driveCartesian(ySpeed, xSpeed, zRotation, false);
+        drive.driveCartesian(ySpeed, xSpeed, zRotation, true);
+    }
+    public void drive(double ySpeed, double xSpeed, double zRotation, boolean squareInputs) {
+        drive.driveCartesian(ySpeed, xSpeed, zRotation, squareInputs);
     }
 }

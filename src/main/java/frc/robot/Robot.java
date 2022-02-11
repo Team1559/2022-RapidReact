@@ -19,6 +19,7 @@ public class Robot extends TimedRobot {
     private Vision vision;
     private VisionData vData;
     private VisionControl vc;
+    private boolean usingVision = false;
 
     public Chassis chassis;
 
@@ -75,10 +76,10 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         if (FeatureFlags.doVision && FeatureFlags.visionInitalized) {
-            vData = vision.getData();
-            vData.Print();
+            vc.main();
+            usingVision = vc.usingAuto;
         }
-        if (FeatureFlags.doChassis && FeatureFlags.chassisInitalized) {
+        if (FeatureFlags.doChassis && FeatureFlags.chassisInitalized && !usingVision) {
             chassis.main();
         }
 

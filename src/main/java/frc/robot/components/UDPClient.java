@@ -19,9 +19,9 @@ public class UDPClient implements Runnable {
     Thread  clientThread;
     boolean running;
 
-    String         data;
+    String data;
     DatagramSocket socket;
-    byte[]         receive;
+    byte[] receive;
 
     public UDPClient() {
         clientThread = new Thread(this);

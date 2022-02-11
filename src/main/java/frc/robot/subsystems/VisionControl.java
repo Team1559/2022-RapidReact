@@ -15,7 +15,8 @@ public class VisionControl {
     private double ballr = visionData.br;
     private boolean wait = visionData.waitForOtherRobot;
     // thresholds
-    private double chassisThreshold = 10;
+    private double ballChassisThreshold = 2;
+    private double hoopChassisThreshold = 10;
     private double shooterThreshold = 10;
 
     // shooter variables
@@ -29,6 +30,9 @@ public class VisionControl {
     private double ball_sidespeed = 0; // straife speed between 0-1
     private double ball_rotation = 0; // rotation speed between 0-1
     private Chassis chassis;
+    public boolean usingAuto = false;
+    private int invalid_ball_counter = 0;    
+    private final int invalid_ball_counter_threshold = 20;
     // private Shooter shooter;
 
     public VisionControl(Vision vision, VisionData visionData, OperatorInterface oi, Chassis chassis) {// , Shooter shooter}) {
@@ -50,45 +54,50 @@ public class VisionControl {
     }
 
     public void main() {
-        while (true) {
+        if (true) {
             update();
-
+            boolean new_ball_data = false;
             visionData.Print();
             if (oi.autoShootButton()) { // Move the chassis so it is alligned, aim the shooter, and fire the cargo
+                usingAuto = true;
                 if(visionData.isHoopValid()){
                     double error = 0;
 
                     // shooter.setAngle(desiredAngle);
                     // Shooter.setPower(desiredPower);
-                    if (Math.abs(error) > chassisThreshold) {
+                    if (Math.abs(error) > hoopChassisThreshold) {
                         chassis.drive(hoop_forward_speed, hoop_sidespeed, hoop_rotation);
                     }
                     else{
                         // shooter.shoot();
-                        try{
-                            wait(1);
-                        }
-                        catch(InterruptedException e){
-                            continue;
-                        }
-                        break;
+                        
                     }
                 }
                 else{
                     System.out.println("Invalid data... aborting");
                 }
-            } 
+            }
             else if (oi.autoCollectButton()) { // go collect the nearest cargo
                 if(visionData.isBallValid()){
+                    new_ball_data = true;
+                    invalid_ball_counter = 0;
+                } else 
+                    invalid_ball_counter++;
+                System.out.println("Got data? " + new_ball_data);
+                if(invalid_ball_counter < invalid_ball_counter_threshold){
+                    System.out.println("in auto");
                     // shooter.gather();
-                    chassis.drive(ball_forward_speed, ball_sidespeed, ball_rotation);
+                    calculateBallChassis();
+                    printData();
+                    chassis.drive(-oi.pilot.getLeftY(), 0 , ball_rotation, false);
                 }
                 else{
-                    System.out.println("Invalid data... aborting");
+                    System.out.println("Invalid data... remaining in manual control");
+                    chassis.main();
                 }
             } 
             else {
-                break;
+                usingAuto = false;
             }
         }
     }
@@ -115,9 +124,16 @@ public class VisionControl {
         // hoop_sidespeed = __calculated_side_speed__;
         // hoop_rotation = __calculated_rotation__;
     }
-    private void calculateballChassis() {
+    private void calculateBallChassis() {
         // ball_forward_speed = __calculated_forward_speed__;
         // ball_sidespeed = __calculated_side_speed__;
-        // ball_rotation = __calculated_rotation__;
+        ball_rotation = 0.5 * (ballr / 34.0);
+    //    ball_rotation = -pid.calculate(balla, 0);
+        if(Math.abs(ballr) <= ballChassisThreshold){
+            ball_rotation = 0;
+        }
+    }
+    private void printData(){
+        System.out.println("rotation value is " + ball_rotation);
     }
 }
