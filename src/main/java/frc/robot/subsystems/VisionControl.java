@@ -133,6 +133,10 @@ public class VisionControl {
     }
 
     private double calculateHoopChassis() {
+        this.hoop_rotation = 0.5 * (hoopr / 34.0);
+        //hoop_rotation = -pid.calculate(balla, 0);
+        if(Math.abs(hoopr) <= hoopChassisThreshold)
+            this.hoop_rotation = 0;
         return this.hoop_rotation;
     }
     private double calculateBallChassis() {
