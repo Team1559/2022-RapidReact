@@ -87,8 +87,7 @@ public class VisionControl {
                 System.out.println("Got data? " + new_ball_data);
                 if(invalid_ball_counter < invalid_ball_counter_threshold){
                     System.out.println("in auto");
-                    // shooter.gather();
-                    calculateBallChassis();
+                    double ball_rotation = calculateBallChassis();
                     printData();
                     double ySpeed = -oi.pilot.getLeftY();
                     if(SQUARE_DRIVER_INPUTS){
@@ -101,6 +100,12 @@ public class VisionControl {
                     chassis.main();
                 }
             } 
+            else if (oi.autoShootButton()){
+                if(visionData.isHoopValid()){
+                    double hoop_rotation = calculateHoopChassis();
+                    drive(0,0,hoop_rotation);
+                }
+            }
             else {
                 usingAuto = false;
             }
@@ -127,19 +132,17 @@ public class VisionControl {
 
     }
 
-    private void calculateHoopChassis() {
-        // hoop_forward_speed = __calculated_forward_speed__;
-        // hoop_sidespeed = __calculated_side_speed__;
-        // hoop_rotation = __calculated_rotation__;
+    private double calculateHoopChassis() {
+        return this.hoop_rotation;
     }
-    private void calculateBallChassis() {
+    private double calculateBallChassis() {
         // ball_forward_speed = __calculated_forward_speed__;
         // ball_sidespeed = __calculated_side_speed__;
-        ball_rotation = 0.5 * (ballr / 34.0);
+        this.ball_rotation = 0.5 * (ballr / 34.0);
     //    ball_rotation = -pid.calculate(balla, 0);
-        if(Math.abs(ballr) <= ballChassisThreshold){
-            ball_rotation = 0;
-        }
+        if(Math.abs(ballr) <= ballChassisThreshold)
+            this.ball_rotation = 0;
+        return this.ball_rotation;
     }
     private void printData(){
         System.out.println("rotation value is " + ball_rotation);
