@@ -34,6 +34,10 @@ public class VisionControl {
     private int invalid_ball_counter = 0;    
     private final int invalid_ball_counter_threshold = 20;
     private final boolean SQUARE_DRIVER_INPUTS = true;
+    private MachineLearning ml= new MachineLearning();
+    private final boolean RECORD_PATH = true;
+
+
     // private Shooter shooter;
 
     public VisionControl(Vision vision, VisionData visionData, OperatorInterface oi, Chassis chassis) {// , Shooter shooter}) {
@@ -54,7 +58,14 @@ public class VisionControl {
         }
     }
 
+    public void record(double _forwardSpeed, double _sideSpeed){
+        ml.periodic(_forwardSpeed, _sideSpeed, chassis.flep, chassis.frep, chassis.blep, chassis.brep);
+    }
+
     public void main() {
+        if(RECORD_PATH){
+            record(oi.pilot.getLeftY(), oi.pilot.getRightX());
+        }
         if (true) {
             update();
             boolean new_ball_data = false;
@@ -110,6 +121,9 @@ public class VisionControl {
                 usingAuto = false;
             }
         }
+    }
+    public void disable(){
+        ml.write();
     }
     public void drive(double fs, double ss, double r){
         chassis.drive(fs, ss , r, false);

@@ -2,6 +2,7 @@ import sys
 from io import StringIO
 import time
 import random
+import os
 
 fileName = sys.argv[1]
 path = os.system("cd..")
@@ -75,20 +76,20 @@ rightEncoderPositionArray = ",\n\t\t".join(rightEncoderPositions)
 if sadness < 1000:
     print("        _______________________________________\n       |                                       |\n       |                                       |\n       |                                       |\n       |       __                       __     |\n       |      |  |                     |  |    |\n       |      |__|                     |__|    |\n       |       |                         |     |\n       |      |   _____________________   |    |\n       |         |                     |       |\n       |                                       |\n       |_______________________________________|")
     print("")
-    print(" Python Parser is Sad " + user+ " :(")
+    print(" Python Parser is Sad :(")
 else: 
     if sadness == 9000:
         print("        _______________________________________         _______________________________________\n       |                                       |       |                                       |\n       |                                       |       |                                       |\n       |                                       |       |                                       |\n       |                                       |       |                                       |\n       |       __                       __     |       |       __                       __     |\n       |      |  |                     |  |    |       |      |  |                     |  |    |\n       |      |__|                     |__|    |       |      |__|                     |__|    |\n       |                                       |       |                                       |\n       |          _____________________        |       |         |_____________________|       |\n       |         |                     |       |       |                                       |\n       |                                       |       |                                       |\n       |_______________________________________|       |_______________________________________|")
         print("")
-        print(" Python Parser is confused on how to feel " + user+ " (: :(")
+        print(" Python Parser is confused on how to feel (: :(")
     else:
         print("        _______________________________________\n       |                                       |\n       |                                       |\n       |                                       |\n       |       __                       __     |\n       |      |  |                     |  |    |\n       |      |__|                     |__|    |\n       |                                       |\n       |         |_____________________|       |\n       |                                       |\n       |                                       |\n       |_______________________________________|")
         print("")
-        print(" Python Parser is Happy " + user+ " :)")
+        print(" Python Parser is Happy :)")
 print("")
 print("")
 print("")
-print(" "+ splashText[text])
+print(" " + splashText[text])
 print("")
 print("")
 content = """

@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController;
@@ -21,7 +22,14 @@ public class Chassis {
     public CANSparkMax CANSparkMax2;
     public CANSparkMax CANSparkMax3;
     public CANSparkMax CANSparkMax4;
-
+    public RelativeEncoder flEncoder;
+    public RelativeEncoder frEncoder;
+    public RelativeEncoder blEncoder;
+    public RelativeEncoder brEncoder;
+    public double flep;
+    public double frep;
+    public double blep;
+    public double brep;
     private OperatorInterface oi;
 
 
@@ -33,7 +41,7 @@ public class Chassis {
      * double cLR = 0.1; This was ctrl c ctrl v'd from 2020. I don't now what
      * these values mean so I don't want to delete them.
      */
-    private CANSparkMax initMotor(CANSparkMax sparky, int id){
+    private CANSparkMax initMotor(CANSparkMax sparky, int id, RelativeEncoder r){
         sparky = new CANSparkMax(id, MotorType.kBrushless);
         SparkMaxPIDController pid = sparky.getPIDController();
         sparky.restoreFactoryDefaults();
@@ -51,14 +59,15 @@ public class Chassis {
         pid.setIZone(kIz);
         pid.setFF(kFF);
         pid.setOutputRange(kMinOutput, kMaxOutput);
+        r = sparky.getEncoder();
         return sparky;
     }
     public Chassis(OperatorInterface oi) {
         this.oi = oi;
-        CANSparkMax1 = initMotor(CANSparkMax1, Wiring.flMotor);
-        CANSparkMax2 = initMotor(CANSparkMax2, Wiring.frMotor);
-        CANSparkMax3 = initMotor(CANSparkMax3, Wiring.blMotor);
-        CANSparkMax4 = initMotor(CANSparkMax4, Wiring.brMotor);
+        CANSparkMax1 = initMotor(CANSparkMax1, Wiring.flMotor, flEncoder);
+        CANSparkMax2 = initMotor(CANSparkMax2, Wiring.frMotor, frEncoder);
+        CANSparkMax3 = initMotor(CANSparkMax3, Wiring.blMotor, blEncoder);
+        CANSparkMax4 = initMotor(CANSparkMax4, Wiring.brMotor, brEncoder);
 
         CANSparkMax2.setInverted(true);
         CANSparkMax4.setInverted(true);
@@ -69,7 +78,12 @@ public class Chassis {
         // System.out.println("forward "+ 0.5 * oi.pilot.getLeftY() +" strafe "+ 0.5 * oi.pilot.getLeftX() +" rotate "+ 0.5 * oi.pilot.getRightX());
         drive(0.5 * oi.pilot.getLeftY(), -0.5 * oi.pilot.getLeftX(), -0.5 * oi.pilot.getRightX());
     }
-
+    public void updateEncoders(){
+        flep = flEncoder.getPosition();
+        frep = frEncoder.getPosition();
+        blep = blEncoder.getPosition();
+        brep = brEncoder.getPosition();
+    }
     public void drive(double ySpeed, double xSpeed, double zRotation) {
         drive.driveCartesian(ySpeed, xSpeed, zRotation, true);
     }
