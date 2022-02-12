@@ -29,7 +29,7 @@ public class MachineLearning{
         backLeftEncoderPosition.clear();
         backRightEncoderPosition.clear();
         try {
-            File myObj = new File(filename);
+            File myObj = new File("/home/admin/" + filename);
             if (myObj.createNewFile()) {
               System.out.println("File created: " + myObj.getName());
             } else {

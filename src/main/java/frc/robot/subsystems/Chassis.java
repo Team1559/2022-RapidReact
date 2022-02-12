@@ -75,8 +75,8 @@ public class Chassis {
         drive = new DevilDrive(CANSparkMax1, CANSparkMax3, CANSparkMax2, CANSparkMax4);
     }
     public void main(){
-        // System.out.println("forward "+ 0.5 * oi.pilot.getLeftY() +" strafe "+ 0.5 * oi.pilot.getLeftX() +" rotate "+ 0.5 * oi.pilot.getRightX());
-        drive(0.5 * oi.pilot.getLeftY(), -0.5 * oi.pilot.getLeftX(), -0.5 * oi.pilot.getRightX());
+        System.out.println("forward "+ 0.5 * oi.pilot.getLeftY() +" strafe "+ 0.5 * oi.pilot.getLeftX() +" rotate "+ 0.5 * oi.pilot.getRightX());
+        drive(0.995 * oi.pilot.getLeftY(), -0.995 * oi.pilot.getLeftX(), -0.995 * oi.pilot.getRightX());
     }
     public void updateEncoders(){
         flep = flEncoder.getPosition();
