@@ -67,7 +67,7 @@ public class VisionControl {
                     // shooter.setAngle(desiredAngle);
                     // Shooter.setPower(desiredPower);
                     if (Math.abs(error) > hoopChassisThreshold) {
-                        chassis.drive(hoop_forward_speed, hoop_sidespeed, hoop_rotation);
+                        drive(hoop_forward_speed, hoop_sidespeed, hoop_rotation);
                     }
                     else{
                         // shooter.shoot();
@@ -94,7 +94,7 @@ public class VisionControl {
                     if(SQUARE_DRIVER_INPUTS){
                         ySpeed = Math.copySign(ySpeed * ySpeed, ySpeed);
                     }
-                    chassis.drive(ySpeed, 0 , ball_rotation, false);
+                    drive(ySpeed, 0 , ball_rotation);
                 }
                 else{
                     System.out.println("Invalid data... remaining in manual control");
@@ -105,6 +105,9 @@ public class VisionControl {
                 usingAuto = false;
             }
         }
+    }
+    public void drive(double fs, double ss, double r){
+        chassis.drive(fs, ss , r, false);
     }
 
     private void update() {
