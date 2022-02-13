@@ -16,7 +16,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
-import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.drive.RobotDriveBase;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 
@@ -60,7 +59,6 @@ import edu.wpi.first.wpilibj.drive.Vector2d;
  * {@link #drivePolar(double, double, double)} is equivalent to RobotDrive's
  * mecanumDrive_Polar(double, double, double)} if a deadband of 0 is used.
  */
-@SuppressWarnings("removal")
 public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseable {
   private static int instances;
 
@@ -221,6 +219,25 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
     // m_frontRightMotor.set(speeds.frontRight * m_maxOutput);
     // m_rearLeftMotor.set(speeds.rearLeft * m_maxOutput);
     // m_rearRightMotor.set(speeds.rearRight * m_maxOutput);
+
+    feed();
+  }
+  @SuppressWarnings("ParameterName")
+  public void pathDrive(int fl, int fr, int bl, int br){
+    if (!m_reported) {
+      HAL.report(
+          tResourceType.kResourceType_RobotDrive, tInstances.kRobotDrive2_MecanumCartesian, 4);
+      m_reported = true;
+    }
+    SparkMaxPIDController frontLeftPid = m_frontLeftMotor.getPIDController();
+    SparkMaxPIDController frontRightPid = m_frontRightMotor.getPIDController();
+    SparkMaxPIDController rearLeftPid = m_rearLeftMotor.getPIDController();
+    SparkMaxPIDController rearRightPid = m_rearRightMotor.getPIDController();
+
+    frontLeftPid.setReference(fl, CANSparkMax.ControlType.kPosition);
+    frontRightPid.setReference(fr, CANSparkMax.ControlType.kPosition);
+    rearLeftPid.setReference(bl, CANSparkMax.ControlType.kPosition);
+    rearRightPid.setReference(br, CANSparkMax.ControlType.kPosition);
 
     feed();
   }

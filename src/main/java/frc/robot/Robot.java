@@ -16,6 +16,7 @@ import frc.robot.components.*;
  */
 public class Robot extends TimedRobot {
     private OperatorInterface oi = new OperatorInterface();
+    private IMU imu;
     private Vision vision;
     private VisionData vData;
     private VisionControl vc;
@@ -75,11 +76,11 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
-        if (FeatureFlags.doVision && FeatureFlags.visionInitalized) {
+        if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
             vc.main();
             usingVision = vc.usingAuto;
         }
-        if (FeatureFlags.doChassis && FeatureFlags.chassisInitalized && !usingVision) {
+        if (FeatureFlags.doChassis && FeatureFlags.chassisInitialized && !usingVision) {
             chassis.main();
         }
 
@@ -88,7 +89,7 @@ public class Robot extends TimedRobot {
     /** This function is called once when the robot is disabled. */
     @Override
     public void disabledInit() {
-        if (FeatureFlags.doVision && FeatureFlags.visionInitalized) {
+        if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
             vc.disable();
         }
     }
@@ -108,17 +109,23 @@ public class Robot extends TimedRobot {
     public void testPeriodic() {}
 
     public void initialize() {
-        if (FeatureFlags.doVision && !FeatureFlags.visionInitalized) {
+        FeatureFlags.updateDependencies();
+        if(FeatureFlags.doImu && !FeatureFlags.imuInitialized){
+            imu = new IMU();
+            FeatureFlags.imuInitialized = true;
+        }
+
+        if (FeatureFlags.doChassis && !FeatureFlags.chassisInitialized) {
+            chassis = new Chassis(oi, imu);
+            FeatureFlags.chassisInitialized = true;
+        }
+        
+        if (FeatureFlags.doVision && !FeatureFlags.visionInitialized) {
             vision = new Vision();
             vision.VisionInit();
             vc = new VisionControl(vision, vData, oi, chassis);
-            FeatureFlags.visionInitalized = true;
+            FeatureFlags.visionInitialized = true;
         }
-        if (FeatureFlags.doChassis && !FeatureFlags.chassisInitalized) {
-            chassis = new Chassis(oi);
-            FeatureFlags.chassisInitalized = true;
-        }
-
 
     }
 }

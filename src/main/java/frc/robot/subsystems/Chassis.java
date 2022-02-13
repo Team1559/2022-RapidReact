@@ -7,6 +7,7 @@ import com.revrobotics.SparkMaxPIDController;
 import frc.robot.components.DevilDrive;
 import frc.robot.OperatorInterface;
 import frc.robot.Wiring;
+import frc.robot.components.IMU;
 
 public class Chassis {
     private static final int TIMEOUT = 20;
@@ -31,6 +32,7 @@ public class Chassis {
     public double blep;
     public double brep;
     private OperatorInterface oi;
+    private IMU imu;
 
 
     /**
@@ -64,8 +66,9 @@ public class Chassis {
         r = sparky.getEncoder();
         return sparky;
     }
-    public Chassis(OperatorInterface oi) {
+    public Chassis(OperatorInterface oi, IMU imu) {
         this.oi = oi;
+        this.imu = imu;
         CANSparkMax1 = initMotor(CANSparkMax1, Wiring.flMotor, flEncoder);
         CANSparkMax2 = initMotor(CANSparkMax2, Wiring.frMotor, frEncoder);
         CANSparkMax3 = initMotor(CANSparkMax3, Wiring.blMotor, blEncoder);
@@ -89,7 +92,22 @@ public class Chassis {
     public void drive(double ySpeed, double xSpeed, double zRotation) {
         drive.driveCartesian(ySpeed, xSpeed, zRotation, true);
     }
+
     public void drive(double ySpeed, double xSpeed, double zRotation, boolean squareInputs) {
         drive.driveCartesian(ySpeed, xSpeed, zRotation, squareInputs);
+    }
+
+    public void pathDrive(int fl, int fr, int bl, int br){
+        drive.pathDrive(fl, fr, bl, br);
+    }
+
+    public void initOdometry()
+    {
+        flEncoder.setPosition(0);
+        frEncoder.setPosition(0);
+        blEncoder.setPosition(0);
+        brEncoder.setPosition(0);
+        imu.zeroYaw();
+
     }
 }

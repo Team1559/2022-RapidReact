@@ -2,7 +2,7 @@ package frc.robot.subsystems;
 
 import frc.robot.components.*;
 import frc.robot.*;
-
+@SuppressWarnings("unused")
 public class VisionControl {
     private OperatorInterface oi;
     private Vision vision;

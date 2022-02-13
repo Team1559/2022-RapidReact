@@ -102,10 +102,11 @@ public class MachineLearning{
     public void write() {
       try {
         FileWriter myWriter = new FileWriter("/paths/"+ filename);
+        String out = "";
         for(int i = 0; i < forwardSpeed.size(); i++){
-          myWriter.write(forwardSpeed.get(i) + " " + sideSpeed.get(i) + " " + frontLeftEncoderPosition.get(i) + " " + frontRightEncoderPosition.get(i) + " " + backLeftEncoderPosition.get(i) + " " + backRightEncoderPosition.get(i) + " ");
+          out += (forwardSpeed.get(i) + " " + sideSpeed.get(i) + " " + frontLeftEncoderPosition.get(i) + " " + frontRightEncoderPosition.get(i) + " " + backLeftEncoderPosition.get(i) + " " + backRightEncoderPosition.get(i) + " \n");
         }
-        myWriter.write("Files in Java might be tricky, but it is fun enough!");
+        myWriter.write(out);
         myWriter.close();
         System.out.println("Successfully wrote to the file.");
       } catch (IOException e) {
