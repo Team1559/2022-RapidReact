@@ -19,27 +19,68 @@ public class MachineLearning{
     private ArrayList<Double> backRightEncoderPosition = new ArrayList<Double>();
 
     private String filename = "path1.txt";
+    public void executeCmd(String cmd){
+      String[] list = cmd.split(" ");
+      if(list.length == 1){
+        executeCmd(list[0]);
+      }
+      else if(list.length == 2){
+        executeCmds(list[0], list[1]);
+      }
+      else if(list.length == 3){
+        executeCmds(list[0], list[1], list[2]);
+      }
+      else if(list.length == 4){
+        executeCmds(list[0], list[1], list[2], list[3]);
+      }
+    }
+
+    private void executeCmds(String cmd){
+      executeCmds(cmd, "");
+    }
+
+    private void executeCmds(String cmd, String arg1){
+      executeCmds(cmd, arg1, "");
+    }
+    private void executeCmds(String cmd, String arg1, String arg2){
+      executeCmds(cmd, arg1, arg2, "");
+    }
+    
+    @SuppressWarnings("unused")
+    private void executeCmds(String cmd, String arg1, String arg2, String arg3){
+      String[] command = {cmd, arg1, arg2, arg3};
+      ProcessBuilder builder = new ProcessBuilder(command);
+      builder = builder.directory(new File("/"));
+      try{
+        Process p = builder.start();
+      }catch(IOException e){
+        e.printStackTrace();
+      }
+    }
 
     // private int counter = 0;
-    public MachineLearning(){
+    public MachineLearning(boolean record){
         forwardSpeed.clear();
         sideSpeed.clear();
         frontLeftEncoderPosition.clear();
         frontRightEncoderPosition.clear();
         backLeftEncoderPosition.clear();
         backRightEncoderPosition.clear();
-        try {
-            File myObj = new File("/home/admin/" + filename);
-            if (myObj.createNewFile()) {
-              System.out.println("File created: " + myObj.getName());
-            } else {
-              System.out.println("File already exists.");
+        if(record){
+         executeCmd("sudo mkdir /paths");
+         executeCmd("sudo chmod a=rwx /paths");
+          try {
+              File myObj = new File("/paths/" + filename);
+              if (myObj.createNewFile()) {
+                System.out.println("File created: " + myObj.getName());
+              } else {
+                System.out.println("File already exists.");
+              }
+            } catch (IOException e) {
+              System.out.println("An error occurred.");
+              e.printStackTrace();
             }
-          } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-          }
-        
+        }
     }
 
     public void periodic(Double _forwardSpeed, Double _sideSpeed, Double flep, Double frep, Double blep, Double brep){
@@ -60,7 +101,7 @@ public class MachineLearning{
 
     public void write() {
       try {
-        FileWriter myWriter = new FileWriter("/home/admin/"+ filename);
+        FileWriter myWriter = new FileWriter("/paths/"+ filename);
         for(int i = 0; i < forwardSpeed.size(); i++){
           myWriter.write(forwardSpeed.get(i) + " " + sideSpeed.get(i) + " " + frontLeftEncoderPosition.get(i) + " " + frontRightEncoderPosition.get(i) + " " + backLeftEncoderPosition.get(i) + " " + backRightEncoderPosition.get(i) + " ");
         }

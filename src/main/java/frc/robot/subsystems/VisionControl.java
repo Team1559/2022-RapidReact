@@ -34,9 +34,8 @@ public class VisionControl {
     private int invalid_ball_counter = 0;    
     private final int invalid_ball_counter_threshold = 20;
     private final boolean SQUARE_DRIVER_INPUTS = true;
-    private MachineLearning ml= new MachineLearning();
     private final boolean RECORD_PATH = true;
-
+    private MachineLearning ml;
 
     // private Shooter shooter;
 
@@ -45,6 +44,7 @@ public class VisionControl {
         this.vision = vision;
         this.visionData = visionData;
         this.chassis = chassis;
+        ml = new MachineLearning(RECORD_PATH);
         // this.shooter = shooter;
     }
 
