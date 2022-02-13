@@ -1,7 +1,7 @@
 package frc.robot;
 import java.util.*;
 
-import frc.robot.subsystems.Chassis;
+// import frc.robot.subsystems.Chassis;
 import java.io.File;  // Import the File class
 import java.io.IOException;  // Import the IOException class to handle errors
 import java.io.FileWriter;
@@ -10,7 +10,7 @@ import java.io.FileWriter;
 
 
 public class MachineLearning{
-    private Chassis drivetrain;
+    // private Chassis drivetrain;
     private ArrayList<Double> forwardSpeed = new ArrayList<Double>();
     private ArrayList<Double> sideSpeed = new ArrayList<Double>();
     private ArrayList<Double> frontLeftEncoderPosition = new ArrayList<Double>();
@@ -20,8 +20,8 @@ public class MachineLearning{
 
     private String filename = "path1.txt";
 
-    private int counter = 0;
-    public void init(){
+    // private int counter = 0;
+    public MachineLearning(){
         forwardSpeed.clear();
         sideSpeed.clear();
         frontLeftEncoderPosition.clear();
@@ -43,7 +43,7 @@ public class MachineLearning{
     }
 
     public void periodic(Double _forwardSpeed, Double _sideSpeed, Double flep, Double frep, Double blep, Double brep){
-        counter ++;
+        // counter ++;
         //if(forwardSpeed.size() <= 3000){
             forwardSpeed.add(_forwardSpeed);
             sideSpeed.add(_sideSpeed);

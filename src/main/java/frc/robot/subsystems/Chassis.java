@@ -9,7 +9,7 @@ import frc.robot.OperatorInterface;
 import frc.robot.Wiring;
 
 public class Chassis {
-    private static final int TIMEOUT = 0;
+    private static final int TIMEOUT = 20;
     public static final double WHEEL_RADIUS_INCHES_MECANUM = 3;
     public static final double MAX_SPEED_FPS_TRACTION = 9.67 * 1.01;
     public static final double MAX_TICKS_PER_100MS = MAX_SPEED_FPS_TRACTION * 4096.0 / (Math.PI * WHEEL_RADIUS_INCHES_MECANUM * 2.0 / 12.0) / 10.0;
@@ -45,6 +45,7 @@ public class Chassis {
         sparky = new CANSparkMax(id, MotorType.kBrushless);
         SparkMaxPIDController pid = sparky.getPIDController();
         sparky.restoreFactoryDefaults();
+        sparky.setCANTimeout(TIMEOUT);
         final double kP= 6e-5;
         final double kI = 0;
         final double kD = 0;
@@ -52,13 +53,14 @@ public class Chassis {
         final double kFF = 0.000015;
         final double kMaxOutput = 1;
         final double kMinOutput = -1;
-        final double maxRPM = 5700;
+        // final double maxRPM = 5700;
         pid.setP(kP);
         pid.setI(kI);
         pid.setD(kD);
         pid.setIZone(kIz);
         pid.setFF(kFF);
         pid.setOutputRange(kMinOutput, kMaxOutput);
+        sparky.setCANTimeout(TIMEOUT);
         r = sparky.getEncoder();
         return sparky;
     }

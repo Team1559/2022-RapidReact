@@ -123,7 +123,9 @@ public class VisionControl {
         }
     }
     public void disable(){
-        ml.write();
+        if(RECORD_PATH){
+            ml.write();
+        }
     }
     public void drive(double fs, double ss, double r){
         chassis.drive(fs, ss , r, false);
