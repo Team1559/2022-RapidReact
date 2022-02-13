@@ -22,7 +22,7 @@ public class MachineLearning{
     public void executeCmd(String cmd){
       String[] list = cmd.split(" ");
       if(list.length == 1){
-        executeCmd(list[0]);
+        executeCmds(list[0]);
       }
       else if(list.length == 2){
         executeCmds(list[0], list[1]);
