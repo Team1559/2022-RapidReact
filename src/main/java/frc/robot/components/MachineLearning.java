@@ -13,7 +13,7 @@ public class MachineLearning {
     private ArrayList<Double> backLeftEncoderPosition = new ArrayList<Double>();
     private ArrayList<Double> backRightEncoderPosition = new ArrayList<Double>();
     private String filename;
-    private final int MAX_SIZE = 1000;//Should only be 750 in length for 15 seconds
+    private final int MAX_SIZE = 2000;//Should only be 750 in length for 15 seconds
 
     public void executeCmd(String cmd) {
         String[] list = cmd.split(" ");
