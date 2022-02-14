@@ -2,7 +2,6 @@ package frc.robot.components;
 
 public class Vision {
     private UDPClient client;
-    
     private static Vision instance;
     private VisionData VData;
     double hoopCameraYOffset = 0;
