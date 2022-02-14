@@ -14,11 +14,7 @@ public class Chassis {
     public static final double WHEEL_RADIUS_INCHES_MECANUM = 3;
     public static final double MAX_SPEED_FPS_TRACTION = 9.67 * 1.01;
     public static final double MAX_TICKS_PER_100MS = MAX_SPEED_FPS_TRACTION * 4096.0 / (Math.PI * WHEEL_RADIUS_INCHES_MECANUM * 2.0 / 12.0) / 10.0;
-
-
-
     private DevilDrive drive;
-
     public CANSparkMax CANSparkMax1;
     public CANSparkMax CANSparkMax2;
     public CANSparkMax CANSparkMax3;
@@ -33,6 +29,7 @@ public class Chassis {
     public double brep;
     private OperatorInterface oi;
     private IMU imu;
+    private final boolean DISABLE_STRAFING = true;
 
 
     /**
@@ -94,6 +91,9 @@ public class Chassis {
     }
 
     public void drive(double ySpeed, double xSpeed, double zRotation, boolean squareInputs) {
+        if(DISABLE_STRAFING){
+            xSpeed = 0;
+        }
         drive.driveCartesian(ySpeed, xSpeed, zRotation, squareInputs);
     }
 
