@@ -74,15 +74,17 @@ public class VisionControl {
             backRightSpeed = p1.generated_backRightEncoderPositions;
             backLeftSpeed = p1.generated_backLeftEncoderPositions;
             counterSpeed = 1.0; 
-          }
-          else{
+        }
+        else{
             kP = 0.0;
             frontRightSpeed = skip;
             frontLeftSpeed = skip;
             backRightSpeed = skip;
             backLeftSpeed = skip;
             counterSpeed = 0.0;
-          }
+        }
+        chassis.setKP(kP);
+
     }
 
     public void autoPeriodic() { // pathfind to cargo, collect it, and score it
