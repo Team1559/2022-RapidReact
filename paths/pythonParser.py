@@ -7,6 +7,8 @@ import os
 fileName = "paths\\" + sys.argv[1]
 os.chdir("..")
 path = os.getcwd()
+if fileName[len(fileName) - 4:] != ".txt":
+    fileName += ".txt"
 # its win32, maybe there is win64 too?
 i = 0
 velocities = []
@@ -20,7 +22,7 @@ bad_chars = ['ï»¿', 'Ã¯Â»Â¿']
 splashText = ["The Robot Revolution Has Begun", "The Router Has Become Sentient", "Enter The Matrix", "Sky Net is Here", "CIMS Is Better Than POE", "It's DE Friday", "Auto Works!", "2 + 3 is 5", "Interpolating is hard", "The Meaning of Life is 42", "Don't Use Do While loops", "Edd, I Hardly Know Her", "How many programmers does it take to change a light bulb?\n None – It’s a hardware problem", "Why do programmers always mix up Halloween and Christmas?\n Because Oct 31 equals Dec 25"]
 copy_right = ["UR MOM", "UR DAD", "HOWARD THE DUCK", "THE FIRST ORDER", "THANOS", "THE COSMIC GOAT", "THE SLACKER MENTOR"]
 
-with open(fileName) as f, open(fileName +'GraphData.txt', "w") as out, open(fileName +'DiscardedData.txt', "w") as trash:
+with open(fileName) as f, open(fileName[:len(fileName) - 4] +'GraphData.txt', "w") as out, open(fileName[:len(fileName) - 4] +'DiscardedData.txt', "w") as trash:
     sadness = random.randint(1, 1000000)
     text = random.randint(0, len(splashText)-1)
     lol = random.randint(0, len(splashText)-1)
@@ -46,7 +48,7 @@ with open(fileName) as f, open(fileName +'GraphData.txt', "w") as out, open(file
     time.sleep(0.5)
     print(" Python Parser Parsed in Python Succsesfully")
     time.sleep(0.25)
-    print(" Python Parser saved the java arrays to:\n " + path + "\\src\\main\\java\\frc\\robot\\routes\\" + fileName[6:len(fileName) - 4] + ".java\n and the graph to\:n " + path + fileName[6:len(fileName) - 4] + "\\" +'GraphData.txt\n and the discarded data to:\n' + path + "\\" +fileName[6:len(fileName) - 4] +'DiscardedData.txt')
+    print(" Python Parser saved the java arrays to:\n " + path + "\\src\\main\\java\\frc\\robot\\routes\\" + fileName[6:len(fileName) - 4] + ".java\n and the graph to: " + path + fileName[6:len(fileName) - 4] + "\\" +'GraphData.txt\n and the discarded data to: ' + path + "\\" +fileName[6:len(fileName) - 4] +'DiscardedData.txt')
     trash.write(" \n")
     for line in g.readlines():
         if line.startswith("-") or line.startswith(" ") or line[0].isdigit():
@@ -77,7 +79,6 @@ with open(fileName) as f, open(fileName +'GraphData.txt', "w") as out, open(file
         else:
             # print(line)
             trash.write(line + " \n")
-print(str(frontRightEncoderPositions))
 years = str(year)
 velocityArray = ",\n\t\t".join(velocities)
 rotationsArray = ",\n\t\t".join(rotations)
