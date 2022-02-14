@@ -35,10 +35,8 @@ public class VisionControl {
     public boolean usingAuto = false;
     private int invalid_ball_counter = 0;    
     private final int invalid_ball_counter_threshold = 20;
- 
     private MachineLearning ml;
     private path1 p1 = new path1();
-
     private double skip[] = {0};
     public double counter = 0;
     private double kP = 0;
@@ -49,13 +47,12 @@ public class VisionControl {
     private double backRightSpeed[] = {};
     private double backLeftSpeed[] = {};
 
+    private final boolean SQUARE_DRIVER_INPUTS = true;
 
     //edit these
-    private String selector = "path1"; 
-
-    private final boolean SQUARE_DRIVER_INPUTS = true;
     private final boolean RECORD_PATH = true;
     private final String FILE_NAME = "path1";
+    private final String selector = "path1"; 
     // private Shooter shooter;
 
     public VisionControl(Vision vision, VisionData visionData, OperatorInterface oi, Chassis chassis) {// , Shooter shooter}) {

@@ -57,14 +57,16 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-
+        if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
+            vc.autoInit();
+         }
     }
 
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
-           vc.auto();
+           vc.autoPeriodic();
         }
     }
 

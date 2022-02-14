@@ -97,8 +97,18 @@ public class Chassis {
         drive.driveCartesian(ySpeed, xSpeed, zRotation, squareInputs);
     }
 
-    public void pathDrive(int fl, int fr, int bl, int br){
+    public void pathDrive(double fl, double fr, double bl, double br){
         drive.pathDrive(fl, fr, bl, br);
+    }
+    public void setKP(double kp){
+        SparkMaxPIDController pid1 = CANSparkMax1.getPIDController();
+        SparkMaxPIDController pid2 = CANSparkMax2.getPIDController();
+        SparkMaxPIDController pid3 = CANSparkMax3.getPIDController();
+        SparkMaxPIDController pid4 = CANSparkMax4.getPIDController();
+        pid1.setP(kp);
+        pid2.setP(kp);
+        pid3.setP(kp);
+        pid4.setP(kp);
     }
 
     public void initOdometry()
