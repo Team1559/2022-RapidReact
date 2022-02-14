@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.components;
 import java.util.ArrayList;
 import java.io.File;
 import java.io.IOException;
@@ -46,7 +46,7 @@ public class MachineLearning {
     private void executeCmds(String cmd, String arg1, String arg2, String arg3) {
         String[] command =  {"sudo", cmd, arg1, arg2, arg3};
         ProcessBuilder builder = new ProcessBuilder(command);
-        builder = builder.directory(new File("/usr/bin/bash"));
+        builder = builder.directory(new File("/"));
         try {
             Process p = builder.start();
         }
