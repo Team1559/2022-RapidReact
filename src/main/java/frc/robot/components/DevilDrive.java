@@ -223,7 +223,7 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
     feed();
   }
   @SuppressWarnings("ParameterName")
-  public void pathDrive(int fl, int fr, int bl, int br){
+  public void pathDrive(double fl, double fr, double bl, double br){
     if (!m_reported) {
       HAL.report(
           tResourceType.kResourceType_RobotDrive, tInstances.kRobotDrive2_MecanumCartesian, 4);

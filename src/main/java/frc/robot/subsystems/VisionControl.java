@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import frc.robot.components.*;
 import frc.robot.*;
+import frc.robot.routes.*;
+
 @SuppressWarnings("unused")
 public class VisionControl {
     private OperatorInterface oi;
@@ -16,8 +18,8 @@ public class VisionControl {
     private boolean wait = visionData.waitForOtherRobot;
     // thresholds
     private double ballChassisThreshold = 2;
-    private double hoopChassisThreshold = 10;
-    private double shooterThreshold = 10;
+    private double hoopChassisThreshold = 2;
+    private double shooterThreshold = 2;
 
     // shooter variables
     private double desiredAngle;// angle of the shooter in degrees
@@ -33,10 +35,27 @@ public class VisionControl {
     public boolean usingAuto = false;
     private int invalid_ball_counter = 0;    
     private final int invalid_ball_counter_threshold = 20;
+ 
+    private MachineLearning ml;
+    private path1 p1 = new path1();
+
+    private double skip[] = {0};
+    public double counter = 0;
+    private double kP = 0;
+    private boolean teachTheAI = true;
+    private double counterSpeed;
+    private double frontRightSpeed[] = {};
+    private double frontLeftSpeed[] = {};
+    private double backRightSpeed[] = {};
+    private double backLeftSpeed[] = {};
+
+
+    //edit these
+    private String selector = "path1"; 
+
     private final boolean SQUARE_DRIVER_INPUTS = true;
     private final boolean RECORD_PATH = true;
-    private MachineLearning ml;
-
+    private final String FILE_NAME = "path1";
     // private Shooter shooter;
 
     public VisionControl(Vision vision, VisionData visionData, OperatorInterface oi, Chassis chassis) {// , Shooter shooter}) {
@@ -44,22 +63,34 @@ public class VisionControl {
         this.vision = vision;
         this.visionData = visionData;
         this.chassis = chassis;
-        ml = new MachineLearning(RECORD_PATH);
+        ml = new MachineLearning(RECORD_PATH, FILE_NAME);
         // this.shooter = shooter;
     }
 
-    public void auto() { // pathfind to cargo, collect it, and score it
-        update();
-        if(visionData.isBallValid() && visionData.isHoopValid()){
-            // auto code will go here
-        }
-        else{
-            System.out.println("Invalid data... aborting");
-        }
+    public void autoInit() {
+        chassis.initOdometry();
+        counter = 0;
+        if(selector == "path1"){
+            kP = 0.025; //.03
+            frontRightSpeed = p1.generated_frontRightEncoderPositions;
+            frontLeftSpeed = p1.generated_frontLeftEncoderPositions;
+            backRightSpeed = p1.generated_backRightEncoderPositions;
+            backLeftSpeed = p1.generated_backLeftEncoderPositions;
+            counterSpeed = 1.0; 
+          }
+          else{
+            kP = 0.0;
+            frontRightSpeed = skip;
+            frontLeftSpeed = skip;
+            backRightSpeed = skip;
+            backLeftSpeed = skip;
+            counterSpeed = 0.0;
+          }
     }
 
-    public void record(double _forwardSpeed, double _sideSpeed){
-        ml.periodic(_forwardSpeed, _sideSpeed, chassis.flep, chassis.frep, chassis.blep, chassis.brep);
+    public void autoPeriodic() { // pathfind to cargo, collect it, and score it
+        update();
+        followPath();
     }
 
     public void main() {
@@ -122,6 +153,14 @@ public class VisionControl {
             }
         }
     }
+    
+    public void followPath(){
+        if(counter < frontLeftSpeed.length){
+            chassis.pathDrive(ml.interpolate(counter, frontLeftSpeed), ml.interpolate(counter, frontRightSpeed), ml.interpolate(counter, backLeftSpeed), ml.interpolate(counter, backRightSpeed));
+            counter += counterSpeed; //good at 1.5 with .03 kp ONLY FOR BR PATH
+        }
+    }
+
     public void disable(){
         if(RECORD_PATH){
             ml.write();
@@ -131,6 +170,11 @@ public class VisionControl {
         chassis.drive(fs, ss , r, false);
     }
 
+    public void record(double _forwardSpeed, double _sideSpeed){
+        chassis.updateEncoders();
+        ml.periodic(_forwardSpeed, _sideSpeed, chassis.flep, chassis.frep, chassis.blep, chassis.brep);
+    }
+    
     private void update() {
         visionData = vision.getData();
         hoopx = visionData.hx;
@@ -155,6 +199,7 @@ public class VisionControl {
             this.hoop_rotation = 0;
         return this.hoop_rotation;
     }
+
     private double calculateBallChassis() {
         // ball_forward_speed = __calculated_forward_speed__;
         // ball_sidespeed = __calculated_side_speed__;
@@ -164,7 +209,9 @@ public class VisionControl {
             this.ball_rotation = 0;
         return this.ball_rotation;
     }
+
     private void printData(){
         System.out.println("rotation value is " + ball_rotation);
     }
+
 }

@@ -18,7 +18,8 @@ public class MachineLearning{
     private ArrayList<Double> backLeftEncoderPosition = new ArrayList<Double>();
     private ArrayList<Double> backRightEncoderPosition = new ArrayList<Double>();
 
-    private String filename = "path1.txt";
+    private String filename;
+
     public void executeCmd(String cmd){
       String[] list = cmd.split(" ");
       if(list.length == 1){
@@ -48,9 +49,9 @@ public class MachineLearning{
     
     @SuppressWarnings("unused")
     private void executeCmds(String cmd, String arg1, String arg2, String arg3){
-      String[] command = {cmd, arg1, arg2, arg3};
+      String[] command = {"sudo", cmd, arg1, arg2, arg3};
       ProcessBuilder builder = new ProcessBuilder(command);
-      builder = builder.directory(new File("/"));
+      builder = builder.directory(new File("/bin/sh"));
       try{
         Process p = builder.start();
       }catch(IOException e){
@@ -59,28 +60,29 @@ public class MachineLearning{
     }
 
     // private int counter = 0;
-    public MachineLearning(boolean record){
-        forwardSpeed.clear();
-        sideSpeed.clear();
-        frontLeftEncoderPosition.clear();
-        frontRightEncoderPosition.clear();
-        backLeftEncoderPosition.clear();
-        backRightEncoderPosition.clear();
-        if(record){
-         executeCmd("sudo mkdir /paths");
-         executeCmd("sudo chmod a=rwx /paths");
-          try {
-              File myObj = new File("/paths/" + filename);
-              if (myObj.createNewFile()) {
-                System.out.println("File created: " + myObj.getName());
-              } else {
-                System.out.println("File already exists.");
-              }
-            } catch (IOException e) {
-              System.out.println("An error occurred.");
-              e.printStackTrace();
+    public MachineLearning(boolean record, String filename){
+      this.filename = filename + ".txt";
+      forwardSpeed.clear();
+      sideSpeed.clear();
+      frontLeftEncoderPosition.clear();
+      frontRightEncoderPosition.clear();
+      backLeftEncoderPosition.clear();
+      backRightEncoderPosition.clear();
+      if(record){
+        executeCmd("mkdir /paths");
+        executeCmd("chmod a=rwx /paths");
+        try {
+            File myObj = new File("/paths/" + filename);
+            if (myObj.createNewFile()) {
+              System.out.println("File created: " + myObj.getName());
+            } else {
+              System.out.println("File already exists.");
             }
-        }
+          } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+          }
+      }
     }
 
     public void periodic(Double _forwardSpeed, Double _sideSpeed, Double flep, Double frep, Double blep, Double brep){
