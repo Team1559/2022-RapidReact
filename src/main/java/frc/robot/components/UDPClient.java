@@ -11,14 +11,11 @@ import java.io.InputStream;
  * This class is responsible for communicating to a server over UDP.
  */
 public class UDPClient implements Runnable {
-
     // private static final String HOST = "169.254.210.151";// "10.15.59.6"; //
     // 169.254.227.6
     private static final int PORT = 5801;
-
     Thread  clientThread;
     boolean running;
-
     String data;
     DatagramSocket socket;
     byte[] receive;
@@ -62,10 +59,10 @@ public class UDPClient implements Runnable {
 
             ret = bfReader.readLine();
             // System.out.println(ret);
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             System.out.println(e.toString());
         }
-
         return ret;
     }
 }

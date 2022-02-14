@@ -31,7 +31,6 @@ public class Chassis {
     private IMU imu;
     private final boolean DISABLE_STRAFING = true;
 
-
     /**
      * private static final double kF = 0.14614285; //F-gain = (100% X 1023) /
      * 7350 F-gain = 0.139183673 - (7350 is max speed) private static final
@@ -40,6 +39,7 @@ public class Chassis {
      * double cLR = 0.1; This was ctrl c ctrl v'd from 2020. I don't now what
      * these values mean so I don't want to delete them.
      */
+
     private CANSparkMax initMotor(CANSparkMax sparky, int id, RelativeEncoder r){
         sparky = new CANSparkMax(id, MotorType.kBrushless);
         SparkMaxPIDController pid = sparky.getPIDController();
@@ -52,7 +52,6 @@ public class Chassis {
         final double kFF = 0.000015;
         final double kMaxOutput = 1;
         final double kMinOutput = -1;
-        // final double maxRPM = 5700;
         pid.setP(kP);
         pid.setI(kI);
         pid.setD(kD);
@@ -63,6 +62,7 @@ public class Chassis {
         r = sparky.getEncoder();
         return sparky;
     }
+
     public Chassis(OperatorInterface oi, IMU imu) {
         this.oi = oi;
         this.imu = imu;
@@ -76,16 +76,19 @@ public class Chassis {
 
         drive = new DevilDrive(CANSparkMax1, CANSparkMax3, CANSparkMax2, CANSparkMax4);
     }
+
     public void main(){
         System.out.println("forward "+ 0.5 * oi.pilot.getLeftY() +" strafe "+ 0.5 * oi.pilot.getLeftX() +" rotate "+ 0.5 * oi.pilot.getRightX());
         drive(0.995 * oi.pilot.getLeftY(), -0.995 * oi.pilot.getLeftX(), -0.995 * oi.pilot.getRightX());
     }
+
     public void updateEncoders(){
         flep = flEncoder.getPosition();
         frep = frEncoder.getPosition();
         blep = blEncoder.getPosition();
         brep = brEncoder.getPosition();
     }
+
     public void drive(double ySpeed, double xSpeed, double zRotation) {
         drive.driveCartesian(ySpeed, xSpeed, zRotation, true);
     }
@@ -100,6 +103,7 @@ public class Chassis {
     public void pathDrive(double fl, double fr, double bl, double br){
         drive.pathDrive(fl, fr, bl, br);
     }
+
     public void setKP(double kp){
         SparkMaxPIDController pid1 = CANSparkMax1.getPIDController();
         SparkMaxPIDController pid2 = CANSparkMax2.getPIDController();
@@ -118,6 +122,5 @@ public class Chassis {
         blEncoder.setPosition(0);
         brEncoder.setPosition(0);
         imu.zeroYaw();
-
     }
 }

@@ -1,6 +1,9 @@
 package frc.robot.subsystems;
 
 import frc.robot.components.*;
+
+import java.util.Currency;
+
 import frc.robot.*;
 import frc.robot.routes.*;
 
@@ -20,7 +23,6 @@ public class VisionControl {
     private double ballChassisThreshold = 2;
     private double hoopChassisThreshold = 2;
     private double shooterThreshold = 2;
-
     // shooter variables
     private double desiredAngle;// angle of the shooter in degrees
     private double desiredPower;// desired shooter power in RPMS
@@ -32,6 +34,7 @@ public class VisionControl {
     private double ball_sidespeed = 0; // straife speed between 0-1
     private double ball_rotation = 0; // rotation speed between 0-1
     private Chassis chassis;
+    //other variables
     public boolean usingAuto = false;
     private int invalid_ball_counter = 0;    
     private final int invalid_ball_counter_threshold = 20;
@@ -46,16 +49,27 @@ public class VisionControl {
     private double frontLeftSpeed[] = {};
     private double backRightSpeed[] = {};
     private double backLeftSpeed[] = {};
-
+    //we need to determine whether to set these or not
     private final boolean SQUARE_DRIVER_INPUTS = true;
 
     //edit these
     private final boolean RECORD_PATH = true;
     private final String FILE_NAME = "path1";
-    private final String selector = "path1"; 
+    private String selector; 
     // private Shooter shooter;
 
     public VisionControl(Vision vision, VisionData visionData, OperatorInterface oi, Chassis chassis) {// , Shooter shooter}) {
+        this.selector = "";
+        this.oi = oi;
+        this.vision = vision;
+        this.visionData = visionData;
+        this.chassis = chassis;
+        ml = new MachineLearning(RECORD_PATH, FILE_NAME);
+        // this.shooter = shooter;
+    }
+
+    public VisionControl(Vision vision, VisionData visionData, OperatorInterface oi, Chassis chassis, String selector) {// , Shooter shooter}) {
+        this.selector = selector;
         this.oi = oi;
         this.vision = vision;
         this.visionData = visionData;
@@ -85,6 +99,10 @@ public class VisionControl {
         }
         chassis.setKP(kP);
 
+    }
+    public void setAutoPath(String selector){
+        this.selector = selector;
+        System.out.println("Current Path is " + this.selector);
     }
 
     public void autoPeriodic() { // pathfind to cargo, collect it, and score it
@@ -203,7 +221,7 @@ public class VisionControl {
         // ball_forward_speed = __calculated_forward_speed__;
         // ball_sidespeed = __calculated_side_speed__;
         this.ball_rotation = 0.5 * (ballr / 34.0);
-    //    ball_rotation = -pid.calculate(balla, 0);
+        // ball_rotation = -pid.calculate(balla, 0);
         if(Math.abs(ballr) <= ballChassisThreshold)
             this.ball_rotation = 0;
         return this.ball_rotation;

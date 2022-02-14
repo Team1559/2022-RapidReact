@@ -5,10 +5,8 @@
 package frc.robot.components;
 
 import static java.util.Objects.requireNonNull;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxPIDController;
-
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
@@ -68,7 +66,6 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
   private final CANSparkMax m_rearRightMotor;
   private final double m_deadband;
   private final double m_maxOutput = 5700;
-
   private boolean m_reported;
 
   @SuppressWarnings("MemberName")
@@ -113,7 +110,8 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
     CANSparkMax rearLeftMotor,
     CANSparkMax frontRightMotor,
     CANSparkMax rearRightMotor,
-      double deadband) {
+    double deadband) {
+
     requireNonNull(frontLeftMotor, "Front-left motor cannot be null");
     requireNonNull(rearLeftMotor, "Rear-left motor cannot be null");
     requireNonNull(frontRightMotor, "Front-right motor cannot be null");
@@ -124,6 +122,7 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
     m_frontRightMotor = frontRightMotor;
     m_rearRightMotor = rearRightMotor;
     m_deadband = deadband;
+
     SendableRegistry.addChild(this, m_frontLeftMotor);
     SendableRegistry.addChild(this, m_rearLeftMotor);
     SendableRegistry.addChild(this, m_frontRightMotor);
@@ -137,6 +136,7 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
     CANSparkMax rearLeftMotor,
     CANSparkMax frontRightMotor,
     CANSparkMax rearRightMotor) {
+
     requireNonNull(frontLeftMotor, "Front-left motor cannot be null");
     requireNonNull(rearLeftMotor, "Rear-left motor cannot be null");
     requireNonNull(frontRightMotor, "Front-right motor cannot be null");
@@ -147,6 +147,7 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
     m_frontRightMotor = frontRightMotor;
     m_rearRightMotor = rearRightMotor;
     m_deadband = 0.0;
+
     SendableRegistry.addChild(this, m_frontLeftMotor);
     SendableRegistry.addChild(this, m_rearLeftMotor);
     SendableRegistry.addChild(this, m_frontRightMotor);
@@ -168,9 +169,9 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
    *
    * @param ySpeed The robot's speed along the Y axis [-1.0..1.0]. Right is positive.
    * @param xSpeed The robot's speed along the X axis [-1.0..1.0]. Forward is positive.
-   * @param zRotation The robot's rotation rate around the Z axis [-1.0..1.0]. Clockwise is
-   *     positive.
+   * @param zRotation The robot's rotation rate around the Z axis [-1.0..1.0]. Clockwise is positive.
    */
+
   @SuppressWarnings("ParameterName")
   public void driveCartesian(double ySpeed, double xSpeed, double zRotation, boolean squaredInputs) {
     driveCartesian(ySpeed, xSpeed, zRotation, 0.0, squaredInputs);
@@ -189,6 +190,7 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
    * @param gyroAngle The current angle reading from the gyro in degrees around the Z axis. Use this
    *     to implement field-oriented controls.
    */
+
   @SuppressWarnings("ParameterName")
   public void driveCartesian(double ySpeed, double xSpeed, double zRotation, double gyroAngle, boolean squareInputs) {
     if (!m_reported) {
@@ -222,6 +224,7 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
 
     feed();
   }
+
   @SuppressWarnings("ParameterName")
   public void pathDrive(double fl, double fr, double bl, double br){
     if (!m_reported) {
@@ -229,6 +232,7 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
           tResourceType.kResourceType_RobotDrive, tInstances.kRobotDrive2_MecanumCartesian, 4);
       m_reported = true;
     }
+
     SparkMaxPIDController frontLeftPid = m_frontLeftMotor.getPIDController();
     SparkMaxPIDController frontRightPid = m_frontRightMotor.getPIDController();
     SparkMaxPIDController rearLeftPid = m_rearLeftMotor.getPIDController();
@@ -253,6 +257,7 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
    * @param zRotation The robot's rotation rate around the Z axis [-1.0..1.0]. Clockwise is
    *     positive.
    */
+
   @SuppressWarnings("ParameterName")
   public void drivePolar(double magnitude, double angle, double zRotation, boolean squaredInputs) {
     if (!m_reported) {
@@ -282,9 +287,10 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
    *     to implement field-oriented controls.
    * @return Wheel speeds.
    */
+
   @SuppressWarnings("ParameterName")
   public static WheelSpeeds driveCartesianIK(
-      double ySpeed, double xSpeed, double zRotation, double gyroAngle) {
+    double ySpeed, double xSpeed, double zRotation, double gyroAngle) {
     ySpeed = MathUtil.clamp(ySpeed, -1.0, 1.0);
     xSpeed = MathUtil.clamp(xSpeed, -1.0, 1.0);
 
@@ -326,16 +332,9 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
     builder.setSmartDashboardType("MecanumDrive");
     builder.setActuator(true);
     builder.setSafeState(this::stopMotor);
-    builder.addDoubleProperty(
-        "Front Left Motor Speed", m_frontLeftMotor::get, m_frontLeftMotor::set);
-    builder.addDoubleProperty(
-        "Front Right Motor Speed",
-        () -> m_frontRightMotor.get(),
-        value -> m_frontRightMotor.set(value));
+    builder.addDoubleProperty("Front Left Motor Speed", m_frontLeftMotor::get, m_frontLeftMotor::set);
+    builder.addDoubleProperty("Front Right Motor Speed", () -> m_frontRightMotor.get(), value -> m_frontRightMotor.set(value));
     builder.addDoubleProperty("Rear Left Motor Speed", m_rearLeftMotor::get, m_rearLeftMotor::set);
-    builder.addDoubleProperty(
-        "Rear Right Motor Speed",
-        () -> m_rearRightMotor.get(),
-        value -> m_rearRightMotor.set(value));
-  }
+    builder.addDoubleProperty("Rear Right Motor Speed", () -> m_rearRightMotor.get(), value -> m_rearRightMotor.set(value));
+    }
 }

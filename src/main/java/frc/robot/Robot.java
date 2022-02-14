@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.subsystems.*;
 import frc.robot.components.*;
 /**
@@ -21,6 +22,10 @@ public class Robot extends TimedRobot {
     private VisionData vData;
     private VisionControl vc;
     private boolean usingVision = false;
+    private static final String kDefaultAuto = "Path 1";
+    private static final String kCustomAuto = "Path 2";
+    private String m_autoSelected;
+    private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
     public Chassis chassis;
 
@@ -59,7 +64,20 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
             vc.autoInit();
+            m_autoSelected = m_chooser.getSelected();
+            // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
+            System.out.println("Auto selected: " + m_autoSelected);
+
+            switch (m_autoSelected) {
+                case kCustomAuto:
+                  vc.setAutoPath("path2");
+                  break;
+                case kDefaultAuto:
+                default:
+                vc.setAutoPath("path1");
+                  break;
          }
+        }
     }
 
     /** This function is called periodically during autonomous. */

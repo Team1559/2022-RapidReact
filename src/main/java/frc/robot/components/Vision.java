@@ -1,8 +1,9 @@
 package frc.robot.components;
 
 public class Vision {
-    UDPClient client;
-
+    private UDPClient client;
+    
+    private static Vision instance;
     private VisionData VData;
     double hoopCameraYOffset = 0;
     double hoopCameraXOffset = 0;// 5.0;
@@ -52,7 +53,6 @@ public class Vision {
                     } else {
                         NewData.waitForOtherRobot = false;
                     }
-
                 }
             }
             VData = NewData;
@@ -65,8 +65,6 @@ public class Vision {
         update();
         return VData;
     }
-
-    private static Vision instance;
 
     public static Vision getInstance() {
         if (instance == null) {

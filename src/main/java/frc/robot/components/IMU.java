@@ -1,5 +1,4 @@
 package frc.robot.components;
-//imports
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.*;
 
@@ -17,43 +16,42 @@ public  class IMU{
 
   //the init method
     public void init(){
-      try {
-        ahrs = new AHRS(SPI.Port.kMXP);
-        ahrs.enableLogging(true);
-      }
-      catch (RuntimeException ex) {
-         DriverStation.reportError("Error instantiating navX MXP:  " + ex.getMessage(), true);
-       }
-        
+        try {
+            ahrs = new AHRS(SPI.Port.kMXP);
+            ahrs.enableLogging(true);
+        }
+        catch (RuntimeException ex) {
+            DriverStation.reportError("Error instantiating navX MXP:  " + ex.getMessage(), true);
+        }
     }
 
     //sets the yaw to zero
     public void zeroYaw(){
-      ahrs.zeroYaw();
-      ahrs.reset();
-      yaw = 0;
+        ahrs.zeroYaw();
+        ahrs.reset();
+        yaw = 0;
     }
 
     //returns true if the yaw is between the valid range
     public boolean isYawValid(){
-      if(ahrs.getYaw() < maxAutoYaw && ahrs.getYaw() > -maxAutoYaw){
-        return true;
-      }
-      else{
-        return false;
-      }
+        if(ahrs.getYaw() < maxAutoYaw && ahrs.getYaw() > -maxAutoYaw){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
   //gets all the yaw values
   public void getvalues(){
-    x_acceleration = ahrs.getWorldLinearAccelX();
-    y_acceleration = ahrs.getWorldLinearAccelY();
-    z_acceleration = ahrs.getWorldLinearAccelZ();
-    roll = ahrs.getPitch();
-    pitch = ahrs.getRoll();
-    yaw = (ahrs.getYaw()) * (Math.PI/180);// normally negated
-    turnRate = ahrs.getRate(); 
-    y_angularVelocity = ahrs.getRate();
+        x_acceleration = ahrs.getWorldLinearAccelX();
+        y_acceleration = ahrs.getWorldLinearAccelY();
+        z_acceleration = ahrs.getWorldLinearAccelZ();
+        roll = ahrs.getPitch();
+        pitch = ahrs.getRoll();
+        yaw = (ahrs.getYaw()) * (Math.PI/180);// normally negated
+        turnRate = ahrs.getRate(); 
+        y_angularVelocity = ahrs.getRate();
    }
          
     /*the following are all the functions avalible*/
