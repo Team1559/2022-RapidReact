@@ -114,7 +114,7 @@ public class VisionControl {
             followPath();
         }
 
-        else{
+        else {
             System.out.println("Please enable in teleop to record a new path");
         }
     }
@@ -142,13 +142,13 @@ public class VisionControl {
                     drive(hoop_forward_speed, hoop_sidespeed, hoop_rotation);
                 }
 
-                else{
+                else {
                     // shooter.shoot();
                     
                 }
             }
 
-            else{
+            else {
                 System.out.println("Invalid data... aborting");
             }
         }
@@ -178,7 +178,7 @@ public class VisionControl {
                 drive(ySpeed, 0 , ball_rotation);
             }
 
-            else{
+            else {
                 System.out.println("Invalid data... remaining in manual control");
                 chassis.main();
             }

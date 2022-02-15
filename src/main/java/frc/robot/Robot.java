@@ -150,7 +150,7 @@ public class Robot extends TimedRobot {
     public void initialize() {
         FeatureFlags.updateDependencies();
 
-        if(FeatureFlags.doImu && !FeatureFlags.imuInitialized){
+        if(FeatureFlags.doImu && !FeatureFlags.imuInitialized) {
             imu = new IMU();
             imu.zeroYaw();
             FeatureFlags.imuInitialized = true;

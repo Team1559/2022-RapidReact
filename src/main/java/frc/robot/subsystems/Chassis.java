@@ -40,7 +40,7 @@ public class Chassis {
      * these values mean so I don't want to delete them.
      */
 
-    private CANSparkMax initMotor(CANSparkMax sparky, int id, RelativeEncoder r){
+    private CANSparkMax initMotor(CANSparkMax sparky, int id, RelativeEncoder r) {
         sparky = new CANSparkMax(id, MotorType.kBrushless);
         SparkMaxPIDController pid = sparky.getPIDController();
         sparky.restoreFactoryDefaults();
@@ -94,7 +94,7 @@ public class Chassis {
     }
 
     public void drive(double ySpeed, double xSpeed, double zRotation, boolean squareInputs) {
-        if(DISABLE_STRAFING){
+        if(DISABLE_STRAFING) {
             xSpeed = 0;
         }
         
@@ -105,7 +105,7 @@ public class Chassis {
         drive.pathDrive(fl, fr, bl, br);
     }
 
-    public void setPid(double kp, double ki, double kd){
+    public void setPid(double kp, double ki, double kd) {
         setKP(kp);
         setKI(ki);
         setKD(kd);

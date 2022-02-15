@@ -27,7 +27,7 @@ public  class IMU{
     }
 
     //sets the yaw to zero
-    public void zeroYaw(){
+    public void zeroYaw() {
         ahrs.zeroYaw();
         ahrs.reset();
         yaw = 0;
@@ -35,7 +35,7 @@ public  class IMU{
 
     //returns true if the yaw is between the valid range
     public boolean isYawValid() {
-        if(ahrs.getYaw() < maxAutoYaw && ahrs.getYaw() > -maxAutoYaw){
+        if(ahrs.getYaw() < maxAutoYaw && ahrs.getYaw() > -maxAutoYaw) {
             return true;
         }
 

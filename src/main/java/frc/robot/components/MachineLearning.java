@@ -20,6 +20,7 @@ public class MachineLearning {
         if(OS == null) { 
             OS = System.getProperty("os.name"); 
         }
+
         return OS;
     }
     
@@ -27,7 +28,7 @@ public class MachineLearning {
         return getOsName().startsWith("Windows");
     }
 
-    public static boolean isUnix(){
+    public static boolean isUnix() {
         return !isWindows();
     }
     
@@ -36,15 +37,15 @@ public class MachineLearning {
         String[] command = new String[split.length + 1];
         String out = "";
 
-        if(isUnix()){
+        if(isUnix()) {
             command[0] = "sudo";
         }
 
-        else{
+        else {
             command[0] = "powershell";
         }
 
-        for(int i = 1; i < command.length; i++){
+        for(int i = 1; i < command.length; i++) {
             command[i] = split[i - 1];
         }
 
@@ -57,7 +58,7 @@ public class MachineLearning {
             String line = null;
 
             while ((line = bufferedReader.readLine()) != null) {
-                   out += line;
+                out += line;
             }
         }
 
@@ -83,9 +84,11 @@ public class MachineLearning {
 
             try {
                 File myObj = new File("/paths/" + filename);
+
                 if (myObj.createNewFile())  {
                     System.out.println("File created: " + myObj.getName());
                 } 
+                
                 else  {
                     System.out.println("File already exists.");
                 }
@@ -97,7 +100,7 @@ public class MachineLearning {
         }
     }
 
-    public void init(){
+    public void init() {
         forwardSpeed.clear();
         sideSpeed.clear();
         frontLeftEncoderPosition.clear();
@@ -116,7 +119,7 @@ public class MachineLearning {
             backRightEncoderPosition.add(brep);
         }
 
-        else{
+        else {
             System.out.println("Max recording size has been reached");
         }
     }
