@@ -36,6 +36,7 @@ public class Robot extends TimedRobot {
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
+
     @Override
     public void robotInit() {
         initialize(); 
@@ -54,6 +55,7 @@ public class Robot extends TimedRobot {
      * This runs after the mode specific periodic functions, but before
      * LiveWindow and SmartDashboard integrated updating.
      */
+
     @Override
     public void robotPeriodic() {
     }
@@ -69,6 +71,7 @@ public class Robot extends TimedRobot {
      * switch structure below with additional strings. If using the
      * SendableChooser make sure to add them to the chooser code above as well.
      */
+
     @Override
     public void autonomousInit() {
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
@@ -96,6 +99,7 @@ public class Robot extends TimedRobot {
     }
 
     /** This function is called periodically during autonomous. */
+
     @Override
     public void autonomousPeriodic() {
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
@@ -104,12 +108,14 @@ public class Robot extends TimedRobot {
     }
 
     /** This function is called once when teleop is enabled. */
+
     @Override
     public void teleopInit() {
 
     }
 
     /** This function is called periodically during operator control. */
+    
     @Override
     public void teleopPeriodic() {
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
@@ -122,6 +128,7 @@ public class Robot extends TimedRobot {
     }
 
     /** This function is called once when the robot is disabled. */
+   
     @Override
     public void disabledInit() {
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
@@ -130,18 +137,21 @@ public class Robot extends TimedRobot {
     }
 
     /** This function is called periodically when disabled. */
+    
     @Override
     public void disabledPeriodic() {
 
     }
 
     /** This function is called once when test mode is enabled. */
+    
     @Override
     public void testInit() {
 
     }
 
     /** This function is called periodically during test mode. */
+    
     @Override
     public void testPeriodic() {
 
