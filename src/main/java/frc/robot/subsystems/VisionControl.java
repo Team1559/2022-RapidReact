@@ -4,6 +4,7 @@ import frc.robot.components.*;
 
 import java.util.Currency;
 
+import edu.wpi.first.math.controller.PIDController;
 import frc.robot.*;
 import frc.robot.routes.*;
 
@@ -13,6 +14,8 @@ public class VisionControl {
     private Vision vision;
     private VisionData visionData;
     private IMU imu;
+    private PIDController hoopDistancePid;
+
     private double hoopx = visionData.hx;
     private double hoopy = visionData.hy;
     private double hoopr = visionData.hr;
@@ -20,10 +23,6 @@ public class VisionControl {
     private double bally = visionData.by;
     private double ballr = visionData.br;
     private boolean wait = visionData.waitForOtherRobot;
-    // thresholds
-    private double ballChassisThreshold = 2;
-    private double hoopChassisThreshold = 2;
-    private double shooterThreshold = 2;
     // shooter variables
     private double desiredAngle;// angle of the shooter in degrees
     private double desiredPower;// desired shooter power in RPMS
@@ -50,13 +49,28 @@ public class VisionControl {
     private double frontLeftSpeed[] = {};
     private double backRightSpeed[] = {};
     private double backLeftSpeed[] = {};
-    //we need to determine whether to set these or not
+
+    //we need to determine what to set these to
+    
+    // thresholds
+    private final double ballChassisThreshold = 2; //angle in degrees
+    private final double hoopChassisThreshold = 2; //angle in degrees
+    private final double shooterThreshold = 2;
+
+    private final double[] hoopRange = {3, 50};//min, max in feet
+
     private final boolean SQUARE_DRIVER_INPUTS = true;
+    private final double kpasta = 0.3;
+    private final double ki = 0;
+    private final double kd = 0.001;
+
 
     //edit these
     private final boolean RECORD_PATH = true;
     private final String FILE_NAME = "path1";
     private String selector; 
+
+    
     // private Shooter shooter;
 
     public VisionControl(Vision vision, VisionData visionData, OperatorInterface oi, Chassis chassis, IMU imu) {// , Shooter shooter}) {
@@ -67,6 +81,7 @@ public class VisionControl {
         this.chassis = chassis;
         this.imu = imu;
         ml = new MachineLearning(RECORD_PATH, FILE_NAME);
+        hoopDistancePid = new PIDController(kpasta, ki, kd);
         // this.shooter = shooter;
     }
 
@@ -120,6 +135,7 @@ public class VisionControl {
     }
 
     public void main() {
+        boolean new_ball_data = false;
         update();
         imu.getvalues();
 
@@ -127,7 +143,6 @@ public class VisionControl {
             record(oi.pilot.getLeftY(), oi.pilot.getRightX());
         }
 
-        boolean new_ball_data = false;
         visionData.Print();
         
         if (oi.autoShootButton()) { // Move the chassis so it is alligned, aim the shooter, and fire the cargo
@@ -167,7 +182,7 @@ public class VisionControl {
             
             if(invalid_ball_counter < invalid_ball_counter_threshold) {
                 System.out.println("in auto");
-                double ball_rotation = calculateBallChassis();
+                calculateBallChassis();
                 printData();
                 double ySpeed = -oi.pilot.getLeftY();
 
@@ -186,8 +201,8 @@ public class VisionControl {
 
         else if (oi.autoShootButton()) {
             if(visionData.isHoopValid()) {
-                double hoop_rotation = calculateHoopChassis();
-                drive(0,0,hoop_rotation);
+                calculateHoopChassis();
+                drive(hoop_forward_speed, 0, hoop_rotation);
             }
         }
 
@@ -238,28 +253,35 @@ public class VisionControl {
         // desiredPower = __calculated_RPMS__;
     }
 
-    private double calculateHoopChassis() {
-        this.hoop_rotation = 0.5 * (hoopr / 34.0);
+    private void calculateHoopChassis() {
+        hoop_rotation = 0.5 * (hoopr / 34.0);
         //hoop_rotation = -pid.calculate(balla, 0);
-
-        if(Math.abs(hoopr) <= hoopChassisThreshold) {
-            this.hoop_rotation = 0;
+        if(hoopx < hoopRange[0]) {
+            hoop_forward_speed = hoopDistancePid.calculate(hoopx, hoopRange[0] + 3);
         }
 
-        return this.hoop_rotation;
+        else if(hoopx > hoopRange[1]) {
+            hoop_forward_speed = hoopDistancePid.calculate(hoopx, hoopRange[1] - 3);
+        }
+
+        else {
+            hoop_forward_speed = 0D;
+        }
+
+        if(Math.abs(hoopr) <= hoopChassisThreshold) {
+            hoop_rotation = 0D;
+        }
     }
 
-    private double calculateBallChassis() {
+    private void calculateBallChassis() {
         // ball_forward_speed = __calculated_forward_speed__;
         // ball_sidespeed = __calculated_side_speed__;
-        this.ball_rotation = 0.5 * (ballr / 34.0);
+        ball_rotation = 0.5 * (ballr / 34.0);
         // ball_rotation = -pid.calculate(balla, 0);
 
         if(Math.abs(ballr) <= ballChassisThreshold) {
-            this.ball_rotation = 0;
+            ball_rotation = 0;
         }
-
-        return this.ball_rotation;
     }
 
     private void printData() {

@@ -87,12 +87,15 @@ public class Robot extends TimedRobot {
                 default:
                     vc.setAutoPath("default");
                     break;
+
                 case PATH_1:
                     vc.setAutoPath("path1");
                     break;
+
                 case PATH_2:
                     vc.setAutoPath("path2");
                     break;
+                    
                 case PATH_3:
                     vc.setAutoPath("path3");
                     break;
