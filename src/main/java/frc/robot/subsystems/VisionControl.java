@@ -1,12 +1,8 @@
 package frc.robot.subsystems;
-
 import frc.robot.components.*;
-
-import java.util.Currency;
-
-import edu.wpi.first.math.controller.PIDController;
-import frc.robot.*;
 import frc.robot.routes.*;
+import frc.robot.*;
+import edu.wpi.first.math.controller.PIDController;
 
 @SuppressWarnings("unused")
 public class VisionControl {
@@ -23,9 +19,11 @@ public class VisionControl {
     private double bally = visionData.by;
     private double ballr = visionData.br;
     private boolean wait = visionData.waitForOtherRobot;
+
     // shooter variables
     private double desiredAngle;// angle of the shooter in degrees
     private double desiredPower;// desired shooter power in RPMS
+
     // chassis variables
     private double hoop_forward_speed = 0; // speed front to back between 0-1
     private double hoop_sidespeed = 0; // straife speed between 0-1
@@ -34,6 +32,7 @@ public class VisionControl {
     private double ball_sidespeed = 0; // straife speed between 0-1
     private double ball_rotation = 0; // rotation speed between 0-1
     private Chassis chassis;
+
     //other variables
     public boolean usingAuto = false;
     private int invalid_ball_counter = 0;    
@@ -43,6 +42,8 @@ public class VisionControl {
     private double skip[] = {0};
     public double counter = 0;
     private double kP = 0;
+    private double kI = 0;
+    private double kD = 0;
     private boolean teachTheAI = true;
     private double counterSpeed;
     private double frontRightSpeed[] = {};
@@ -61,15 +62,13 @@ public class VisionControl {
 
     private final boolean SQUARE_DRIVER_INPUTS = true;
     private final double kpasta = 0.3;
-    private final double ki = 0;
-    private final double kd = 0.001;
-
+    private final double kicing = 0;
+    private final double kdonut = 0.001;
 
     //edit these
     private final boolean RECORD_PATH = true;
     private final String FILE_NAME = "path1";
     private String selector; 
-
     
     // private Shooter shooter;
 
@@ -81,7 +80,7 @@ public class VisionControl {
         this.chassis = chassis;
         this.imu = imu;
         ml = new MachineLearning(RECORD_PATH, FILE_NAME);
-        hoopDistancePid = new PIDController(kpasta, ki, kd);
+        hoopDistancePid = new PIDController(kpasta, kicing, kdonut);
         // this.shooter = shooter;
     }
 
@@ -102,6 +101,8 @@ public class VisionControl {
         
         if(selector == "default") {
             kP = 0.025; //.03
+            kI = 0.0;
+            kD = 0.0;
             frontRightSpeed = p1.generated_frontRightEncoderPositions;
             frontLeftSpeed = p1.generated_frontLeftEncoderPositions;
             backRightSpeed = p1.generated_backRightEncoderPositions;
@@ -111,6 +112,8 @@ public class VisionControl {
 
         else {
             kP = 0.0;
+            kI = 0.0;
+            kD = 0.0;
             frontRightSpeed = skip;
             frontLeftSpeed = skip;
             backRightSpeed = skip;
@@ -118,7 +121,7 @@ public class VisionControl {
             counterSpeed = 0.0;
         }
 
-        chassis.setKP(kP);
+        chassis.setPid(kP, kI, kD);
     }
 
     public void autoPeriodic() { // pathfind to cargo, collect it, and score it
@@ -223,6 +226,7 @@ public class VisionControl {
             ml.write();
         }
     }
+
     public void drive(double fs, double ss, double r) {
         chassis.drive(fs, ss , r, false);
     }
@@ -280,7 +284,7 @@ public class VisionControl {
         // ball_rotation = -pid.calculate(balla, 0);
 
         if(Math.abs(ballr) <= ballChassisThreshold) {
-            ball_rotation = 0;
+            ball_rotation = 0D;
         }
     }
 

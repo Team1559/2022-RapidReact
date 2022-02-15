@@ -13,13 +13,13 @@ public final class FeatureFlags {
     public static boolean imuInitialized = false;
 
 
-    public static void updateDependencies(){
-        if(doVision){
+    public static void updateDependencies() {
+        if(doVision) {
             doChassis= true;
             doImu = true;
         }
         
-        if(doChassis){
+        if(doChassis) {
             doImu = true;
         }
     }
