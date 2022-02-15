@@ -18,6 +18,7 @@ public final class FeatureFlags {
             doChassis= true;
             doImu = true;
         }
+        
         if(doChassis){
             doImu = true;
         }

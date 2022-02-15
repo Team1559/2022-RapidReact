@@ -198,11 +198,13 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
           tResourceType.kResourceType_RobotDrive, tInstances.kRobotDrive2_MecanumCartesian, 4);
       m_reported = true;
     }
+
     if (squareInputs) {
       ySpeed = Math.copySign(ySpeed * ySpeed, ySpeed);
       xSpeed = Math.copySign(xSpeed * xSpeed, xSpeed);
       zRotation = Math.copySign(zRotation * zRotation, zRotation);
     }
+    
     ySpeed = MathUtil.applyDeadband(ySpeed, m_deadband);
     xSpeed = MathUtil.applyDeadband(xSpeed, m_deadband);
 

@@ -32,9 +32,6 @@ public class Robot extends TimedRobot {
     private static final String PATH_2 = "Path 2";
     private static final String PATH_3 = "Path 3";
 
-    
-
-
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -122,7 +119,6 @@ public class Robot extends TimedRobot {
         if (FeatureFlags.doChassis && FeatureFlags.chassisInitialized && !usingVision) {
             chassis.main();
         }
-
     }
 
     /** This function is called once when the robot is disabled. */
@@ -141,16 +137,22 @@ public class Robot extends TimedRobot {
 
     /** This function is called once when test mode is enabled. */
     @Override
-    public void testInit() {}
+    public void testInit() {
+
+    }
 
     /** This function is called periodically during test mode. */
     @Override
-    public void testPeriodic() {}
+    public void testPeriodic() {
+
+    }
 
     public void initialize() {
         FeatureFlags.updateDependencies();
+
         if(FeatureFlags.doImu && !FeatureFlags.imuInitialized){
             imu = new IMU();
+            imu.zeroYaw();
             FeatureFlags.imuInitialized = true;
         }
 
@@ -161,10 +163,8 @@ public class Robot extends TimedRobot {
         
         if (FeatureFlags.doVision && !FeatureFlags.visionInitialized) {
             vision = new Vision();
-            vision.VisionInit();
-            vc = new VisionControl(vision, vData, oi, chassis);
+            vc = new VisionControl(vision, vData, oi, chassis, imu);
             FeatureFlags.visionInitialized = true;
         }
-
     }
 }

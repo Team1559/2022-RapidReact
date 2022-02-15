@@ -77,12 +77,12 @@ public class Chassis {
         drive = new DevilDrive(CANSparkMax1, CANSparkMax3, CANSparkMax2, CANSparkMax4);
     }
 
-    public void main(){
+    public void main() {
         System.out.println("forward "+ 0.5 * oi.pilot.getLeftY() +" strafe "+ 0.5 * oi.pilot.getLeftX() +" rotate "+ 0.5 * oi.pilot.getRightX());
         drive(0.995 * oi.pilot.getLeftY(), -0.995 * oi.pilot.getLeftX(), -0.995 * oi.pilot.getRightX());
     }
 
-    public void updateEncoders(){
+    public void updateEncoders() {
         flep = flEncoder.getPosition();
         frep = frEncoder.getPosition();
         blep = blEncoder.getPosition();
@@ -97,14 +97,21 @@ public class Chassis {
         if(DISABLE_STRAFING){
             xSpeed = 0;
         }
+        
         drive.driveCartesian(ySpeed, xSpeed, zRotation, squareInputs);
     }
 
-    public void pathDrive(double fl, double fr, double bl, double br){
+    public void pathDrive(double fl, double fr, double bl, double br) {
         drive.pathDrive(fl, fr, bl, br);
     }
 
-    public void setKP(double kp){
+    public void setPid(double kp, double ki, double kd){
+        setKP(kp);
+        setKI(ki);
+        setKD(kd);
+    }
+
+    public void setKP(double kp) {
         SparkMaxPIDController pid1 = CANSparkMax1.getPIDController();
         SparkMaxPIDController pid2 = CANSparkMax2.getPIDController();
         SparkMaxPIDController pid3 = CANSparkMax3.getPIDController();
@@ -115,8 +122,29 @@ public class Chassis {
         pid4.setP(kp);
     }
 
-    public void initOdometry()
-    {
+    public void setKI(double ki) {
+        SparkMaxPIDController pid1 = CANSparkMax1.getPIDController();
+        SparkMaxPIDController pid2 = CANSparkMax2.getPIDController();
+        SparkMaxPIDController pid3 = CANSparkMax3.getPIDController();
+        SparkMaxPIDController pid4 = CANSparkMax4.getPIDController();
+        pid1.setI(ki);
+        pid2.setI(ki);
+        pid3.setI(ki);
+        pid4.setI(ki);
+    }
+
+    public void setKD(double kd) {
+        SparkMaxPIDController pid1 = CANSparkMax1.getPIDController();
+        SparkMaxPIDController pid2 = CANSparkMax2.getPIDController();
+        SparkMaxPIDController pid3 = CANSparkMax3.getPIDController();
+        SparkMaxPIDController pid4 = CANSparkMax4.getPIDController();
+        pid1.setD(kd);
+        pid2.setD(kd);
+        pid3.setD(kd);
+        pid4.setD(kd);
+    }
+
+    public void initOdometry() {
         flEncoder.setPosition(0);
         frEncoder.setPosition(0);
         blEncoder.setPosition(0);

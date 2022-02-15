@@ -22,13 +22,16 @@ public class UDPClient implements Runnable {
 
     public UDPClient() {
         clientThread = new Thread(this);
-
         receive = new byte[65535];
+
         try {
             socket = new DatagramSocket(PORT);
-        } catch (Exception e) {
+        } 
+        
+        catch (Exception e) {
             System.out.println(e.toString());
         }
+
         clientThread.start();
     }
 
@@ -39,6 +42,7 @@ public class UDPClient implements Runnable {
         while (running) {
             String rec = receive();
             // System.out.println(rec);
+
             if (rec != null) {
                 data = rec;
             }
@@ -52,6 +56,7 @@ public class UDPClient implements Runnable {
     public String receive() {
         String ret = null;
         DatagramPacket DpReceive = new DatagramPacket(receive, receive.length);
+        
         try {
             socket.receive(DpReceive);
             InputStream is = new ByteArrayInputStream(receive);
@@ -60,9 +65,11 @@ public class UDPClient implements Runnable {
             ret = bfReader.readLine();
             // System.out.println(ret);
         } 
+
         catch (Exception e) {
             System.out.println(e.toString());
         }
+
         return ret;
     }
 }

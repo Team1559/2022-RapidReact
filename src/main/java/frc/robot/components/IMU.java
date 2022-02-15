@@ -15,11 +15,12 @@ public  class IMU{
     public double maxAutoYaw = 60;// messured in degrees, may change
 
   //the init method
-    public void init(){
+    public void init() {
         try {
             ahrs = new AHRS(SPI.Port.kMXP);
             ahrs.enableLogging(true);
         }
+
         catch (RuntimeException ex) {
             DriverStation.reportError("Error instantiating navX MXP:  " + ex.getMessage(), true);
         }
@@ -33,17 +34,18 @@ public  class IMU{
     }
 
     //returns true if the yaw is between the valid range
-    public boolean isYawValid(){
+    public boolean isYawValid() {
         if(ahrs.getYaw() < maxAutoYaw && ahrs.getYaw() > -maxAutoYaw){
             return true;
         }
-        else{
+
+        else {
             return false;
         }
     }
 
   //gets all the yaw values
-  public void getvalues(){
+  public void getvalues() {
         x_acceleration = ahrs.getWorldLinearAccelX();
         y_acceleration = ahrs.getWorldLinearAccelY();
         z_acceleration = ahrs.getWorldLinearAccelZ();

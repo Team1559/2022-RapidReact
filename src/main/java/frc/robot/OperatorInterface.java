@@ -16,10 +16,11 @@ public class OperatorInterface {
     }
     // Use this class to label each button sowe don't accidentily assign the same button to 2 different functions
     
-    public boolean autoShootButton(){
+    public boolean autoShootButton() {
         return pilot.getXButton();
     }
-    public boolean autoCollectButton(){
+
+    public boolean autoCollectButton() {
         return pilot.getAButton();
     }
 }
