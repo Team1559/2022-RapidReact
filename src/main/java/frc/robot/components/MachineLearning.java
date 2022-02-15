@@ -50,6 +50,8 @@ public class MachineLearning {
     @return the output of the command
     */
     private String executeCmd(String cmd, String startingDir) {
+        cmd = cmd.replaceAll("//S", "//s");
+        
         if(startingDir == ""){
             startingDir = "/";
         }
