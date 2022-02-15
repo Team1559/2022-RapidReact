@@ -31,8 +31,29 @@ public class MachineLearning {
     public static boolean isUnix() {
         return !isWindows();
     }
-    
-    private static String executeCmd(String cmd) {
+
+    /**
+    Runs commands on the system starting at the root directory of the os
+    Use //s instead of spaces, so for example making a directory "test 1" is done with executeCmd("mkdir test//s1");
+    @param cmd the command you want to run
+    @return the output of the command
+    */
+    private String executeCmd(String cmd){
+        return executeCmd(cmd, "/");
+    }
+
+    /**
+    Runs commands on the system starting at the specified directory
+    Use //s instead of spaces, so for example making a directory "test 1" is done with executeCmd("mkdir test//s1", "/");
+    @param cmd the command you want to run
+    @param startingDir the starting directory of the command
+    @return the output of the command
+    */
+    private String executeCmd(String cmd, String startingDir) {
+        if(startingDir == ""){
+            startingDir = "/";
+        }
+
         String[] split = cmd.split(" ");
         String[] command = new String[split.length + 1];
         String out = "";
@@ -46,11 +67,11 @@ public class MachineLearning {
         }
 
         for(int i = 1; i < command.length; i++) {
-            command[i] = split[i - 1];
+            command[i] = split[i - 1].replaceAll("//s"," ");
         }
 
         ProcessBuilder builder = new ProcessBuilder(command);
-        builder = builder.directory(new File("/"));
+        builder = builder.directory(new File(startingDir));
 
         try {
             Process p = builder.start();
@@ -58,7 +79,7 @@ public class MachineLearning {
             String line = null;
 
             while ((line = bufferedReader.readLine()) != null) {
-                out += line;
+                out += line + "\n";
             }
         }
 
