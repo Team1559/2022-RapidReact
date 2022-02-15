@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.*;
 import frc.robot.components.*;
 /**
@@ -22,12 +23,17 @@ public class Robot extends TimedRobot {
     private VisionData vData;
     private VisionControl vc;
     private boolean usingVision = false;
-    private static final String kDefaultAuto = "Path 1";
-    private static final String kCustomAuto = "Path 2";
     private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
-
     public Chassis chassis;
+
+    private static final String DEFAULT_PATH = "Default Path";
+    private static final String PATH_1 = "Path 1";
+    private static final String PATH_2 = "Path 2";
+    private static final String PATH_3 = "Path 3";
+
+    
+
 
     /**
      * This function is run when the robot is first started up and should be
@@ -36,6 +42,11 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         initialize(); 
+        m_chooser.setDefaultOption("Default Auto Path", DEFAULT_PATH);
+        m_chooser.addOption("Path 1", PATH_1);
+        m_chooser.addOption("Path 2", PATH_2);
+        m_chooser.addOption("Path 3", PATH_3);
+        SmartDashboard.putData("Auto Paths", m_chooser);
     }
 
     /**
@@ -47,7 +58,8 @@ public class Robot extends TimedRobot {
      * LiveWindow and SmartDashboard integrated updating.
      */
     @Override
-    public void robotPeriodic() {}
+    public void robotPeriodic() {
+    }
 
     /**
      * This autonomous (along with the chooser code above) shows how to select
@@ -69,14 +81,20 @@ public class Robot extends TimedRobot {
             System.out.println("Auto selected: " + m_autoSelected);
 
             switch (m_autoSelected) {
-                case kCustomAuto:
-                  vc.setAutoPath("path2");
-                  break;
-                case kDefaultAuto:
+                case DEFAULT_PATH:
                 default:
-                vc.setAutoPath("path1");
-                  break;
-         }
+                    vc.setAutoPath("default");
+                    break;
+                case PATH_1:
+                    vc.setAutoPath("path1");
+                    break;
+                case PATH_2:
+                    vc.setAutoPath("path2");
+                    break;
+                case PATH_3:
+                    vc.setAutoPath("path3");
+                    break;
+            }    
         }
     }
 

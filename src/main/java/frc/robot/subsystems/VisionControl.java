@@ -81,7 +81,7 @@ public class VisionControl {
     public void autoInit() {
         chassis.initOdometry();
         counter = 0;
-        if(selector == "path1"){
+        if(selector == "default"){
             kP = 0.025; //.03
             frontRightSpeed = p1.generated_frontRightEncoderPositions;
             frontLeftSpeed = p1.generated_frontLeftEncoderPositions;
@@ -100,74 +100,74 @@ public class VisionControl {
         chassis.setKP(kP);
 
     }
-    public void setAutoPath(String selector){
-        this.selector = selector;
-        System.out.println("Current Path is " + this.selector);
-    }
 
     public void autoPeriodic() { // pathfind to cargo, collect it, and score it
-        update();
-        followPath();
+        if(!RECORD_PATH){
+            update();
+            followPath();
+        }
+        else{
+            System.out.println("Please enable in teleop to record a new path");
+        }
     }
 
     public void main() {
+        update();
         if(RECORD_PATH){
             record(oi.pilot.getLeftY(), oi.pilot.getRightX());
         }
-        if (true) {
-            update();
-            boolean new_ball_data = false;
-            visionData.Print();
-            if (oi.autoShootButton()) { // Move the chassis so it is alligned, aim the shooter, and fire the cargo
-                usingAuto = true;
-                if(visionData.isHoopValid()){
-                    double error = 0;
+        boolean new_ball_data = false;
+        visionData.Print();
+        if (oi.autoShootButton()) { // Move the chassis so it is alligned, aim the shooter, and fire the cargo
+            usingAuto = true;
+            if(visionData.isHoopValid()){
+                double error = 0;
 
-                    // shooter.setAngle(desiredAngle);
-                    // Shooter.setPower(desiredPower);
-                    if (Math.abs(error) > hoopChassisThreshold) {
-                        drive(hoop_forward_speed, hoop_sidespeed, hoop_rotation);
-                    }
-                    else{
-                        // shooter.shoot();
-                        
-                    }
+                // shooter.setAngle(desiredAngle);
+                // Shooter.setPower(desiredPower);
+                if (Math.abs(error) > hoopChassisThreshold) {
+                    drive(hoop_forward_speed, hoop_sidespeed, hoop_rotation);
                 }
                 else{
-                    System.out.println("Invalid data... aborting");
+                    // shooter.shoot();
+                    
                 }
             }
-            else if (oi.autoCollectButton()) { // go collect the nearest cargo
-                if(visionData.isBallValid()){
-                    new_ball_data = true;
-                    invalid_ball_counter = 0;
-                } else 
-                    invalid_ball_counter++;
-                System.out.println("Got data? " + new_ball_data);
-                if(invalid_ball_counter < invalid_ball_counter_threshold){
-                    System.out.println("in auto");
-                    double ball_rotation = calculateBallChassis();
-                    printData();
-                    double ySpeed = -oi.pilot.getLeftY();
-                    if(SQUARE_DRIVER_INPUTS){
-                        ySpeed = Math.copySign(ySpeed * ySpeed, ySpeed);
-                    }
-                    drive(ySpeed, 0 , ball_rotation);
-                }
-                else{
-                    System.out.println("Invalid data... remaining in manual control");
-                    chassis.main();
-                }
+            else{
+                System.out.println("Invalid data... aborting");
+            }
+        }
+        else if (oi.autoCollectButton()) { // go collect the nearest cargo
+            if(visionData.isBallValid()){
+                new_ball_data = true;
+                invalid_ball_counter = 0;
             } 
-            else if (oi.autoShootButton()){
-                if(visionData.isHoopValid()){
-                    double hoop_rotation = calculateHoopChassis();
-                    drive(0,0,hoop_rotation);
+            else 
+                invalid_ball_counter++;
+            System.out.println("Got data? " + new_ball_data);
+            if(invalid_ball_counter < invalid_ball_counter_threshold){
+                System.out.println("in auto");
+                double ball_rotation = calculateBallChassis();
+                printData();
+                double ySpeed = -oi.pilot.getLeftY();
+                if(SQUARE_DRIVER_INPUTS){
+                    ySpeed = Math.copySign(ySpeed * ySpeed, ySpeed);
                 }
+                drive(ySpeed, 0 , ball_rotation);
             }
-            else {
-                usingAuto = false;
+            else{
+                System.out.println("Invalid data... remaining in manual control");
+                chassis.main();
             }
+        } 
+        else if (oi.autoShootButton()){
+            if(visionData.isHoopValid()){
+                double hoop_rotation = calculateHoopChassis();
+                drive(0,0,hoop_rotation);
+            }
+        }
+        else {
+            usingAuto = false;
         }
     }
     
@@ -187,8 +187,12 @@ public class VisionControl {
         chassis.drive(fs, ss , r, false);
     }
 
+    public void setAutoPath(String selector){
+        this.selector = selector;
+        System.out.println("Current Path is " + this.selector);
+    }
+
     public void record(double _forwardSpeed, double _sideSpeed){
-        chassis.updateEncoders();
         ml.periodic(_forwardSpeed, _sideSpeed, chassis.flep, chassis.frep, chassis.blep, chassis.brep);
     }
     
@@ -201,12 +205,12 @@ public class VisionControl {
         bally = visionData.by;
         ballr = visionData.br;
         wait = visionData.waitForOtherRobot;
+        chassis.updateEncoders();
     }
 
     private void calculateShooter() {
         // desiredAngle = __calculated_angle__;
         // desiredPower = __calculated_RPMS__;
-
     }
 
     private double calculateHoopChassis() {
@@ -230,5 +234,4 @@ public class VisionControl {
     private void printData(){
         System.out.println("rotation value is " + ball_rotation);
     }
-
 }

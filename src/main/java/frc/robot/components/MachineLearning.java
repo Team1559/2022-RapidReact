@@ -1,8 +1,6 @@
 package frc.robot.components;
 import java.util.ArrayList;
-import java.io.File;
-import java.io.IOException;
-import java.io.FileWriter;
+import java.io.*;
 
 public class MachineLearning {
     // private Chassis drivetrain;
@@ -15,44 +13,48 @@ public class MachineLearning {
     private String filename;
     private final int MAX_SIZE = 2000;//Should only be 750 in length for 15 seconds
 
-    public void executeCmd(String cmd) {
-        String[] list = cmd.split(" ");
-        if(list.length == 1) {
-            executeCmds(list[0]);
-        }
-        else if(list.length == 2) {
-            executeCmds(list[0], list[1]);
-        }
-        else if(list.length == 3) {
-            executeCmds(list[0], list[1], list[2]);
-        }
-        else if(list.length == 4) {
-            executeCmds(list[0], list[1], list[2], list[3]);
-        }
+    private static String OS = null;
+    public static String getOsName()
+    {
+        if(OS == null) { OS = System.getProperty("os.name"); }
+        return OS;
+    }
+    public static boolean isWindows()
+    {
+        return getOsName().startsWith("Windows");
     }
 
-    private void executeCmds(String cmd) {
-        executeCmds(cmd, "");
-    }
-
-    private void executeCmds(String cmd, String arg1) {
-        executeCmds(cmd, arg1, "");
-    }
-    private void executeCmds(String cmd, String arg1, String arg2) {
-        executeCmds(cmd, arg1, arg2, "");
+    public static boolean isUnix(){
+        return !isWindows();
     }
     
-    @SuppressWarnings("unused")
-    private void executeCmds(String cmd, String arg1, String arg2, String arg3) {
-        String[] command =  {"sudo", cmd, arg1, arg2, arg3};
+    private static String executeCmd(String cmd) {
+        String[] split = cmd.split(" ");
+        String[] command = new String[split.length + 1];
+        String out = "";
+        if(isUnix()){
+            command[0] = "sudo";
+        }
+        else{
+            command[0] = "powershell";
+        }
+        for(int i = 1; i < command.length; i++){
+            command[i] = split[i - 1];
+        }
         ProcessBuilder builder = new ProcessBuilder(command);
         builder = builder.directory(new File("/"));
         try {
             Process p = builder.start();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(p.getInputStream()), 1);
+            String line = null;
+            while ((line = bufferedReader.readLine()) != null) {
+                   out += line;
+               }
         }
         catch(IOException e) {
             e.printStackTrace();
         }
+        return out;
     }
 
     // private int counter = 0;
