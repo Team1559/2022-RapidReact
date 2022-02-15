@@ -84,6 +84,7 @@ public class VisionControl {
     public void autoInit() {
         chassis.initOdometry();
         counter = 0;
+        
         if(selector == "default") {
             kP = 0.025; //.03
             frontRightSpeed = p1.generated_frontRightEncoderPositions;
@@ -107,6 +108,7 @@ public class VisionControl {
 
     public void autoPeriodic() { // pathfind to cargo, collect it, and score it
         imu.getvalues();
+
         if(!RECORD_PATH) {
             update();
             followPath();
