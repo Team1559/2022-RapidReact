@@ -6,10 +6,12 @@ import os
 
 
 def main():
+    def convert_list(list_a: list[str]) -> list[str]:
+        return ",\n\t\t".join(list_a)
     fileName = "paths\\" + sys.argv[1]
     os.chdir("..")
     path = os.getcwd()
-    if fileName[len(fileName) - 4:] != ".txt":
+    if fileName[-4:] != ".txt":
         fileName += ".txt"
     i = 0
     velocities = []
@@ -18,6 +20,9 @@ def main():
     frontRightEncoderPositions = []
     backLeftEncoderPositions = []
     backRightEncoderPositions = []
+
+    def name() -> str:
+        return fileName[6:-4]
 
     bad_chars = ['ï»¿', 'Ã¯Â»Â¿']
     splashText = ["The Robot Revolution Has Begun", "The Router Has Become Sentient", "Enter The Matrix",
@@ -29,8 +34,8 @@ def main():
     copy_right = ["UR MOM", "UR DAD", "HOWARD THE DUCK", "THE FIRST ORDER", "THANOS", "THE COSMIC GOAT",
                   "THE SLACKER MENTOR"]
 
-    with open(fileName) as f, open(fileName[:len(fileName) - 4] + 'GraphData.txt', "w") as out, open(
-            fileName[:len(fileName) - 4] + 'DiscardedData.txt', "w") as trash:
+    with open(fileName) as f, open(fileName[:-4] + 'GraphData.txt', "w") as out, open(
+            fileName[:-4] + 'DiscardedData.txt', "w") as trash:
         sadness = random.randint(1, 1000000)
         text = random.randint(0, len(splashText) - 1)
         lol = random.randint(0, len(splashText) - 1)
@@ -57,8 +62,8 @@ def main():
         print(" Python Parser Parsed in Python Succsesfully")
         time.sleep(0.25)
         print(" Python Parser saved the java arrays to:\n " + path + "\\src\\main\\java\\frc\\robot\\routes\\" +
-              fileName[6:len(fileName) - 4] + ".java\n and the graph to: " + path + fileName[6:len(fileName) - 4] + "\\"
-              + 'GraphData.txt\n and the discarded data to: ' + path + "\\" + fileName[6:len(fileName) - 4] +
+              name() + ".java\n and the graph to: " + path + name() + "\\"
+              + 'GraphData.txt\n and the discarded data to: ' + path + "\\" + name() +
               'DiscardedData.txt')
         trash.write(" \n")
         for line in g.readlines():
@@ -91,10 +96,10 @@ def main():
                 # print(line)
                 trash.write(line + " \n")
     years = str(year)
-    frontLeftEncoderPositionArray = ",\n\t\t".join(frontLeftEncoderPositions)
-    frontRightEncoderPositionArray = ",\n\t\t".join(frontRightEncoderPositions)
-    backLeftEncoderPositionArray = ",\n\t\t".join(backLeftEncoderPositions)
-    backRightEncoderPositionArray = ",\n\t\t".join(backRightEncoderPositions)
+    frontLeftEncoderPositionArray = convert_list(frontLeftEncoderPositions)
+    frontRightEncoderPositionArray = convert_list(frontRightEncoderPositions)
+    backLeftEncoderPositionArray = convert_list(backLeftEncoderPositions)
+    backRightEncoderPositionArray = convert_list(backRightEncoderPositions)
     if sadness < 1000:
         print("        _______________________________________\n       |                                       |\n     "
               "  | "
@@ -176,7 +181,7 @@ def main():
     */
     """ % (
         splashText[lol],
-        fileName[6:len(fileName) - 4],
+        name(),
         frontLeftEncoderPositionArray,
         frontRightEncoderPositionArray,
         splashText[e1],
@@ -186,7 +191,7 @@ def main():
         copy_right[ree],
         years
     )
-    with open(path + "\\src\\main\\java\\frc\\robot\\routes\\" + fileName[6:len(fileName) - 4] + ".java", "w") as f:
+    with open(path + "\\src\\main\\java\\frc\\robot\\routes\\" + name() + ".java", "w") as f:
         f.write(content)
 
 
