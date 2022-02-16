@@ -202,9 +202,9 @@ def main():
     package frc.robot.routes;
     
     /**
-     * Stores the paths for auto %s. 
-     * @author %s
-     */
+    * Stores the paths for auto %s. 
+    * @author %s
+    */
     public class %s {
         public double[] frontLeftEncoderPositions = {
             %s
