@@ -31,7 +31,7 @@ public class MachineLearning {
         if(record) {
 
             try {
-                new File("/paths/" + filename).mkdirs();
+                new File("/paths/.dsx").mkdirs();
                 File myObj = new File("/paths/" + filename);
 
                 if (myObj.createNewFile()) {
