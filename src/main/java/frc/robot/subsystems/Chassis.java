@@ -58,7 +58,6 @@ public class Chassis {
         pid.setIZone(kIz);
         pid.setFF(kFF);
         pid.setOutputRange(kMinOutput, kMaxOutput);
-        sparky.setCANTimeout(TIMEOUT);
         return sparky;
     }
     public void initEncoders(){
@@ -76,6 +75,7 @@ public class Chassis {
         CANSparkMax3 = initMotor(CANSparkMax3, Wiring.blMotor);
         CANSparkMax4 = initMotor(CANSparkMax4, Wiring.brMotor);
 
+        //encoders
         CANSparkMax2.setInverted(true);
         CANSparkMax4.setInverted(true);
         initEncoders();
@@ -86,6 +86,9 @@ public class Chassis {
     public void main() {
         //System.out.println("forward "+ 0.5 * oi.pilot.getLeftY() +" strafe "+ 0.5 * oi.pilot.getLeftX() +" rotate "+ 0.5 * oi.pilot.getRightX());
         drive(0.995 * oi.pilot.getLeftY(), -0.995 * oi.pilot.getLeftX(), -0.995 * oi.pilot.getRightX());
+        updateEncoders();
+        System.out.println("Front left encoder velocity is: " + flEncoder.getVelocity() + " Front right encoder velocity is: " + frEncoder.getVelocity() + 
+                           "\nBack left encoder velocity is: " + blEncoder.getVelocity() + " Back right encoder velocity is: " + brEncoder.getVelocity());
     }
 
     public void updateEncoders() {

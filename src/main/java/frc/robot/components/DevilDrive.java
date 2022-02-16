@@ -65,7 +65,7 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
   private final CANSparkMax m_frontRightMotor;
   private final CANSparkMax m_rearRightMotor;
   private final double m_deadband;
-  private final double m_maxOutput = 30700;
+  private final double m_maxOutput = 4540.8; //that should be the theoretical max encoder tics per second
   private boolean m_reported;
 
   @SuppressWarnings("MemberName")

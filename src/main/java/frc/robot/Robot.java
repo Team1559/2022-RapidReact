@@ -33,6 +33,7 @@ public class Robot extends TimedRobot {
     private static final String PATH_1 = "Path 1";
     private static final String PATH_2 = "Path 2";
     private static final String PATH_3 = "Path 3";
+    private static final String PATH_4 = "Path 4";
 
     /**
      * This function is run when the robot is first started up and should be
@@ -46,6 +47,8 @@ public class Robot extends TimedRobot {
         m_chooser.addOption("Path 1", PATH_1);
         m_chooser.addOption("Path 2", PATH_2);
         m_chooser.addOption("Path 3", PATH_3);
+        m_chooser.addOption("Path 4", PATH_4);
+
         SmartDashboard.putData("Auto Paths", m_chooser);
     }
 
@@ -79,14 +82,11 @@ public class Robot extends TimedRobot {
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
 
             m_autoSelected = m_chooser.getSelected();
-            // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-            System.out.println("Auto selected: " + m_autoSelected);
 
             switch (m_autoSelected) {
                 case DEFAULT_PATH:
                 default:
-                    vc.setAutoPath("default");
-                    System.out.println("default");
+                    vc.setAutoPath("");
                     break;
 
                 case PATH_1:
@@ -99,6 +99,9 @@ public class Robot extends TimedRobot {
                     
                 case PATH_3:
                     vc.setAutoPath("path3");
+                    break;
+                case PATH_4:
+                    vc.setAutoPath("path4");
                     break;
             }    
             vc.autoInit();

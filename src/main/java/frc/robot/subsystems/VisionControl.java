@@ -78,7 +78,7 @@ public class VisionControl {
         chassis.initOdometry();
         counter = 0;
         
-        if(selector == "default") {
+        if(selector == "path1") {
             kP = 0.005;
             kI = 0.0;
             kD = 0.0;
