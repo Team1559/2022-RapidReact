@@ -28,10 +28,9 @@ public class MachineLearning {
         backRightEncoderPosition.clear();
 
         if(record) {
-            executeCmd("mkdir /paths");
-            executeCmd("chmod a=rwx /paths");
 
             try {
+                new File("/paths/" + filename).mkdirs();
                 File myObj = new File("/paths/" + filename);
 
                 if (myObj.createNewFile()) {
