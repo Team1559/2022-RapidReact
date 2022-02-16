@@ -40,7 +40,7 @@ public class Chassis {
      * these values mean so I don't want to delete them.
      */
 
-    private CANSparkMax initMotor(CANSparkMax sparky, int id, RelativeEncoder r) {
+    private CANSparkMax initMotor(CANSparkMax sparky, int id) {
         sparky = new CANSparkMax(id, MotorType.kBrushless);
         SparkMaxPIDController pid = sparky.getPIDController();
         sparky.restoreFactoryDefaults();
@@ -59,27 +59,33 @@ public class Chassis {
         pid.setFF(kFF);
         pid.setOutputRange(kMinOutput, kMaxOutput);
         sparky.setCANTimeout(TIMEOUT);
-        r = sparky.getEncoder();
         return sparky;
+    }
+    public void initEncoders(){
+        flEncoder = CANSparkMax1.getEncoder();
+        frEncoder = CANSparkMax2.getEncoder();
+        blEncoder = CANSparkMax3.getEncoder();
+        brEncoder = CANSparkMax4.getEncoder();
     }
 
     public Chassis(OperatorInterface oi, IMU imu) {
         this.oi = oi;
         this.imu = imu;
-        CANSparkMax1 = initMotor(CANSparkMax1, Wiring.flMotor, flEncoder);
-        CANSparkMax2 = initMotor(CANSparkMax2, Wiring.frMotor, frEncoder);
-        CANSparkMax3 = initMotor(CANSparkMax3, Wiring.blMotor, blEncoder);
-        CANSparkMax4 = initMotor(CANSparkMax4, Wiring.brMotor, brEncoder);
+        CANSparkMax1 = initMotor(CANSparkMax1, Wiring.flMotor);
+        CANSparkMax2 = initMotor(CANSparkMax2, Wiring.frMotor);
+        CANSparkMax3 = initMotor(CANSparkMax3, Wiring.blMotor);
+        CANSparkMax4 = initMotor(CANSparkMax4, Wiring.brMotor);
 
         CANSparkMax2.setInverted(true);
         CANSparkMax4.setInverted(true);
+        initEncoders();
 
         drive = new DevilDrive(CANSparkMax1, CANSparkMax3, CANSparkMax2, CANSparkMax4);
     }
 
     public void main() {
         System.out.println("forward "+ 0.5 * oi.pilot.getLeftY() +" strafe "+ 0.5 * oi.pilot.getLeftX() +" rotate "+ 0.5 * oi.pilot.getRightX());
-        drive(0.995 * oi.pilot.getLeftY(), -0.995 * oi.pilot.getLeftX(), -0.995 * oi.pilot.getRightX());
+        drive(0.995 * oi.pilot.getLeftY(), -0.0 * oi.pilot.getLeftX(), -0.995 * oi.pilot.getRightX());
     }
 
     public void updateEncoders() {
@@ -95,10 +101,11 @@ public class Chassis {
 
     public void drive(double ySpeed, double xSpeed, double zRotation, boolean squareInputs) {
         if(DISABLE_STRAFING) {
-            xSpeed = 0;
+            drive.driveCartesian(ySpeed, 0, zRotation, squareInputs);
         }
-        
-        drive.driveCartesian(ySpeed, xSpeed, zRotation, squareInputs);
+        else{
+            drive.driveCartesian(ySpeed, xSpeed, zRotation, squareInputs);
+        }
     }
 
     public void pathDrive(double fl, double fr, double bl, double br) {

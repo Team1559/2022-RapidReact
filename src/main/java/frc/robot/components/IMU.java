@@ -15,7 +15,7 @@ public  class IMU{
     public double maxAutoYaw = 60;// messured in degrees, may change
 
   //the init method
-    public void init() {
+    public IMU() {
         try {
             ahrs = new AHRS(SPI.Port.kMXP);
             ahrs.enableLogging(true);

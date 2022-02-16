@@ -12,13 +12,13 @@ public class VisionControl {
     private IMU imu;
     private PIDController hoopDistancePid;
 
-    private double hoopx = visionData.hx;
-    private double hoopy = visionData.hy;
-    private double hoopr = visionData.hr;
-    private double ballx = visionData.bx;
-    private double bally = visionData.by;
-    private double ballr = visionData.br;
-    private boolean wait = visionData.waitForOtherRobot;
+    private double hoopx = 0;
+    private double hoopy = 0;
+    private double hoopr = 0;
+    private double ballx = 0;
+    private double bally = 0;
+    private double ballr = 0;
+    private boolean wait = false;
 
     // shooter variables
     private double desiredAngle;// angle of the shooter in degrees

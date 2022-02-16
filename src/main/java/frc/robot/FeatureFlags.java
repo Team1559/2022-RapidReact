@@ -3,7 +3,7 @@ package frc.robot;
 public final class FeatureFlags {
 
     // Modify these values
-    public static boolean doVision = false;
+    public static boolean doVision = true;
     public static boolean doChassis = false;
     public static boolean doImu = false;
 
