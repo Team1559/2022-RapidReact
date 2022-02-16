@@ -23,13 +23,7 @@ public class VisionControl {
     private int invalid_ball_counter = 0;    
     private final int invalid_ball_counter_threshold = 20;
     private MachineLearning ml;
-    private path4 p1 = new path4();
-    private double skip[] = {0};
-    public double counter = 0;
-    private double kP = 0;
-    private double kI = 0;
-    private double kD = 0;
-    private double kF = 0;
+    private double counter = 0;
     private double counterSpeed;
     private double frontRightSpeed[] = {};
     private double frontLeftSpeed[] = {};
@@ -44,7 +38,6 @@ public class VisionControl {
     private final double shooterThreshold = 2;
 
     private final boolean SQUARE_DRIVER_INPUTS = true;
-
 
     //edit these
     private final boolean RECORD_PATH = false;
@@ -76,6 +69,12 @@ public class VisionControl {
     }
 
     public void autoInit() {
+        path4 p1 = new path4();
+        double skip[] = {0};
+        double kP = 0;
+        double kI = 0;
+        double kD = 0;
+        double kF = 0;
         chassis.initOdometry();
         counter = 0;
         
