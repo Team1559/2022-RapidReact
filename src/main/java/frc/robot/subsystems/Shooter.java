@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 public class Shooter {
 
     private OperatorInterface               oi;
+
     private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(true, 20, 20, 0);
     private final int                       TIMEOUT      = 0;
     private final double                    cLR          = 0.1;
@@ -31,9 +32,7 @@ public class Shooter {
 
     private TalonFX     shooter;
     private CANSparkMax feeder;
-
     private Solenoid lowerIntake;
-
     private TalonSRX intake;
 
     public Shooter(OperatorInterface operatorinterface) {
@@ -44,7 +43,7 @@ public class Shooter {
         shooter = new TalonFX(Wiring.shooterMotor);
         feeder = new CANSparkMax(Wiring.feederMotor, MotorType.kBrushless);
         lowerIntake = new Solenoid(PneumaticsModuleType.REVPH, Wiring.lowerIntake);
-
+        intake = new TalonSRX(Wiring.intake);
         // use for
         // PneumaticsModuleType.CTREPCM
         // for
@@ -56,13 +55,9 @@ public class Shooter {
         // the
         // rev
         // stuff
-        intake = new TalonSRX(Wiring.intake);
-
-        // shooter.set(TalonFXControlMode.PercentOutput, 0);
-        feeder.set(0);
         
+        feeder.set(0);
         lowerIntake.set(false);
-
         intake.set(TalonSRXControlMode.PercentOutput, 0);
 
         shooter.configClosedloopRamp(cLR, TIMEOUT);
@@ -81,19 +76,23 @@ public class Shooter {
     }
 
     public void runShooter() {
-        System.out.println(shooter.getSelectedSensorVelocity());
+        //System.out.println(shooter.getSelectedSensorVelocity()); PRINTS FOR VELOCITY CONTROL
+
+        //Control for FlyWheel
         if (oi.runFlyWheelButton()) {
             startShooter();
         } else {
             stopShooter();
         }
 
+        //Control for lowering intake
         if (oi.lowerIntakeButton()) {
             lowerIntake();
         } else {
             raiseIntake();
         }
 
+        //Control for running intake
         if (oi.intakeButton()) {
             startIntake();
         } else {

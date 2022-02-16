@@ -28,6 +28,8 @@ public class Robot extends TimedRobot {
     private VisionControl visionControl;
     private Vision        vision;
     private VisionData    vData;
+
+    
     private Shooter       shooter;
 
     private CompressorControl compressorControl;
