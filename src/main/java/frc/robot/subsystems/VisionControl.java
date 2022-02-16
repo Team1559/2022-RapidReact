@@ -83,10 +83,10 @@ public class VisionControl {
             kI = 0.0;
             kD = 0.0;
             kF = 0.0;
-            frontRightSpeed = p1.generated_frontRightEncoderPositions;
-            frontLeftSpeed = p1.generated_frontLeftEncoderPositions;
-            backRightSpeed = p1.generated_backRightEncoderPositions;
-            backLeftSpeed = p1.generated_backLeftEncoderPositions;
+            frontRightSpeed = p1.frontRightEncoderPositions;
+            frontLeftSpeed = p1.frontLeftEncoderPositions;
+            backRightSpeed = p1.backRightEncoderPositions;
+            backLeftSpeed = p1.backLeftEncoderPositions;
             counterSpeed = 1.0; 
         }
 

@@ -201,26 +201,30 @@ def main():
     
     package frc.robot.routes;
     
+    /**
+     * Stores the paths for auto %s. 
+     * @author %s
+     */
     public class %s {
-        public double[] generated_frontLeftEncoderPositions = {
+        public double[] frontLeftEncoderPositions = {
             %s
         };
     /*
     ROBOTS RUN THE WORLD, YOU JUST DON'T KNOW IT YET
     */
-        public double[] generated_frontRightEncoderPositions = {
+        public double[] frontRightEncoderPositions = {
             %s
         };
     /*
     %s 
     */
-        public double[] generated_backLeftEncoderPositions = {
+        public double[] backLeftEncoderPositions = {
             %s
         };
     /*
     %s
     */    
-        public double[] generated_backRightEncoderPositions = {
+        public double[] backRightEncoderPositions = {
             %s
         };
     }
@@ -229,6 +233,8 @@ def main():
     */
     """ % (
         splashText[lol],
+        name(),
+        copy_right[ree],
         name(),
         frontLeftEncoderPositionArray,
         frontRightEncoderPositionArray,
