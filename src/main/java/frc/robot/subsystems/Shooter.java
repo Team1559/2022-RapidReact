@@ -14,23 +14,23 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class Shooter {
 
-    private OperatorInterface               oi;
+    private OperatorInterface oi;
 
     private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(true, 20, 20, 0);
-    private final int                       TIMEOUT      = 0;
-    private final double                    cLR          = 0.1;
+    private final int TIMEOUT = 0;
+    private final double cLR = 0.1;
 
-    private double shooter_kF  = 0.045;
-    private double shooter_kP  = 0.4;
-    private double shooter_kD  = 0;
-    private double shooter_kI  = 0.000;
+    private double shooter_kF = 0.045;
+    private double shooter_kP = 0.4;
+    private double shooter_kD = 0;
+    private double shooter_kI = 0.000;
     private double shooterRpms = 7500;
 
     private double shooterSpeed = -0.2;
-    private double feederSpeed  = .2;
-    private double intakeSpeed  = .4;
+    private double feederSpeed = .2;
+    private double intakeSpeed = .4;
 
-    private TalonFX     shooter;
+    private TalonFX shooter;
     private CANSparkMax feeder;
     private Solenoid lowerIntake;
     private TalonSRX intake;
@@ -55,7 +55,7 @@ public class Shooter {
         // the
         // rev
         // stuff
-        
+
         feeder.set(0);
         lowerIntake.set(false);
         intake.set(TalonSRXControlMode.PercentOutput, 0);
@@ -76,23 +76,24 @@ public class Shooter {
     }
 
     public void runShooter() {
-        //System.out.println(shooter.getSelectedSensorVelocity()); PRINTS FOR VELOCITY CONTROL
+        // System.out.println(shooter.getSelectedSensorVelocity()); PRINTS FOR VELOCITY
+        // CONTROL
 
-        //Control for FlyWheel
+        // Control for FlyWheel
         if (oi.runFlyWheelButton()) {
             startShooter();
         } else {
             stopShooter();
         }
 
-        //Control for lowering intake
+        // Control for lowering intake
         if (oi.lowerIntakeButton()) {
             lowerIntake();
         } else {
             raiseIntake();
         }
 
-        //Control for running intake
+        // Control for running intake
         if (oi.intakeButton()) {
             startIntake();
         } else {
