@@ -8,7 +8,6 @@ public class VisionData {
     public double bx;
     public double by;
     public double br;
-
     public Integer hoopStatus;
     public Integer ballStatus;
     public boolean waitForOtherRobot;
@@ -16,7 +15,9 @@ public class VisionData {
     public boolean isHoopValid() {
         if (hoopStatus != 1) {
             return false;
-        } else {
+        } 
+        
+        else {
             return true;
         }
     }
@@ -24,13 +25,14 @@ public class VisionData {
     public boolean isBallValid() {
         if (ballStatus != 1) {
             return false;
-        } else {
+        } 
+        
+        else {
             return true;
         }
     }
 
     public void Print() {
-        System.out.printf("%3.1f %3.1f %3.1f %3.1f %3.1f %3.1f %d %d\n", hx, hy, hr, bx, by, br, hoopStatus,
-                ballStatus);
+        System.out.printf("%3.1f %3.1f %3.1f %3.1f %3.1f %3.1f %d %d\n", hx, hy, hr, bx, by, br, hoopStatus, ballStatus);
     }
 }

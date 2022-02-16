@@ -11,6 +11,8 @@ import frc.robot.subsystems.Shooter;
 // import frc.robot.subsystems.Vision;
 import frc.robot.components.VisionData;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.*;
 import frc.robot.components.*;
 
@@ -21,13 +23,23 @@ import frc.robot.components.*;
  * creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
 
+public class Robot extends TimedRobot {
     private OperatorInterface oi = new OperatorInterface();
-    // auto classes
-    private VisionControl visionControl;
-    private Vision        vision;
-    private VisionData    vData;
+    private IMU imu;
+    private Vision vision;
+    private VisionData vData;
+    private VisionControl vc;
+    private boolean usingVision = false;
+    private String m_autoSelected;
+    private final SendableChooser<String> m_chooser = new SendableChooser<>();
+    public Chassis chassis;
+
+    private static final String DEFAULT_PATH = "Default Path";
+    private static final String PATH_1 = "Path 1";
+    private static final String PATH_2 = "Path 2";
+    private static final String PATH_3 = "Path 3";
+    private static final String PATH_4 = "Path 4";
 
     
     private Shooter       shooter;
@@ -38,12 +50,17 @@ public class Robot extends TimedRobot {
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
+
     @Override
     public void robotInit() {
+        initialize(); 
+        m_chooser.setDefaultOption("Default Auto Path", DEFAULT_PATH);
+        m_chooser.addOption("Path 1", PATH_1);
+        m_chooser.addOption("Path 2", PATH_2);
+        m_chooser.addOption("Path 3", PATH_3);
+        m_chooser.addOption("Path 4", PATH_4);
 
-        initialize();
-        //FeatureFlags.visionInitalized = true;
-
+        SmartDashboard.putData("Auto Paths", m_chooser);
     }
 
     /**
@@ -54,8 +71,10 @@ public class Robot extends TimedRobot {
      * This runs after the mode specific periodic functions, but before
      * LiveWindow and SmartDashboard integrated updating.
      */
+
     @Override
-    public void robotPeriodic() {}
+    public void robotPeriodic() {
+    }
 
     /**
      * This autonomous (along with the chooser code above) shows how to select
@@ -68,28 +87,73 @@ public class Robot extends TimedRobot {
      * switch structure below with additional strings. If using the
      * SendableChooser make sure to add them to the chooser code above as well.
      */
+
     @Override
     public void autonomousInit() {
+        if(FeatureFlags.doImu && FeatureFlags.imuInitialized){
+            imu.zeroYaw();
+        }
+        if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
+            m_autoSelected = m_chooser.getSelected();
 
+            switch (m_autoSelected) {
+                case DEFAULT_PATH:
+                default:
+                    vc.setAutoPath("");
+                    break;
+
+                case PATH_1:
+                    vc.setAutoPath("path1");
+                    break;
+
+                case PATH_2:
+                    vc.setAutoPath("path2");
+                    break;
+                    
+                case PATH_3:
+                    vc.setAutoPath("path3");
+                    break;
+                case PATH_4:
+                    vc.setAutoPath("path4");
+                    break;
+            }    
+            vc.autoInit();
+        }
     }
 
     /** This function is called periodically during autonomous. */
+
     @Override
     public void autonomousPeriodic() {
-        if (FeatureFlags.doVision && FeatureFlags.visionInitalized) {
-            visionControl.auto();
+        if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
+           vc.autoPeriodic();
         }
     }
 
     /** This function is called once when teleop is enabled. */
+
     @Override
-    public void teleopInit() {}
+    public void teleopInit() {
+        if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
+            vc.teleopInit();
+            usingVision = vc.usingAuto;
+        }
+
+        if(FeatureFlags.doChassis && FeatureFlags.chassisInitialized){
+            chassis.setPid(6e-5, 0, 0, 0.000015);
+        }
+    }
 
     /** This function is called periodically during operator control. */
+    
     @Override
     public void teleopPeriodic() {
-        if (FeatureFlags.doVision && FeatureFlags.visionInitalized) {
-            visionControl.main();
+        if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
+            vc.teleopPeriodic();
+            usingVision = vc.usingAuto;
+        }
+        if (FeatureFlags.doChassis && FeatureFlags.chassisInitialized && !usingVision) {
+            chassis.main();
         }
 
         if(FeatureFlags.compressorEnable && FeatureFlags.compressorInitialized){
@@ -102,33 +166,57 @@ public class Robot extends TimedRobot {
     }
 
     /** This function is called once when the robot is disabled. */
+   
     @Override
     public void disabledInit() {
 
         if(FeatureFlags.compressorEnable && FeatureFlags.compressorInitialized){
             compressorControl.disable();
           }
+        if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
+            vc.disable();
+        }
     }
 
     /** This function is called periodically when disabled. */
+    
     @Override
-    public void disabledPeriodic() {}
+    public void disabledPeriodic() {
+
+    }
 
     /** This function is called once when test mode is enabled. */
+    
     @Override
-    public void testInit() {}
+    public void testInit() {
+
+    }
 
     /** This function is called periodically during test mode. */
+    
     @Override
-    public void testPeriodic() {}
+    public void testPeriodic() {
+
+    }
 
     public void initialize() {
-        if (FeatureFlags.doVision && !FeatureFlags.visionInitalized) {
+        FeatureFlags.updateDependencies();
+
+        if(FeatureFlags.doImu && !FeatureFlags.imuInitialized) {
+            imu = new IMU();
+            imu.zeroYaw();
+            FeatureFlags.imuInitialized = true;
+        }
+
+        if (FeatureFlags.doChassis && !FeatureFlags.chassisInitialized) {
+            chassis = new Chassis(oi, imu);
+            FeatureFlags.chassisInitialized = true;
+        }
+        
+        if (FeatureFlags.doVision && !FeatureFlags.visionInitialized) {
             vision = new Vision();
-            vision.VisionInit();
-            visionControl = new VisionControl(vision, vData, oi);// chassis, //
-                                                                 // shooter);
-            FeatureFlags.visionInitalized = true;
+            vc = new VisionControl(vision, vData, oi, chassis, imu);
+            FeatureFlags.visionInitialized = true;
         }
 
         if (FeatureFlags.shooterEnabled && !FeatureFlags.shooterInitalized) {

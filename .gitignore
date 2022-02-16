@@ -31,7 +31,6 @@
 *.lib
 
 # Executables
-*.exe
 *.out
 *.app
 
@@ -160,3 +159,5 @@ bin/
 
 # Simulation GUI and other tools window save file
 *-window.json
+*.xml
+*.iml
