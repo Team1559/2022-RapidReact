@@ -260,7 +260,7 @@ public class VisionControl {
     private void calculateHoopChassis() {
         hoop_rotation = 0.5 * (hoopr / 34.0);
         //hoop_rotation = -pid.calculate(balla, 0);
-        if(hoopx < hoopRange[0]) {
+        /*if(hoopx < hoopRange[0]) {
             hoop_forward_speed = hoopDistancePid.calculate(hoopx, hoopRange[0] + 3);
         }
 
@@ -270,7 +270,7 @@ public class VisionControl {
 
         else {
             hoop_forward_speed = 0D;
-        }
+        }*/
 
         if(Math.abs(hoopr) <= hoopChassisThreshold) {
             hoop_rotation = 0D;
