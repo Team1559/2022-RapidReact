@@ -87,6 +87,7 @@ public class Chassis {
         //System.out.println("forward "+ 0.5 * oi.pilot.getLeftY() +" strafe "+ 0.5 * oi.pilot.getLeftX() +" rotate "+ 0.5 * oi.pilot.getRightX());
         drive(0.995 * oi.pilot.getLeftY(), -0.995 * oi.pilot.getLeftX(), -0.995 * oi.pilot.getRightX());
         updateEncoders();
+        imu.getvalues();
         System.out.println("Front left encoder velocity is: " + flEncoder.getVelocity() + " Front right encoder velocity is: " + frEncoder.getVelocity() + 
                            "\nBack left encoder velocity is: " + blEncoder.getVelocity() + " Back right encoder velocity is: " + brEncoder.getVelocity());
     }
@@ -172,6 +173,5 @@ public class Chassis {
         frEncoder.setPosition(0);
         blEncoder.setPosition(0);
         brEncoder.setPosition(0);
-        imu.zeroYaw();
     }
 }

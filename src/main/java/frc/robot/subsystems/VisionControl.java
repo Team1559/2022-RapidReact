@@ -115,8 +115,13 @@ public class VisionControl {
             System.out.println("Please enable in teleop to record a new path");
         }
     }
+    public void teleopInit(){
+        if(RECORD_PATH) {
+            chassis.initOdometry();
+        }
+    }
 
-    public void main() {
+    public void teleopPeriodic() {
         update();
 
         if(RECORD_PATH) {

@@ -79,8 +79,10 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        if(FeatureFlags.doImu && FeatureFlags.imuInitialized){
+            imu.zeroYaw();
+        }
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
-
             m_autoSelected = m_chooser.getSelected();
 
             switch (m_autoSelected) {
@@ -121,6 +123,11 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
+        if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
+            vc.teleopInit();
+            usingVision = vc.usingAuto;
+        }
+
         if(FeatureFlags.doChassis && FeatureFlags.chassisInitialized){
             chassis.setPid(6e-5, 0, 0, 0.000015);
         }
@@ -131,7 +138,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
-            vc.main();
+            vc.teleopPeriodic();
             usingVision = vc.usingAuto;
         }
         if (FeatureFlags.doChassis && FeatureFlags.chassisInitialized && !usingVision) {
