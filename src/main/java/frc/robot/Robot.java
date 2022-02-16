@@ -77,7 +77,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
-            vc.autoInit();
+
             m_autoSelected = m_chooser.getSelected();
             // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
             System.out.println("Auto selected: " + m_autoSelected);
@@ -86,6 +86,7 @@ public class Robot extends TimedRobot {
                 case DEFAULT_PATH:
                 default:
                     vc.setAutoPath("default");
+                    System.out.println("default");
                     break;
 
                 case PATH_1:
@@ -100,6 +101,7 @@ public class Robot extends TimedRobot {
                     vc.setAutoPath("path3");
                     break;
             }    
+            vc.autoInit();
         }
     }
 
@@ -116,7 +118,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-
+        if(FeatureFlags.doChassis && FeatureFlags.chassisInitialized){
+            chassis.setPid(6e-5, 0, 0, 0.000015);
+        }
     }
 
     /** This function is called periodically during operator control. */

@@ -96,7 +96,8 @@ def main():
     backLeftEncoderPositionArray = ",\n\t\t".join(backLeftEncoderPositions)
     backRightEncoderPositionArray = ",\n\t\t".join(backRightEncoderPositions)
     if sadness < 1000:
-        print("_______________________________________\n       |                                       |\n       |    "
+        print("        _______________________________________\n       |                                       |\n     "
+              "  | "
               "                                   |\n       |                                       |\n       |       "
               "__                       __     |\n       |      |  |                     |  |    |\n       |      "
               "|__|                     |__|    |\n       |       |                         |     |\n       |      |  "
@@ -106,7 +107,9 @@ def main():
         print(" Python Parser is Sad :(")
     else:
         if sadness == 9000:
-            print("_______________________________________         _______________________________________\n       |  "
+            print("        _______________________________________         _______________________________________\n  "
+                  "  "
+                  "   |  "
                   "                                     |       |                                       |\n       |   "
                   "                                    |       |                                       |\n       |    "
                   "                                   |       |                                       |\n       |     "
@@ -122,7 +125,8 @@ def main():
             print("")
             print(" Python Parser is confused on how to feel (: :(")
         else:
-            print("_______________________________________\n       |                                       |\n       "
+            print("        _______________________________________\n       |                                       |\n "
+                  "      "
                   "|                                       |\n       |                                       |\n      "
                   " |       __                       __     |\n       |      |  |                     |  |    |\n     "
                   "  |      |__|                     |__|    |\n       |                                       |\n    "

@@ -3,6 +3,7 @@ import frc.robot.components.*;
 import frc.robot.routes.*;
 import frc.robot.*;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 @SuppressWarnings("unused")
 public class VisionControl {
@@ -38,12 +39,13 @@ public class VisionControl {
     private int invalid_ball_counter = 0;    
     private final int invalid_ball_counter_threshold = 20;
     private MachineLearning ml;
-    private path1 p1 = new path1();
+    private path4 p1 = new path4();
     private double skip[] = {0};
     public double counter = 0;
     private double kP = 0;
     private double kI = 0;
     private double kD = 0;
+    private double kF = 0;
     private boolean teachTheAI = true;
     private double counterSpeed;
     private double frontRightSpeed[] = {};
@@ -54,8 +56,8 @@ public class VisionControl {
     //we need to determine what to set these to
     
     // thresholds
-    private final double ballChassisThreshold = 2; //angle in degrees
-    private final double hoopChassisThreshold = 2; //angle in degrees
+    private final double ballChassisThreshold = 1; //angle in degrees
+    private final double hoopChassisThreshold = 1; //angle in degrees
     private final double shooterThreshold = 2;
 
     private final double[] hoopRange = {3, 50};//min, max in feet
@@ -66,8 +68,8 @@ public class VisionControl {
     private final double kdonut = 0.001;
 
     //edit these
-    private final boolean RECORD_PATH = true;
-    private final String FILE_NAME = "path1";
+    private final boolean RECORD_PATH = false;
+    private final String FILE_NAME = "path4";
     private String selector; 
     
     // private Shooter shooter;
@@ -100,9 +102,10 @@ public class VisionControl {
         counter = 0;
         
         if(selector == "default") {
-            kP = 0.025; //.03
+            kP = 0.005; //.03
             kI = 0.0;
             kD = 0.0;
+            kF = 0.0;
             frontRightSpeed = p1.generated_frontRightEncoderPositions;
             frontLeftSpeed = p1.generated_frontLeftEncoderPositions;
             backRightSpeed = p1.generated_backRightEncoderPositions;
@@ -114,6 +117,7 @@ public class VisionControl {
             kP = 0.0;
             kI = 0.0;
             kD = 0.0;
+            kF = 0.0;
             frontRightSpeed = skip;
             frontLeftSpeed = skip;
             backRightSpeed = skip;
@@ -121,7 +125,7 @@ public class VisionControl {
             counterSpeed = 0.0;
         }
 
-        chassis.setPid(kP, kI, kD);
+        chassis.setPid(kP, kI, kD, kF);
     }
 
     public void autoPeriodic() { // pathfind to cargo, collect it, and score it
@@ -146,32 +150,34 @@ public class VisionControl {
             record(oi.pilot.getLeftY(), oi.pilot.getRightX());
         }
 
-        visionData.Print();
+        // visionData.Print();
         
         if (oi.autoShootButton()) { // Move the chassis so it is alligned, aim the shooter, and fire the cargo
             usingAuto = true;
             
             if(visionData.isHoopValid()) {
-                double error = 0;
-
+                calculateHoopChassis();
                 // shooter.setAngle(desiredAngle);
                 // Shooter.setPower(desiredPower);
-                if (Math.abs(error) > hoopChassisThreshold) {
-                    drive(hoop_forward_speed, hoop_sidespeed, hoop_rotation);
+                if (Math.abs(hoopr) > hoopChassisThreshold) {
+                    drive(oi.pilot.getLeftY(), hoop_sidespeed, hoop_rotation);
                 }
 
                 else {
+                    chassis.main();
                     // shooter.shoot();
                     
                 }
+                
             }
 
             else {
-                System.out.println("Invalid data... aborting");
+                chassis.main();
             }
         }
 
         else if (oi.autoCollectButton()) { // go collect the nearest cargo
+            usingAuto = true;
             if(visionData.isBallValid()) {
                 new_ball_data = true;
                 invalid_ball_counter = 0;
@@ -181,43 +187,41 @@ public class VisionControl {
                 invalid_ball_counter++;
             }
 
-            System.out.println("Got data? " + new_ball_data);
+          //  System.out.println("Got data? " + new_ball_data);
             
             if(invalid_ball_counter < invalid_ball_counter_threshold) {
-                System.out.println("in auto");
                 calculateBallChassis();
-                printData();
+                // printData();
                 double ySpeed = -oi.pilot.getLeftY();
 
                 if(SQUARE_DRIVER_INPUTS) {
-                    ySpeed = Math.copySign(ySpeed * ySpeed, ySpeed);
+                    ySpeed = -1.0 * Math.copySign(ySpeed * ySpeed, ySpeed);
                 }
-
-                drive(ySpeed, 0 , ball_rotation);
+                SmartDashboard.putNumber("rotation", -ball_rotation);
+                drive(ySpeed, 0 , -ball_rotation);
             }
-
+            
             else {
-                System.out.println("Invalid data... remaining in manual control");
+                //System.out.println("Invalid data... remaining in manual control");
                 chassis.main();
             }
         } 
-
-        else if (oi.autoShootButton()) {
-            if(visionData.isHoopValid()) {
-                calculateHoopChassis();
-                drive(hoop_forward_speed, 0, hoop_rotation);
-            }
-        }
-
         else {
             usingAuto = false;
         }
+
+        System.out.println(invalid_ball_counter);
+
     }
     
     public void followPath() {
         if(counter < frontLeftSpeed.length) {
+            System.out.println("driving, counter is : " + counter);
             chassis.pathDrive(ml.interpolate(counter, frontLeftSpeed), ml.interpolate(counter, frontRightSpeed), ml.interpolate(counter, backLeftSpeed), ml.interpolate(counter, backRightSpeed));
             counter += counterSpeed; //good at 1.5 with .03 kp ONLY FOR BR PATH
+        }
+        else{
+            chassis.drive(0, 0, 0, false);
         }
     }
 
@@ -258,7 +262,8 @@ public class VisionControl {
     }
 
     private void calculateHoopChassis() {
-        hoop_rotation = 0.5 * (hoopr / 34.0);
+        System.out.println(hoopr);
+        hoop_rotation = 1.0 * (hoopr / 34.0);
         //hoop_rotation = -pid.calculate(balla, 0);
         /*if(hoopx < hoopRange[0]) {
             hoop_forward_speed = hoopDistancePid.calculate(hoopx, hoopRange[0] + 3);
@@ -274,18 +279,20 @@ public class VisionControl {
 
         if(Math.abs(hoopr) <= hoopChassisThreshold) {
             hoop_rotation = 0D;
+            System.out.println("set to zero");
         }
     }
 
     private void calculateBallChassis() {
         // ball_forward_speed = __calculated_forward_speed__;
         // ball_sidespeed = __calculated_side_speed__;
-        ball_rotation = 0.5 * (ballr / 34.0);
+        ball_rotation = 1.5 * (ballr / 34.0);
         // ball_rotation = -pid.calculate(balla, 0);
 
         if(Math.abs(ballr) <= ballChassisThreshold) {
             ball_rotation = 0D;
         }
+
     }
 
     private void printData() {

@@ -84,8 +84,8 @@ public class Chassis {
     }
 
     public void main() {
-        System.out.println("forward "+ 0.5 * oi.pilot.getLeftY() +" strafe "+ 0.5 * oi.pilot.getLeftX() +" rotate "+ 0.5 * oi.pilot.getRightX());
-        drive(0.995 * oi.pilot.getLeftY(), -0.0 * oi.pilot.getLeftX(), -0.995 * oi.pilot.getRightX());
+        //System.out.println("forward "+ 0.5 * oi.pilot.getLeftY() +" strafe "+ 0.5 * oi.pilot.getLeftX() +" rotate "+ 0.5 * oi.pilot.getRightX());
+        drive(0.995 * oi.pilot.getLeftY(), -0.995 * oi.pilot.getLeftX(), -0.995 * oi.pilot.getRightX());
     }
 
     public void updateEncoders() {
@@ -96,13 +96,14 @@ public class Chassis {
     }
 
     public void drive(double ySpeed, double xSpeed, double zRotation) {
-        drive.driveCartesian(ySpeed, xSpeed, zRotation, true);
+        drive(ySpeed, xSpeed, zRotation, true);
     }
 
     public void drive(double ySpeed, double xSpeed, double zRotation, boolean squareInputs) {
         if(DISABLE_STRAFING) {
             drive.driveCartesian(ySpeed, 0, zRotation, squareInputs);
         }
+
         else{
             drive.driveCartesian(ySpeed, xSpeed, zRotation, squareInputs);
         }
@@ -112,10 +113,11 @@ public class Chassis {
         drive.pathDrive(fl, fr, bl, br);
     }
 
-    public void setPid(double kp, double ki, double kd) {
+    public void setPid(double kp, double ki, double kd, double kf) {
         setKP(kp);
         setKI(ki);
         setKD(kd);
+        setKF(kf);
     }
 
     public void setKP(double kp) {
@@ -149,6 +151,17 @@ public class Chassis {
         pid2.setD(kd);
         pid3.setD(kd);
         pid4.setD(kd);
+    }
+
+    public void setKF(double kf) {
+        SparkMaxPIDController pid1 = CANSparkMax1.getPIDController();
+        SparkMaxPIDController pid2 = CANSparkMax2.getPIDController();
+        SparkMaxPIDController pid3 = CANSparkMax3.getPIDController();
+        SparkMaxPIDController pid4 = CANSparkMax4.getPIDController();
+        pid1.setP(kf);
+        pid2.setP(kf);
+        pid3.setP(kf);
+        pid4.setP(kf);
     }
 
     public void initOdometry() {

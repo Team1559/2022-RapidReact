@@ -24,8 +24,7 @@ public class Vision {
             NewData.hoopStatus = 2;
             NewData.ballStatus = 2;
             String in = client.get();
-            System.out.println(in);
-
+            
             if (in != null) {
                 String[] parameters = in.split(" ");
 
@@ -41,8 +40,8 @@ public class Vision {
 
                     if(NewData.hoopStatus == 1) {
                         NewData.hx = -(Double.parseDouble(parameters[0]) - hoopCameraXOffset);
-                        NewData.hy = Double.parseDouble(parameters[1]) - hoopCameraYOffset;
-                        NewData.hr = Double.parseDouble(parameters[2]) - hoopCameraROffset;
+                        NewData.hy = Double.parseDouble(parameters[2]) - hoopCameraYOffset;
+                        NewData.hr = Double.parseDouble(parameters[1]) - hoopCameraROffset;
                     }
 
                     if (Integer.parseInt(parameters[8]) == 1) {
