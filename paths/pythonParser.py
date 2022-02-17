@@ -13,7 +13,10 @@ else:
 
 def main():
     def convert_list(list_a: list) -> str:
-        return ",\n\t\t\t".join(list_a)
+        output = ",\n"
+        for count in range(12):
+            output += " "
+        return output.join(list_a)
 
     os.chdir("..")
     path = os.getcwd()
