@@ -1,14 +1,11 @@
 package frc.robot.subsystems;
 
 import frc.robot.OperatorInterface;
-import frc.robot.components.CompressorControl;
-
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
 import frc.robot.*;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import frc.robot.*;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 
@@ -25,8 +22,6 @@ public class Shooter {
     private double shooter_kD = 0;
     private double shooter_kI = 0.000;
     private double shooterRpms = 7500;
-
-    private double shooterSpeed = -0.2;
     private double feederSpeed = .2;
     private double intakeSpeed = .4;
 
@@ -82,23 +77,33 @@ public class Shooter {
         // CONTROL
 
         // Control for FlyWheel
-        if (oi.runFlyWheelButton()) {
+        if(oi.runFlyWheelButtonManual()){
+            startShooter(shooterRpms);
+        }
+
+        else if (oi.runFlyWheelButton()) {
             startShooter(vc.calculateShooterRPMS());
-        } else {
+        }
+
+        else {
             stopShooter();
         }
 
         // Control for lowering intake
         if (oi.lowerIntakeButton()) {
             lowerIntake();
-        } else {
+        } 
+        
+        else {
             raiseIntake();
         }
 
         // Control for running intake
         if (oi.intakeButton()) {
             startIntake();
-        } else {
+        } 
+        
+        else {
             stopIntake();
         }
 
@@ -108,7 +113,9 @@ public class Shooter {
         shooter.set(TalonFXControlMode.Velocity, rpms);
         if (oi.shootButton()) {
             feeder.set(feederSpeed);
-        } else {
+        } 
+        
+        else {
             feeder.set(0);
         }
     }

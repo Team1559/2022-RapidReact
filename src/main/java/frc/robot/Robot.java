@@ -3,9 +3,6 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
-
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.subsystems.Shooter;
 // import frc.robot.subsystems.Vision;
@@ -125,6 +122,10 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
+        if(FeatureFlags.doCompressor && FeatureFlags.compressorInitialized){
+            compressorControl.enable();
+        }
+
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
            vc.autoPeriodic();
         }
@@ -157,7 +158,7 @@ public class Robot extends TimedRobot {
         }
 
         if(FeatureFlags.doCompressor && FeatureFlags.compressorInitialized){
-            compressorControl.run();
+            compressorControl.enable();
         }
 
         if (FeatureFlags.doShooter && FeatureFlags.shooterInitalized) {

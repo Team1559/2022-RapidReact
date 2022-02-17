@@ -32,6 +32,10 @@ public class OperatorInterface {
     //Going to have to switch these to co-pilot at some point
     //Currently thinking that the co pilot controls intake and flywheel with one button
     // And pilot shoots(runs feeder motor) At the moment, going to use seperate buttons for testing purposes
+    public boolean runFlyWheelButtonManual(){
+        return pilot.getBButton();
+    }
+
     public boolean runFlyWheelButton(){
         return pilot.getLeftBumper();
     }

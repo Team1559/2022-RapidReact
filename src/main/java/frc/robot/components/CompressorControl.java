@@ -2,7 +2,6 @@ package frc.robot.components;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import frc.robot.Wiring;
 
 public class CompressorControl {
     public Compressor airCompressor;
@@ -13,7 +12,7 @@ public class CompressorControl {
         airCompressor = new Compressor(PneumaticsModuleType.REVPH);
     }
 
-    public void run() {
+    public void enable() {
         airCompressor.enableDigital();
         isCompressorOn = true;
     }
