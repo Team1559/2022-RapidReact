@@ -34,7 +34,9 @@ public class Chassis {
     public double brep;
     private OperatorInterface oi;
     private IMU imu;
-    private final double differpercent = 40;
+
+    
+    private final double differpercent = 40; //percent the front needs to move compared to the back, needs to be justed
 
 
     /**
@@ -113,7 +115,7 @@ public class Chassis {
     }
 
     public void drive(double ySpeed, double zRotation, boolean squareInputs) {
-        front.splitDrive(ySpeed, differpercent * zRotation, squareInputs);
+        front.splitDrive(ySpeed, (differpercent / 100.0) * zRotation, squareInputs);
         back.splitDrive(ySpeed, zRotation,squareInputs);
         // drive.driveCartesian(ySpeed, 0, zRotation, squareInputs);
     }
