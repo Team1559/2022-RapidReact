@@ -9,7 +9,7 @@ public class CompressorControl {
     public boolean    useCompressor  = true;
     public boolean    isCompressorOn = false;
 
-    public void init() {
+    public CompressorControl() {
         airCompressor = new Compressor(PneumaticsModuleType.REVPH);
     }
 

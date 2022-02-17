@@ -156,11 +156,11 @@ public class Robot extends TimedRobot {
             chassis.main();
         }
 
-        if(FeatureFlags.compressorEnable && FeatureFlags.compressorInitialized){
+        if(FeatureFlags.doCompressor && FeatureFlags.compressorInitialized){
             compressorControl.run();
         }
 
-        if (FeatureFlags.shooterEnabled && FeatureFlags.shooterInitalized) {
+        if (FeatureFlags.doShooter && FeatureFlags.shooterInitalized) {
             shooter.runShooter();
         }
     }
@@ -170,7 +170,7 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
 
-        if(FeatureFlags.compressorEnable && FeatureFlags.compressorInitialized){
+        if(FeatureFlags.doCompressor && FeatureFlags.compressorInitialized){
             compressorControl.disable();
           }
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
@@ -202,6 +202,11 @@ public class Robot extends TimedRobot {
     public void initialize() {
         FeatureFlags.updateDependencies();
 
+        if (FeatureFlags.doCompressor && !FeatureFlags.compressorInitialized) {
+            compressorControl = new CompressorControl();
+            FeatureFlags.compressorInitialized = true;
+        }
+
         if(FeatureFlags.doImu && !FeatureFlags.imuInitialized) {
             imu = new IMU();
             imu.zeroYaw();
@@ -219,16 +224,9 @@ public class Robot extends TimedRobot {
             FeatureFlags.visionInitialized = true;
         }
 
-        if (FeatureFlags.shooterEnabled && !FeatureFlags.shooterInitalized) {
+        if (FeatureFlags.doShooter && !FeatureFlags.shooterInitalized) {
             shooter = new Shooter(oi, vc);
             FeatureFlags.shooterInitalized = true;
         }
-
-        if (FeatureFlags.compressorEnable && !FeatureFlags.compressorInitialized) {
-            compressorControl = new CompressorControl();
-            compressorControl.init();
-            FeatureFlags.compressorInitialized = true;
-        }
-
     }
 }
