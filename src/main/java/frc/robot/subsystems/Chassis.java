@@ -3,8 +3,6 @@ package frc.robot.subsystems;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-
 import com.revrobotics.SparkMaxPIDController;
 import frc.robot.components.DevilDrive;
 import frc.robot.OperatorInterface;

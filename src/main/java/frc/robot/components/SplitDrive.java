@@ -88,7 +88,6 @@ import edu.wpi.first.wpilibj.drive.RobotDriveBase;
  * be set to 0, and larger values will be scaled so that the full range is still used. This deadband
  * value can be changed with {@link #setDeadband}.
  */
-@SuppressWarnings("removal")
 public class SplitDrive extends RobotDriveBase implements Sendable, AutoCloseable {
   private static int instances;
 
@@ -165,7 +164,7 @@ public class SplitDrive extends RobotDriveBase implements Sendable, AutoCloseabl
   }
 
   /**
-   * Arcade drive method for differential drive platform.
+   * drive method for driving the front and back wheels at different speeds
    *
    * @param xSpeed The robot's speed along the X axis [-1.0..1.0]. Forward is positive.
    * @param zRotation The robot's rotation rate around the Z axis [-1.0..1.0]. Clockwise is
