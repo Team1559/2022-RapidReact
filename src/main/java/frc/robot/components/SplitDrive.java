@@ -17,6 +17,7 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.drive.RobotDriveBase;
+import edu.wpi.first.wpilibj.drive.Vector2d;
 
 /**
  * A class for driving differential drive/skid-steer drive platforms such as the Kit of Parts drive
@@ -192,6 +193,111 @@ public class SplitDrive extends RobotDriveBase implements Sendable, AutoCloseabl
     // m_rightMotor.set(speeds.right * m_maxOutput);
 
     feed();
+  }
+
+  @SuppressWarnings("ParameterName")
+  public void mechanumDrive(double ySpeed, double zRotation) {
+    mechanumDrive(ySpeed, zRotation, true);
+  }
+  
+  /**
+   * Drive method for Mecanum platform.
+   *
+   * <p>Angles are measured clockwise from the positive X axis. The robot's speed is independent
+   * from its angle or rotation rate.
+   *
+   * @param ySpeed The robot's speed along the Y axis [-1.0..1.0]. Right is positive.
+   * @param xSpeed The robot's speed along the X axis [-1.0..1.0]. Forward is positive.
+   * @param zRotation The robot's rotation rate around the Z axis [-1.0..1.0]. Clockwise is
+   *     positive.
+   * @param gyroAngle The current angle reading from the gyro in degrees around the Z axis. Use this
+   *     to implement field-oriented controls.
+   */
+
+  @SuppressWarnings("ParameterName")
+  public void mechanumDrive(double ySpeed, double zRotation, boolean squareInputs) {
+    if (!m_reported) {
+      HAL.report(
+          tResourceType.kResourceType_RobotDrive, tInstances.kRobotDrive2_MecanumCartesian, 4);
+      m_reported = true;
+    }
+
+    if (squareInputs) {
+      ySpeed = Math.copySign(ySpeed * ySpeed, ySpeed);
+      zRotation = Math.copySign(zRotation * zRotation, zRotation);
+    }
+    
+    ySpeed = MathUtil.applyDeadband(ySpeed, m_deadband);
+
+    var speeds = driveCartesianIK(ySpeed, 0, zRotation, 0.0);
+    SparkMaxPIDController frontLeftPid = m_leftMotor.getPIDController();
+    SparkMaxPIDController frontRightPid = m_rightMotor.getPIDController();
+
+    frontLeftPid.setReference(speeds.left * m_maxOutput, CANSparkMax.ControlType.kVelocity);
+    frontRightPid.setReference(speeds.right * m_maxOutput, CANSparkMax.ControlType.kVelocity);
+
+
+    // m_frontLeftMotor.set(speeds.frontLeft * m_maxOutput);
+    // m_frontRightMotor.set(speeds.frontRight * m_maxOutput);
+    // m_rearLeftMotor.set(speeds.rearLeft * m_maxOutput);
+    // m_rearRightMotor.set(speeds.rearRight * m_maxOutput);
+
+    feed();
+  }
+
+  @SuppressWarnings("ParameterName")
+  public void pathDrive(double l, double r) {
+    if (!m_reported) {
+      HAL.report(
+          tResourceType.kResourceType_RobotDrive, tInstances.kRobotDrive2_MecanumCartesian, 4);
+      m_reported = true;
+    }
+
+    SparkMaxPIDController leftPid = m_leftMotor.getPIDController();
+    SparkMaxPIDController rightPid = m_rightMotor.getPIDController();
+
+    leftPid.setReference(l, CANSparkMax.ControlType.kPosition);
+    rightPid.setReference(r, CANSparkMax.ControlType.kPosition);
+    
+
+    feed();
+  }
+
+
+  /**
+   * Cartesian inverse kinematics for Mecanum platform.
+   *
+   * <p>Angles are measured clockwise from the positive X axis. The robot's speed is independent
+   * from its angle or rotation rate.
+   *
+   * @param ySpeed The robot's speed along the Y axis [-1.0..1.0]. Right is positive.
+   * @param xSpeed The robot's speed along the X axis [-1.0..1.0]. Forward is positive.
+   * @param zRotation The robot's rotation rate around the Z axis [-1.0..1.0]. Clockwise is
+   *     positive.
+   * @param gyroAngle The current angle reading from the gyro in degrees around the Z axis. Use this
+   *     to implement field-oriented controls.
+   * @return Wheel speeds.
+   */
+
+  @SuppressWarnings("ParameterName")
+  public static WheelSpeeds driveCartesianIK(
+    double ySpeed, double xSpeed, double zRotation, double gyroAngle) {
+    ySpeed = MathUtil.clamp(ySpeed, -1.0, 1.0);
+    xSpeed = MathUtil.clamp(xSpeed, -1.0, 1.0);
+
+    // Compensate for gyro angle.
+    Vector2d input = new Vector2d(ySpeed, xSpeed);
+    input.rotate(-gyroAngle);
+
+    double[] wheelSpeeds = new double[2];
+    wheelSpeeds[MotorType.kLeft.value] = input.x + input.y + zRotation;
+    wheelSpeeds[MotorType.kRight.value] = input.x - input.y + zRotation;
+
+    normalize(wheelSpeeds);
+
+    return new WheelSpeeds(
+        wheelSpeeds[MotorType.kLeft.value],
+        wheelSpeeds[MotorType.kRight.value]);
   }
 
   /**

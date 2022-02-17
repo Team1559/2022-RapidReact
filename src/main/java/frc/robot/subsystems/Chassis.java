@@ -114,7 +114,8 @@ public class Chassis {
 
     public void drive(double ySpeed, double zRotation, boolean squareInputs) {
         front.splitDrive(ySpeed, (differpercent / 100.0) * zRotation, squareInputs);
-        back.splitDrive(ySpeed, zRotation,squareInputs);
+        back.mechanumDrive(ySpeed, zRotation, squareInputs);
+        // back.splitDrive(ySpeed, zRotation,squareInputs);
         // drive.driveCartesian(ySpeed, 0, zRotation, squareInputs);
     }
 
