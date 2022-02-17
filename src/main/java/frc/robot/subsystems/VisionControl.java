@@ -160,7 +160,7 @@ public class VisionControl {
         }
 
         else {
-            chassis.drive(0, 0, 0, false);
+            chassis.drive(0, 0, false);
         }
     }
 
@@ -179,7 +179,7 @@ public class VisionControl {
             }
 
             if (Math.abs(hoopr) > hoopChassisThreshold) {
-                drive(ySpeed, 0, calculateHoopRotation());
+                drive(ySpeed, calculateHoopRotation());
             }
 
             else {
@@ -208,7 +208,7 @@ public class VisionControl {
                 ySpeed = -1.0 * Math.copySign(ySpeed * ySpeed, ySpeed);
             }
 
-            drive(ySpeed, 0, calculateBallRotation());
+            drive(ySpeed, calculateBallRotation());
         }
 
         else {
@@ -216,8 +216,8 @@ public class VisionControl {
         }
     }
 
-    public void drive(double fs, double ss, double r) {
-        chassis.drive(fs, ss, r, false);
+    public void drive(double fs, double r) {
+        chassis.drive(fs, r, false);
     }
 
     public void setAutoPath(String selector) {

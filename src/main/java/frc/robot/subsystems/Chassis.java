@@ -3,11 +3,14 @@ package frc.robot.subsystems;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+
 import com.revrobotics.SparkMaxPIDController;
 import frc.robot.components.DevilDrive;
 import frc.robot.OperatorInterface;
 import frc.robot.Wiring;
 import frc.robot.components.IMU;
+import frc.robot.components.SplitDrive;
 
 public class Chassis {
     private static final int TIMEOUT = 20;
@@ -15,6 +18,8 @@ public class Chassis {
     public static final double MAX_SPEED_FPS_TRACTION = 9.67 * 1.01;
     public static final double MAX_TICKS_PER_100MS = MAX_SPEED_FPS_TRACTION * 4096.0 / (Math.PI * WHEEL_RADIUS_INCHES_MECANUM * 2.0 / 12.0) / 10.0;
     private DevilDrive drive;
+    private SplitDrive front;
+    private SplitDrive back;
     public CANSparkMax CANSparkMax1;
     public CANSparkMax CANSparkMax2;
     public CANSparkMax CANSparkMax3;
@@ -29,7 +34,8 @@ public class Chassis {
     public double brep;
     private OperatorInterface oi;
     private IMU imu;
-    private final boolean DISABLE_STRAFING = true;
+    private final double differpercent = 40;
+
 
     /**
      * private static final double kF = 0.14614285; //F-gain = (100% X 1023) /
@@ -80,12 +86,15 @@ public class Chassis {
         CANSparkMax4.setInverted(true);
         initEncoders();
 
+        front = new SplitDrive(CANSparkMax1, CANSparkMax2);
+        back = new SplitDrive(CANSparkMax3, CANSparkMax4);
         drive = new DevilDrive(CANSparkMax1, CANSparkMax3, CANSparkMax2, CANSparkMax4);
+
     }
 
     public void main() {
         //System.out.println("forward "+ 0.5 * oi.pilot.getLeftY() +" strafe "+ 0.5 * oi.pilot.getLeftX() +" rotate "+ 0.5 * oi.pilot.getRightX());
-        drive(0.995 * oi.pilot.getLeftY(), -0.995 * oi.pilot.getLeftX(), -0.995 * oi.pilot.getRightX());
+        drive(0.995 * oi.pilot.getLeftY(), -0.995 * oi.pilot.getRightX());
         updateEncoders();
         imu.getvalues();
         System.out.println("Front left encoder velocity is: " + flEncoder.getVelocity() + " Front right encoder velocity is: " + frEncoder.getVelocity() + 
@@ -99,18 +108,14 @@ public class Chassis {
         brep = brEncoder.getPosition();
     }
 
-    public void drive(double ySpeed, double xSpeed, double zRotation) {
-        drive(ySpeed, xSpeed, zRotation, true);
+    public void drive(double ySpeed, double zRotation) {
+        drive(ySpeed, zRotation, true);
     }
 
-    public void drive(double ySpeed, double xSpeed, double zRotation, boolean squareInputs) {
-        if(DISABLE_STRAFING) {
-            drive.driveCartesian(ySpeed, 0, zRotation, squareInputs);
-        }
-
-        else{
-            drive.driveCartesian(ySpeed, xSpeed, zRotation, squareInputs);
-        }
+    public void drive(double ySpeed, double zRotation, boolean squareInputs) {
+        front.splitDrive(ySpeed, differpercent * zRotation, squareInputs);
+        back.splitDrive(ySpeed, zRotation,squareInputs);
+        // drive.driveCartesian(ySpeed, 0, zRotation, squareInputs);
     }
 
     public void pathDrive(double fl, double fr, double bl, double br) {

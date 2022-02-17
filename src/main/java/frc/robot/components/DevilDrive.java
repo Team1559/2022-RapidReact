@@ -176,7 +176,7 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
   public void driveCartesian(double ySpeed, double xSpeed, double zRotation, boolean squaredInputs) {
     driveCartesian(ySpeed, xSpeed, zRotation, 0.0, squaredInputs);
   }
-
+  
   /**
    * Drive method for Mecanum platform.
    *
