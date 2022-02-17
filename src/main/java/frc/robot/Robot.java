@@ -4,7 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
+import frc.robot.subsystems.Shooter;
+// import frc.robot.subsystems.Vision;
+import frc.robot.components.VisionData;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.*;
@@ -34,6 +40,11 @@ public class Robot extends TimedRobot {
     private static final String PATH_2 = "Path 2";
     private static final String PATH_3 = "Path 3";
     private static final String PATH_4 = "Path 4";
+
+    
+    private Shooter       shooter;
+
+    private CompressorControl compressorControl;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -144,12 +155,24 @@ public class Robot extends TimedRobot {
         if (FeatureFlags.doChassis && FeatureFlags.chassisInitialized && !usingVision) {
             chassis.main();
         }
+
+        if(FeatureFlags.compressorEnable && FeatureFlags.compressorInitialized){
+            compressorControl.run();
+        }
+
+        if (FeatureFlags.shooterEnabled && FeatureFlags.shooterInitalized) {
+            shooter.runShooter();
+        }
     }
 
     /** This function is called once when the robot is disabled. */
    
     @Override
     public void disabledInit() {
+
+        if(FeatureFlags.compressorEnable && FeatureFlags.compressorInitialized){
+            compressorControl.disable();
+          }
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
             vc.disable();
         }
@@ -195,5 +218,17 @@ public class Robot extends TimedRobot {
             vc = new VisionControl(vision, vData, oi, chassis, imu);
             FeatureFlags.visionInitialized = true;
         }
+
+        if (FeatureFlags.shooterEnabled && !FeatureFlags.shooterInitalized) {
+            shooter = new Shooter(oi, vc);
+            FeatureFlags.shooterInitalized = true;
+        }
+
+        if (FeatureFlags.compressorEnable && !FeatureFlags.compressorInitialized) {
+            compressorControl = new CompressorControl();
+            compressorControl.init();
+            FeatureFlags.compressorInitialized = true;
+        }
+
     }
 }
