@@ -80,7 +80,7 @@ def main():
                 print(" Python Parser Parsed in Python Successfully")
                 time.sleep(0.25)
                 print(" Python Parser saved the java arrays to:\n " + path + "\\src\\main\\java\\frc\\robot\\routes\\" +
-                      name() + ".java\n and the graph to: " + path + name() + "\\"
+                      name() + ".java\n and the graph to: " + path + "\\" + name()
                       + 'GraphData.txt\n and the discarded data to: ' + path + "\\" + name() +
                       'DiscardedData.txt')
                 trash.write(" \n")
