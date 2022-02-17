@@ -220,7 +220,7 @@ public class Robot extends TimedRobot {
         }
 
         if (FeatureFlags.shooterEnabled && !FeatureFlags.shooterInitalized) {
-            shooter = new Shooter(oi);
+            shooter = new Shooter(oi, vc);
             FeatureFlags.shooterInitalized = true;
         }
 

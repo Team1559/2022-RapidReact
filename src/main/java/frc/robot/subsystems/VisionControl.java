@@ -253,4 +253,7 @@ public class VisionControl {
 
         return -ball_rotation;
     }
+    public double calculateShooterRPMS(){
+        return -7500;
+    }
 }

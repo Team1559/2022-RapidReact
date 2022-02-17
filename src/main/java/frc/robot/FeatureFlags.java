@@ -14,7 +14,6 @@ public final class FeatureFlags {
     public static boolean visionInitialized = false;
     public static boolean chassisInitialized  = false;
     public static boolean imuInitialized = false;
-    
     public static boolean shooterInitalized = false;
     public static boolean compressorInitialized = false;
 
@@ -23,10 +22,16 @@ public final class FeatureFlags {
         if(doVision) {
             doChassis= true;
             doImu = true;
+            shooterEnabled = true;
+            compressorEnable = true;
         }
         
         if(doChassis) {
             doImu = true;
+        }
+
+        if(shooterEnabled){
+            compressorEnable = true;
         }
     }
 }

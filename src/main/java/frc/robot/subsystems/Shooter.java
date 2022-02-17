@@ -34,9 +34,11 @@ public class Shooter {
     private CANSparkMax feeder;
     private Solenoid lowerIntake;
     private TalonSRX intake;
+    private VisionControl vc;
 
-    public Shooter(OperatorInterface operatorinterface) {
+    public Shooter(OperatorInterface operatorinterface, VisionControl vc) {
         oi = operatorinterface;
+        this.vc = vc;
 
         // MotorController Config
 
@@ -81,7 +83,7 @@ public class Shooter {
 
         // Control for FlyWheel
         if (oi.runFlyWheelButton()) {
-            startShooter();
+            startShooter(vc.calculateShooterRPMS());
         } else {
             stopShooter();
         }
@@ -102,9 +104,8 @@ public class Shooter {
 
     }
 
-    public void startShooter() {
-        shooter.set(TalonFXControlMode.Velocity, -shooterRpms);
-        // shooter.set(TalonFXControlMode.PercentOutput, -.5);
+    public void startShooter(double rpms) {
+        shooter.set(TalonFXControlMode.Velocity, rpms);
         if (oi.shootButton()) {
             feeder.set(feederSpeed);
         } else {
