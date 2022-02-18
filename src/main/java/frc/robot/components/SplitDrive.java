@@ -17,7 +17,6 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.drive.RobotDriveBase;
-import edu.wpi.first.wpilibj.drive.Vector2d;
 
 /**
  * A class for driving differential drive/skid-steer drive platforms such as the
@@ -106,6 +105,7 @@ import edu.wpi.first.wpilibj.drive.Vector2d;
  * points down. Rotations follow the right-hand rule, so clockwise rotation
  * around the Z axis is
  * positive.
+ * <p>
  *
  * <p>
  * Inputs smaller then
@@ -246,127 +246,6 @@ public class SplitDrive extends RobotDriveBase implements Sendable, AutoCloseabl
   }
 
   /**
-   * Cartesian inverse kinematics for Mecanum platform.
-   *
-   * <p>
-   * Angles are measured clockwise from the positive X axis. The robot's speed is
-   * independent
-   * from its angle or rotation rate.
-   *
-   * @param ySpeed    The robot's speed along the Y axis [-1.0..1.0]. Right is
-   *                  positive.
-   * @param xSpeed    The robot's speed along the X axis [-1.0..1.0]. Forward is
-   *                  positive.
-   * @param zRotation The robot's rotation rate around the Z axis [-1.0..1.0].
-   *                  Clockwise is
-   *                  positive.
-   * @param gyroAngle The current angle reading from the gyro in degrees around
-   *                  the Z axis. Use this
-   *                  to implement field-oriented controls.
-   * @return Wheel speeds.
-   */
-
-  @SuppressWarnings("ParameterName")
-  public static WheelSpeeds driveCartesianIK(
-      double ySpeed, double xSpeed, double zRotation, double gyroAngle) {
-    ySpeed = MathUtil.clamp(ySpeed, -1.0, 1.0);
-    xSpeed = MathUtil.clamp(xSpeed, -1.0, 1.0);
-
-    // Compensate for gyro angle.
-    Vector2d input = new Vector2d(ySpeed, xSpeed);
-    input.rotate(-gyroAngle);
-
-    double[] wheelSpeeds = new double[2];
-    wheelSpeeds[MotorType.kLeft.value] = input.x + input.y + zRotation;
-    wheelSpeeds[MotorType.kRight.value] = input.x - input.y + zRotation;
-
-    normalize(wheelSpeeds);
-
-    return new WheelSpeeds(
-        wheelSpeeds[MotorType.kLeft.value],
-        wheelSpeeds[MotorType.kRight.value]);
-  }
-
-  /**
-   * Curvature drive method for differential drive platform.
-   *
-   * <p>
-   * The rotation argument controls the curvature of the robot's path rather than
-   * its rate of
-   * heading change. This makes the robot more controllable at high speeds.
-   *
-   * @param xSpeed           The robot's speed along the X axis [-1.0..1.0].
-   *                         Forward is positive.
-   * @param zRotation        The normalized curvature [-1.0..1.0]. Clockwise is
-   *                         positive.
-   * @param allowTurnInPlace If set, overrides constant-curvature turning for
-   *                         turn-in-place
-   *                         maneuvers. zRotation will control turning rate
-   *                         instead of curvature.
-   */
-  @SuppressWarnings("ParameterName")
-  public void curvatureDrive(double xSpeed, double zRotation, boolean allowTurnInPlace) {
-    if (!m_reported) {
-      HAL.report(
-          tResourceType.kResourceType_RobotDrive, tInstances.kRobotDrive2_DifferentialCurvature, 2);
-      m_reported = true;
-    }
-
-    xSpeed = MathUtil.applyDeadband(xSpeed, m_deadband);
-    zRotation = MathUtil.applyDeadband(zRotation, m_deadband);
-
-    var speeds = curvatureDriveIK(xSpeed, zRotation, allowTurnInPlace);
-
-    m_leftMotor.set(speeds.left * m_maxOutput);
-    m_rightMotor.set(speeds.right * m_maxOutput);
-
-    feed();
-  }
-
-  /**
-   * Tank drive method for differential drive platform. The calculated values will
-   * be squared to
-   * decrease sensitivity at low speeds.
-   *
-   * @param leftSpeed  The robot's left side speed along the X axis [-1.0..1.0].
-   *                   Forward is positive.
-   * @param rightSpeed The robot's right side speed along the X axis [-1.0..1.0].
-   *                   Forward is
-   *                   positive.
-   */
-  public void tankDrive(double leftSpeed, double rightSpeed) {
-    tankDrive(leftSpeed, rightSpeed, true);
-  }
-
-  /**
-   * Tank drive method for differential drive platform.
-   *
-   * @param leftSpeed    The robot left side's speed along the X axis [-1.0..1.0].
-   *                     Forward is positive.
-   * @param rightSpeed   The robot right side's speed along the X axis
-   *                     [-1.0..1.0]. Forward is
-   *                     positive.
-   * @param squareInputs If set, decreases the input sensitivity at low speeds.
-   */
-  public void tankDrive(double leftSpeed, double rightSpeed, boolean squareInputs) {
-    if (!m_reported) {
-      HAL.report(
-          tResourceType.kResourceType_RobotDrive, tInstances.kRobotDrive2_DifferentialTank, 2);
-      m_reported = true;
-    }
-
-    leftSpeed = MathUtil.applyDeadband(leftSpeed, m_deadband);
-    rightSpeed = MathUtil.applyDeadband(rightSpeed, m_deadband);
-
-    var speeds = tankDriveIK(leftSpeed, rightSpeed, squareInputs);
-
-    m_leftMotor.set(speeds.left * m_maxOutput);
-    m_rightMotor.set(speeds.right * m_maxOutput);
-
-    feed();
-  }
-
-  /**
    * Arcade drive inverse kinematics for differential drive platform.
    *
    * @param xSpeed       The robot's speed along the X axis [-1.0..1.0]. Forward
@@ -424,83 +303,6 @@ public class SplitDrive extends RobotDriveBase implements Sendable, AutoCloseabl
     return new WheelSpeeds(leftSpeed, rightSpeed);
   }
 
-  /**
-   * Curvature drive inverse kinematics for differential drive platform.
-   *
-   * <p>
-   * The rotation argument controls the curvature of the robot's path rather than
-   * its rate of
-   * heading change. This makes the robot more controllable at high speeds.
-   *
-   * @param xSpeed           The robot's speed along the X axis [-1.0..1.0].
-   *                         Forward is positive.
-   * @param zRotation        The normalized curvature [-1.0..1.0]. Clockwise is
-   *                         positive.
-   * @param allowTurnInPlace If set, overrides constant-curvature turning for
-   *                         turn-in-place
-   *                         maneuvers. zRotation will control rotation rate
-   *                         around the Z axis instead of curvature.
-   * @return Wheel speeds [-1.0..1.0].
-   */
-  @SuppressWarnings("ParameterName")
-  public static WheelSpeeds curvatureDriveIK(
-      double xSpeed, double zRotation, boolean allowTurnInPlace) {
-    xSpeed = MathUtil.clamp(xSpeed, -1.0, 1.0);
-    zRotation = MathUtil.clamp(zRotation, -1.0, 1.0);
-
-    double leftSpeed;
-    double rightSpeed;
-
-    if (allowTurnInPlace) {
-      leftSpeed = xSpeed + zRotation;
-      rightSpeed = xSpeed - zRotation;
-    } else {
-      leftSpeed = xSpeed + Math.abs(xSpeed) * zRotation;
-      rightSpeed = xSpeed - Math.abs(xSpeed) * zRotation;
-    }
-
-    // Normalize wheel speeds
-    double maxMagnitude = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
-    if (maxMagnitude > 1.0) {
-      leftSpeed /= maxMagnitude;
-      rightSpeed /= maxMagnitude;
-    }
-
-    return new WheelSpeeds(leftSpeed, rightSpeed);
-  }
-
-  /**
-   * Tank drive inverse kinematics for differential drive platform.
-   *
-   * @param leftSpeed    The robot left side's speed along the X axis [-1.0..1.0].
-   *                     Forward is positive.
-   * @param rightSpeed   The robot right side's speed along the X axis
-   *                     [-1.0..1.0]. Forward is
-   *                     positive.
-   * @param squareInputs If set, decreases the input sensitivity at low speeds.
-   * @return Wheel speeds [-1.0..1.0].
-   */
-  public static WheelSpeeds tankDriveIK(double leftSpeed, double rightSpeed, boolean squareInputs) {
-    leftSpeed = MathUtil.clamp(leftSpeed, -1.0, 1.0);
-    rightSpeed = MathUtil.clamp(rightSpeed, -1.0, 1.0);
-
-    // Square the inputs (while preserving the sign) to increase fine control
-    // while permitting full power.
-    if (squareInputs) {
-      leftSpeed = Math.copySign(leftSpeed * leftSpeed, leftSpeed);
-      rightSpeed = Math.copySign(rightSpeed * rightSpeed, rightSpeed);
-    }
-
-    return new WheelSpeeds(leftSpeed, rightSpeed);
-  }
-
-  @Override
-  public void stopMotor() {
-    m_leftMotor.stopMotor();
-    m_rightMotor.stopMotor();
-    feed();
-  }
-
   @Override
   public String getDescription() {
     return "DifferentialDrive";
@@ -514,5 +316,12 @@ public class SplitDrive extends RobotDriveBase implements Sendable, AutoCloseabl
     builder.addDoubleProperty("Left Motor Speed", m_leftMotor::get, m_leftMotor::set);
     builder.addDoubleProperty(
         "Right Motor Speed", () -> m_rightMotor.get(), x -> m_rightMotor.set(x));
+  }
+
+  @Override
+  public void stopMotor() {
+    m_leftMotor.stopMotor();
+    m_rightMotor.stopMotor();
+    feed();
   }
 }
