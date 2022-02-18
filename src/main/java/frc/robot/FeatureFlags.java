@@ -4,7 +4,7 @@ package frc.robot;
 public final class FeatureFlags {
 
     // Modify these values
-    public static boolean doVision = true;
+    public static boolean doVision = false;
     public static boolean doChassis = false;
     public static boolean doImu = false;
     public static boolean doShooter = false;
@@ -54,5 +54,6 @@ public final class FeatureFlags {
                 doCompressor = true;
             }
         }
+
     }
 }

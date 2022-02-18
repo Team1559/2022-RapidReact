@@ -9,6 +9,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 
+@SuppressWarnings("unused")
+
 public class Shooter {
 
     private OperatorInterface oi;
@@ -31,6 +33,14 @@ public class Shooter {
     private TalonSRX intake;
     private VisionControl vc;
 
+    // States for gatherer
+
+    public static final int gathererUp = 0;
+    public static final int gathererDown = 1;
+    public static final int holding = 3;
+
+    public int state = gathererUp;
+
     public Shooter(OperatorInterface operatorinterface, VisionControl vc) {
         oi = operatorinterface;
         this.vc = vc;
@@ -41,22 +51,18 @@ public class Shooter {
         feeder = new CANSparkMax(Wiring.feederMotor, MotorType.kBrushless);
         lowerIntake = new Solenoid(PneumaticsModuleType.REVPH, Wiring.lowerIntake);
         intake = new TalonSRX(Wiring.intake);
-        // use for
-        // PneumaticsModuleType.CTREPCM
-        // for
-        // ctre
-        // stuff
-        // or
-        // PneumaticsModuleType.REVPH
-        // for
-        // the
-        // rev
-        // stuff
 
+        // Note about pneumatics :
+
+        // PneumaticsModuleType.CTREPCM for ctre stuff
+        // PneumaticsModuleType.REVPH for rev stuff
+
+        // Set all motors to 0 and pistons up
         feeder.set(0);
         lowerIntake.set(false);
         intake.set(TalonSRXControlMode.PercentOutput, 0);
 
+        // Shooter Velocity mode configs
         shooter.configClosedloopRamp(cLR, TIMEOUT);
         shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor); // shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
         shooter.config_kF(0, shooter_kF);
@@ -77,34 +83,21 @@ public class Shooter {
         // CONTROL
 
         // Control for FlyWheel
-        if(oi.runFlyWheelButtonManual()){
+        if (oi.runFlyWheelButtonManual()) {
             startShooter(shooterRpms);
-        }
-
-        else if (oi.runFlyWheelButton()) {
-            startShooter(vc.calculateShooterRPMS());
-        }
-
-        else {
+        } else {
             stopShooter();
         }
 
         // Control for lowering intake
-        if (oi.lowerIntakeButton()) {
+        if (oi.manualIntakeButton() && state == gathererUp) {
             lowerIntake();
-        } 
-        
-        else {
-            raiseIntake();
-        }
-
-        // Control for running intake
-        if (oi.intakeButton()) {
             startIntake();
-        } 
-        
-        else {
+        } else if (!oi.manualIntakeButton() && state == gathererDown) {
             stopIntake();
+        } else if (oi.manualIntakeButton() && state == holding) {
+            stopIntake();
+            raiseIntake();
         }
 
     }
@@ -113,8 +106,8 @@ public class Shooter {
         shooter.set(TalonFXControlMode.Velocity, rpms);
         if (oi.shootButton()) {
             feeder.set(feederSpeed);
-        } 
-        
+        }
+
         else {
             feeder.set(0);
         }
@@ -125,10 +118,12 @@ public class Shooter {
     }
 
     public void lowerIntake() {
+        state = gathererDown;
         lowerIntake.set(true);
     }
 
     public void raiseIntake() {
+        state = gathererUp;
         lowerIntake.set(false);
     }
 
@@ -137,6 +132,7 @@ public class Shooter {
     }
 
     public void stopIntake() {
+        state = holding;
         intake.set(TalonSRXControlMode.PercentOutput, 0);
     }
 

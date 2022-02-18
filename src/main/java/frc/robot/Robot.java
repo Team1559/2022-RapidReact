@@ -6,7 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.subsystems.Shooter;
-// import frc.robot.subsystems.Vision;
 import frc.robot.components.VisionData;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;

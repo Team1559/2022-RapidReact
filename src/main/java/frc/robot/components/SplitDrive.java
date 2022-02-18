@@ -81,11 +81,11 @@ import edu.wpi.first.wpilibj.drive.Vector2d;
  * Drive base diagram:
  *
  * <pre>
- * |_______|
- * | |   | |
- *   |   |
- * |_|___|_|
- * |       |
+ *|_______|
+ *| |   | |
+ *  |   |
+ *|_|___|_|
+ *|       |
  * </pre>
  *
  * <p>
