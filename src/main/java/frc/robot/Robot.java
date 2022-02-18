@@ -26,7 +26,7 @@ public class Robot extends TimedRobot {
     private IMU imu;
     private Vision vision;
     private VisionData vData;
-    private VisionControl vc;
+    public static VisionControl vc;
     private boolean usingVision = false;
     private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -221,7 +221,7 @@ public class Robot extends TimedRobot {
         }
 
         if (FeatureFlags.doShooter && !FeatureFlags.shooterInitalized) {
-            shooter = new Shooter(oi, vc);
+            shooter = new Shooter(oi);
             FeatureFlags.shooterInitalized = true;
         }
 

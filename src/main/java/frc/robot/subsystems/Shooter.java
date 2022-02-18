@@ -41,9 +41,9 @@ public class Shooter {
 
     public int state = gathererUp;
 
-    public Shooter(OperatorInterface operatorinterface, VisionControl vc) {
+    public Shooter(OperatorInterface operatorinterface) {
         oi = operatorinterface;
-        this.vc = vc;
+        this.vc = Robot.vc;
 
         // MotorController Config
 
