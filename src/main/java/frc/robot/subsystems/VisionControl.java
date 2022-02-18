@@ -57,11 +57,12 @@ public class VisionControl {
         this.visionData = visionData;
         this.chassis = chassis;
         this.imu = imu;
+        this.shooter = shooter;
         ml = new MachineLearning();
         if (RECORD_PATH) {
             ml.createfile(FILE_NAME);
         }
-        this.shooter = shooter;
+
     }
 
     public VisionControl(Vision vision, VisionData visionData, OperatorInterface oi, Chassis chassis, IMU imu,
