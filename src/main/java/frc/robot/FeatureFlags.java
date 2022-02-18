@@ -7,7 +7,7 @@ public final class FeatureFlags {
     public static boolean doChassis = false;
     public static boolean doImu = false;
     public static boolean doShooter = false;
-    public static boolean doCompressor = true;
+    public static boolean doCompressor = false;
 
     // Leave these values alone
     public static boolean visionInitialized = false;
@@ -21,8 +21,8 @@ public final class FeatureFlags {
         if(doVision) {
             doChassis= true;
             doImu = true;
-            doShooter = true;
-            doCompressor = true;
+            // doShooter = true;
+            // doCompressor = true;
         }
         
         if(doChassis) {

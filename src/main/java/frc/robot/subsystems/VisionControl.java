@@ -10,6 +10,7 @@ public class VisionControl {
     private Vision vision;
     private VisionData visionData;
     private IMU imu;
+    private Shooter shooter;
     private double hoopr = 0;
     private double ballr = 0;
     private double hoopx = 0;
@@ -26,6 +27,7 @@ public class VisionControl {
     private final int invalid_ball_counter_threshold = 20;
     private MachineLearning ml;
     private double counter = 0;
+    private int recordCounter = 0;
     private double counterSpeed;
     private double frontRightSpeed[] = {};
     private double frontLeftSpeed[] = {};
@@ -35,6 +37,7 @@ public class VisionControl {
     // we need to determine what to set these to
 
     // thresholds
+    private final int MAX_SIZE = 2000;// should only need to be 750
     private final double ballChassisThreshold = 1; // angle in degrees
     private final double hoopChassisThreshold = 1; // angle in degrees
     private final double shooterThreshold = 2;
@@ -46,20 +49,19 @@ public class VisionControl {
     private final String FILE_NAME = "path4";
     private String selector;
 
-    // private Shooter shooter;
-
-    public VisionControl(Vision vision, VisionData visionData, OperatorInterface oi, Chassis chassis, IMU imu) {// ,
-                                                                                                                // Shooter
-                                                                                                                // shooter})
-                                                                                                                // {
+    public VisionControl(Vision vision, VisionData visionData, OperatorInterface oi, Chassis chassis, IMU imu,
+            Shooter shooter) {
         this.selector = "";
         this.oi = oi;
         this.vision = vision;
         this.visionData = visionData;
         this.chassis = chassis;
         this.imu = imu;
-        ml = new MachineLearning(RECORD_PATH, FILE_NAME);
-        // this.shooter = shooter;
+        ml = new MachineLearning();
+        if (RECORD_PATH) {
+            ml.createfile(FILE_NAME);
+        }
+        this.shooter = shooter;
     }
 
     public VisionControl(Vision vision, VisionData visionData, OperatorInterface oi, Chassis chassis, IMU imu,
@@ -70,7 +72,10 @@ public class VisionControl {
         this.visionData = visionData;
         this.chassis = chassis;
         this.imu = imu;
-        ml = new MachineLearning(RECORD_PATH, FILE_NAME);
+        ml = new MachineLearning();
+        if (RECORD_PATH) {
+            ml.createfile(FILE_NAME);
+        }
         // this.shooter = shooter;
     }
 
@@ -131,8 +136,13 @@ public class VisionControl {
     public void teleopPeriodic() {
         update();
 
-        if (RECORD_PATH) {
+        if (RECORD_PATH && recordCounter <= MAX_SIZE) {
             record(oi.pilot.getLeftY(), oi.pilot.getRightX());
+            recordCounter++;
+        } 
+        
+        else if (RECORD_PATH && recordCounter > MAX_SIZE) {
+            System.out.println("Max recording size has been reached");
         }
 
         // visionData.Print();
@@ -226,7 +236,7 @@ public class VisionControl {
     }
 
     public void record(double _forwardSpeed, double _sideSpeed) {
-        ml.periodic(_forwardSpeed, _sideSpeed, chassis.flep, chassis.frep, chassis.blep, chassis.brep);
+        ml.periodic(_forwardSpeed + _sideSpeed + chassis.flep + chassis.frep + chassis.blep + chassis.brep + "");
     }
 
     private void update() {

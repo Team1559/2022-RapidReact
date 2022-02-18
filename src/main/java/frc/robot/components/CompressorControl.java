@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class CompressorControl {
     public Compressor airCompressor;
-    public boolean    useCompressor  = true;
-    public boolean    isCompressorOn = false;
+    public boolean useCompressor = true;
+    public boolean isCompressorOn = false;
 
     public CompressorControl() {
         airCompressor = new Compressor(PneumaticsModuleType.REVPH);
