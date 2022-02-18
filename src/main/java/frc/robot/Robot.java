@@ -170,7 +170,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
-
+        if (FeatureFlags.doChassis && FeatureFlags.chassisInitialized && !usingVision) {
+            chassis.disable();
+        }
         if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
             compressorControl.disable();
         }
@@ -219,15 +221,15 @@ public class Robot extends TimedRobot {
             FeatureFlags.chassisInitialized = true;
         }
 
-        if (FeatureFlags.doVision && !FeatureFlags.visionInitialized) {
-            vision = new Vision();
-            vc = new VisionControl(vision, vData, oi, chassis, imu);
-            FeatureFlags.visionInitialized = true;
-        }
-
         if (FeatureFlags.doShooter && !FeatureFlags.shooterInitalized) {
             shooter = new Shooter(oi, vc);
             FeatureFlags.shooterInitalized = true;
+        }
+
+        if (FeatureFlags.doVision && !FeatureFlags.visionInitialized) {
+            vision = new Vision();
+            vc = new VisionControl(vision, vData, oi, chassis, imu, shooter);
+            FeatureFlags.visionInitialized = true;
         }
     }
 }
