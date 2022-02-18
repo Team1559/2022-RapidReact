@@ -33,19 +33,15 @@ public class Shooter {
     private TalonSRX intake;
     private VisionControl vc;
 
-    
     // States for gatherer
-    
-    private static final int gathererUp = 0;
-    private static final int gathererDown = 1;
-    private static final int holding = 3;
 
-    private int state = gathererUp;
-    
-    
-    
-    
-    
+    public static final int gathererUp = 0;
+    public static final int gathererDown = 1;
+    public static final int holding = 3;
+
+    public int state = gathererUp;
+    public boolean buttonState = false;
+
     public Shooter(OperatorInterface operatorinterface, VisionControl vc) {
         oi = operatorinterface;
         this.vc = vc;
@@ -56,22 +52,18 @@ public class Shooter {
         feeder = new CANSparkMax(Wiring.feederMotor, MotorType.kBrushless);
         lowerIntake = new Solenoid(PneumaticsModuleType.REVPH, Wiring.lowerIntake);
         intake = new TalonSRX(Wiring.intake);
-        // use for
-        // PneumaticsModuleType.CTREPCM
-        // for
-        // ctre
-        // stuff
-        // or
-        // PneumaticsModuleType.REVPH
-        // for
-        // the
-        // rev
-        // stuff
 
+        // Note about pneumatics :
+
+        // PneumaticsModuleType.CTREPCM for ctre stuff
+        // PneumaticsModuleType.REVPH for rev stuff
+
+        // Set all motors to 0 and pistons up
         feeder.set(0);
         lowerIntake.set(false);
         intake.set(TalonSRXControlMode.PercentOutput, 0);
 
+        // Shooter Velocity mode configs
         shooter.configClosedloopRamp(cLR, TIMEOUT);
         shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor); // shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
         shooter.config_kF(0, shooter_kF);
@@ -99,13 +91,17 @@ public class Shooter {
         }
 
         // Control for lowering intake
-        if (oi.manualIntakeButton()) {
+        if (oi.manualIntakeButton() && buttonState == false) {
+            
             lowerIntake();
             startIntake();
             state = gathererDown;
-        } else {
+            buttonState = true;
+        } else if(oi.manualIntakeButton() && buttonState == true) {
             stopIntake();
             raiseIntake();
+            state = gathererUp;
+            buttonState = false;
 
         }
 
