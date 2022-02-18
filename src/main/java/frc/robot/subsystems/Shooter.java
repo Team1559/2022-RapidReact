@@ -40,7 +40,6 @@ public class Shooter {
     public static final int holding = 3;
 
     public int state = gathererUp;
-    public boolean buttonState = false;
 
     public Shooter(OperatorInterface operatorinterface, VisionControl vc) {
         oi = operatorinterface;
@@ -91,18 +90,15 @@ public class Shooter {
         }
 
         // Control for lowering intake
-        if (oi.manualIntakeButton() && buttonState == false) {
-            
+        if (oi.manualIntakeButton() && state == gathererUp) {
             lowerIntake();
             startIntake();
-            state = gathererDown;
-            buttonState = true;
-        } else if(oi.manualIntakeButton() && buttonState == true) {
+        } else if(!oi.manualIntakeButton() && state == gathererDown) {
+            stopIntake(); 
+        }
+        else if(oi.manualIntakeButton() && state == holding){
             stopIntake();
             raiseIntake();
-            state = gathererUp;
-            buttonState = false;
-
         }
 
     }
@@ -123,10 +119,12 @@ public class Shooter {
     }
 
     public void lowerIntake() {
+        state = gathererDown;
         lowerIntake.set(true);
     }
 
     public void raiseIntake() {
+        state = gathererUp;
         lowerIntake.set(false);
     }
 
@@ -135,6 +133,7 @@ public class Shooter {
     }
 
     public void stopIntake() {
+        state = holding;
         intake.set(TalonSRXControlMode.PercentOutput, 0);
     }
 
