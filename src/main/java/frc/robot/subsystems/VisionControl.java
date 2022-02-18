@@ -62,7 +62,6 @@ public class VisionControl {
         if (RECORD_PATH) {
             ml.createfile(FILE_NAME);
         }
-
     }
 
     public VisionControl(Vision vision, VisionData visionData, OperatorInterface oi, Chassis chassis, IMU imu,
