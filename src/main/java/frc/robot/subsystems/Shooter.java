@@ -93,10 +93,9 @@ public class Shooter {
         if (oi.manualIntakeButton() && state == gathererUp) {
             lowerIntake();
             startIntake();
-        } else if(!oi.manualIntakeButton() && state == gathererDown) {
-            stopIntake(); 
-        }
-        else if(oi.manualIntakeButton() && state == holding){
+        } else if (!oi.manualIntakeButton() && state == gathererDown) {
+            stopIntake();
+        } else if (oi.manualIntakeButton() && state == holding) {
             stopIntake();
             raiseIntake();
         }

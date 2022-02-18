@@ -139,8 +139,8 @@ public class VisionControl {
         if (RECORD_PATH && recordCounter <= MAX_SIZE) {
             record(oi.pilot.getLeftY(), oi.pilot.getRightX());
             recordCounter++;
-        } 
-        
+        }
+
         else if (RECORD_PATH && recordCounter > MAX_SIZE) {
             System.out.println("Max recording size has been reached");
         }

@@ -41,7 +41,6 @@ public class OperatorInterface {
         } else {
             return false;
         }
-
     }
 
     // Climber
