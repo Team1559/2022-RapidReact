@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.subsystems.Shooter;
 // import frc.robot.subsystems.Vision;
@@ -38,8 +39,7 @@ public class Robot extends TimedRobot {
     private static final String PATH_3 = "Path 3";
     private static final String PATH_4 = "Path 4";
 
-    
-    private Shooter       shooter;
+    private Shooter shooter;
 
     private CompressorControl compressorControl;
 
@@ -50,7 +50,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
-        initialize(); 
+        initialize();
         m_chooser.setDefaultOption("Default Auto Path", DEFAULT_PATH);
         m_chooser.addOption("Path 1", PATH_1);
         m_chooser.addOption("Path 2", PATH_2);
@@ -87,7 +87,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        if(FeatureFlags.doImu && FeatureFlags.imuInitialized){
+        if (FeatureFlags.doImu && FeatureFlags.imuInitialized) {
             imu.zeroYaw();
         }
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
@@ -106,14 +106,14 @@ public class Robot extends TimedRobot {
                 case PATH_2:
                     vc.setAutoPath("path2");
                     break;
-                    
+
                 case PATH_3:
                     vc.setAutoPath("path3");
                     break;
                 case PATH_4:
                     vc.setAutoPath("path4");
                     break;
-            }    
+            }
             vc.autoInit();
         }
     }
@@ -122,12 +122,12 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-        if(FeatureFlags.doCompressor && FeatureFlags.compressorInitialized){
+        if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
             compressorControl.enable();
         }
 
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
-           vc.autoPeriodic();
+            vc.autoPeriodic();
         }
     }
 
@@ -140,13 +140,13 @@ public class Robot extends TimedRobot {
             usingVision = vc.usingAuto;
         }
 
-        if(FeatureFlags.doChassis && FeatureFlags.chassisInitialized){
+        if (FeatureFlags.doChassis && FeatureFlags.chassisInitialized) {
             chassis.setPid(6e-5, 0, 0, 0.000015);
         }
     }
 
     /** This function is called periodically during operator control. */
-    
+
     @Override
     public void teleopPeriodic() {
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
@@ -157,7 +157,7 @@ public class Robot extends TimedRobot {
             chassis.main();
         }
 
-        if(FeatureFlags.doCompressor && FeatureFlags.compressorInitialized){
+        if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
             compressorControl.enable();
         }
 
@@ -167,34 +167,34 @@ public class Robot extends TimedRobot {
     }
 
     /** This function is called once when the robot is disabled. */
-   
+
     @Override
     public void disabledInit() {
 
-        if(FeatureFlags.doCompressor && FeatureFlags.compressorInitialized){
+        if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
             compressorControl.disable();
-          }
+        }
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
             vc.disable();
         }
     }
 
     /** This function is called periodically when disabled. */
-    
+
     @Override
     public void disabledPeriodic() {
 
     }
 
     /** This function is called once when test mode is enabled. */
-    
+
     @Override
     public void testInit() {
 
     }
 
     /** This function is called periodically during test mode. */
-    
+
     @Override
     public void testPeriodic() {
 
@@ -208,7 +208,7 @@ public class Robot extends TimedRobot {
             FeatureFlags.compressorInitialized = true;
         }
 
-        if(FeatureFlags.doImu && !FeatureFlags.imuInitialized) {
+        if (FeatureFlags.doImu && !FeatureFlags.imuInitialized) {
             imu = new IMU();
             imu.zeroYaw();
             FeatureFlags.imuInitialized = true;
@@ -218,7 +218,7 @@ public class Robot extends TimedRobot {
             chassis = new Chassis(oi, imu);
             FeatureFlags.chassisInitialized = true;
         }
-        
+
         if (FeatureFlags.doVision && !FeatureFlags.visionInitialized) {
             vision = new Vision();
             vc = new VisionControl(vision, vData, oi, chassis, imu);

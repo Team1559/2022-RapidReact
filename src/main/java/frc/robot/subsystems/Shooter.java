@@ -9,6 +9,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 
+@SuppressWarnings("unused")
+
 public class Shooter {
 
     private OperatorInterface oi;
@@ -31,6 +33,19 @@ public class Shooter {
     private TalonSRX intake;
     private VisionControl vc;
 
+    
+    // States for gatherer
+    
+    private static final int gathererUp = 0;
+    private static final int gathererDown = 1;
+    private static final int holding = 3;
+
+    private int state = gathererUp;
+    
+    
+    
+    
+    
     public Shooter(OperatorInterface operatorinterface, VisionControl vc) {
         oi = operatorinterface;
         this.vc = vc;
@@ -77,34 +92,21 @@ public class Shooter {
         // CONTROL
 
         // Control for FlyWheel
-        if(oi.runFlyWheelButtonManual()){
+        if (oi.runFlyWheelButtonManual()) {
             startShooter(shooterRpms);
-        }
-
-        else if (oi.runFlyWheelButton()) {
-            startShooter(vc.calculateShooterRPMS());
-        }
-
-        else {
+        } else {
             stopShooter();
         }
 
         // Control for lowering intake
-        if (oi.lowerIntakeButton()) {
+        if (oi.manualIntakeButton()) {
             lowerIntake();
-        } 
-        
-        else {
-            raiseIntake();
-        }
-
-        // Control for running intake
-        if (oi.intakeButton()) {
             startIntake();
-        } 
-        
-        else {
+            state = gathererDown;
+        } else {
             stopIntake();
+            raiseIntake();
+
         }
 
     }
@@ -113,8 +115,8 @@ public class Shooter {
         shooter.set(TalonFXControlMode.Velocity, rpms);
         if (oi.shootButton()) {
             feeder.set(feederSpeed);
-        } 
-        
+        }
+
         else {
             feeder.set(0);
         }
