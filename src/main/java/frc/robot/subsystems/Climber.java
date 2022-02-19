@@ -26,7 +26,8 @@ public class Climber {
     private double climberRpms = 7500;
 
     private TalonFX climber;
-//    private Solenoid ;
+    private Solenoid left;
+    private Solenoid right;
     private VisionControl vc;
 
 
@@ -52,46 +53,49 @@ public class Climber {
         climber.configPeakOutputReverse(-1, TIMEOUT);
         climber.setNeutralMode(NeutralMode.Brake);
         climber.configSupplyCurrentLimit(climberLimit);
-
+        climber.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
+        climber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
     }
 
     public void runclimber() {
-        // System.out.println(climber.getSelectedSensorVelocity()); PRINTS FOR VELOCITY
-        // CONTROL
-
-        // Control for FlyWheel
-        if (oi.DPadUp()) {
-            startclimber(climberRpms);
-        } else {
-            stopclimber();
+        // Control for Winch
+        if (oi.climberEnableButton()) {
+            if (oi.climberUpButton()) {
+                raiseRobot();
+            } else if (climberDownButton()) {
+                lowerRobot();
+            } else {
+                holdRobot()
+            }
         }
 
-        // Control for lowering intake
-        if (oi.manualIntakeButton() && state == gathererUp) {
-            lowerIntake();
-            startIntake();
-        } else if (!oi.manualIntakeButton() && state == gathererDown) {
-            stopIntake();
-        } else if (oi.manualIntakeButton() && state == holding) {
-            stopIntake();
-            raiseIntake();
-        }
-
+        // Control for moving pistons
+        if (oi.extendClimberPistonsButton()) {
+            extendPistons();
+        } 
+        else if(oi.retractClimberPistonsButton()) {
+            retractPistons();
+        } 
     }
 
-    public void startclimber(double rpms) {
+    public void raiseRobot() {
         climber.set(1.0, TalonFXControlMode.PercentOutput);
     }
 
-    public void stopclimber() {
-        climber.set(TalonFXControlMode.PercentOutput, 0);
+    public void lowerRobot() {
+        climber.set(-1.0, TalonFXControlMode.PercentOutput);
+    }
+    public void holdRobot() {
+        climber.set(-0.0, TalonFXControlMode.PercentOutput);
     }
 
-    public void lowerIntake() {
-        lowerIntake.set(true);
+    public void extendPistons() {
+        left.set(true);
+        right.set(true);
     }
 
-    public void raiseIntake() {
-        lowerIntake.set(false);
+    public void retractPistons() {
+        left.set(false);
+        right.set(false);
     }
 }

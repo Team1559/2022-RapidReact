@@ -36,13 +36,23 @@ public class OperatorInterface {
     }
 
     public boolean manualIntakeButton() {
-        if (pilot.getLeftBumper()) {
-            return true;
-        } else {
-            return false;
-        }
+        return pilot.getLeftBumper();
     }
 
     // Climber
-
+    public boolean climberUpButton() {
+        return copilot.getDpad(0);
+    }
+    public boolean climberDownButton() {
+        return copilot.getDpad(180);
+    }
+    public boolean climberEnableButton() {
+        return copilot.getRightTriggerAxis() > .25;
+    }
+    public boolean extendClimberPistons() {
+        return copilot.getXButton();
+    }
+    public boolean retractClimberPisons() {
+        return copilot.getYButton();
+    }
 }
