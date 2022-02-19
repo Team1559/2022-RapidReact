@@ -36,11 +36,7 @@ public class OperatorInterface {
     }
 
     public boolean manualIntakeButton() {
-        if (pilot.getLeftBumper()) {
-            return true;
-        } else {
-            return false;
-        }
+        return pilot.getLeftBumper();
     }
 
     // Climber
