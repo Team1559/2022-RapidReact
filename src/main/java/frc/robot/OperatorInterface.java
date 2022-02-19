@@ -49,10 +49,10 @@ public class OperatorInterface {
     public boolean climberEnableButton() {
         return copilot.getRightTriggerAxis() > .25;
     }
-    public boolean extendClimberPistons() {
+    public boolean extendClimberPistonsButton() {
         return copilot.getXButton();
     }
-    public boolean retractClimberPisons() {
+    public boolean retractClimberPistonsButton() {
         return copilot.getYButton();
     }
 }
