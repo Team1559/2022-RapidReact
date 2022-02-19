@@ -3,18 +3,25 @@ package frc.robot.subsystems;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import com.revrobotics.SparkMaxPIDController;
-import frc.robot.components.DevilDrive;
 import frc.robot.OperatorInterface;
 import frc.robot.Wiring;
 import frc.robot.components.IMU;
+import frc.robot.components.MachineLearning;
+import frc.robot.components.SplitDrive;
 
+@SuppressWarnings("unused")
 public class Chassis {
     private static final int TIMEOUT = 20;
     public static final double WHEEL_RADIUS_INCHES_MECANUM = 3;
     public static final double MAX_SPEED_FPS_TRACTION = 9.67 * 1.01;
-    public static final double MAX_TICKS_PER_100MS = MAX_SPEED_FPS_TRACTION * 4096.0 / (Math.PI * WHEEL_RADIUS_INCHES_MECANUM * 2.0 / 12.0) / 10.0;
-    private DevilDrive drive;
+    public static final double MAX_TICKS_PER_100MS = MAX_SPEED_FPS_TRACTION * 4096.0
+            / (Math.PI * WHEEL_RADIUS_INCHES_MECANUM * 2.0 / 12.0) / 10.0;
+    private SplitDrive front;
+    private SplitDrive back;
     public CANSparkMax CANSparkMax1;
     public CANSparkMax CANSparkMax2;
     public CANSparkMax CANSparkMax3;
@@ -29,7 +36,11 @@ public class Chassis {
     public double brep;
     private OperatorInterface oi;
     private IMU imu;
-    private final boolean DISABLE_STRAFING = true;
+    private MachineLearning ml;
+    // these need to be set once
+    private final double differpercent = 12/25.5; // percent the front needs to move compared to the back, needs to be justed
+    // these can be changed when needed
+    private final boolean LOGDATA = true;
 
     /**
      * private static final double kF = 0.14614285; //F-gain = (100% X 1023) /
@@ -39,13 +50,12 @@ public class Chassis {
      * double cLR = 0.1; This was ctrl c ctrl v'd from 2020. I don't now what
      * these values mean so I don't want to delete them.
      */
-
     private CANSparkMax initMotor(CANSparkMax sparky, int id) {
         sparky = new CANSparkMax(id, MotorType.kBrushless);
         SparkMaxPIDController pid = sparky.getPIDController();
         sparky.restoreFactoryDefaults();
         sparky.setCANTimeout(TIMEOUT);
-        final double kP= 6e-5;
+        final double kP = 6e-5;
         final double kI = 0;
         final double kD = 0;
         final double kIz = 0;
@@ -60,7 +70,8 @@ public class Chassis {
         pid.setOutputRange(kMinOutput, kMaxOutput);
         return sparky;
     }
-    public void initEncoders(){
+
+    public void initEncoders() {
         flEncoder = CANSparkMax1.getEncoder();
         frEncoder = CANSparkMax2.getEncoder();
         blEncoder = CANSparkMax3.getEncoder();
@@ -75,21 +86,32 @@ public class Chassis {
         CANSparkMax3 = initMotor(CANSparkMax3, Wiring.blMotor);
         CANSparkMax4 = initMotor(CANSparkMax4, Wiring.brMotor);
 
-        //encoders
+        // encoders
         CANSparkMax2.setInverted(true);
         CANSparkMax4.setInverted(true);
         initEncoders();
 
-        drive = new DevilDrive(CANSparkMax1, CANSparkMax3, CANSparkMax2, CANSparkMax4);
+        front = new SplitDrive(CANSparkMax1, CANSparkMax2);
+        back = new SplitDrive(CANSparkMax3, CANSparkMax4);
+
+        ml = new MachineLearning();
+        if (LOGDATA) {
+            ml.createfile("encoders");
+        }
     }
 
     public void main() {
-        //System.out.println("forward "+ 0.5 * oi.pilot.getLeftY() +" strafe "+ 0.5 * oi.pilot.getLeftX() +" rotate "+ 0.5 * oi.pilot.getRightX());
-        drive(0.995 * oi.pilot.getLeftY(), -0.995 * oi.pilot.getLeftX(), -0.995 * oi.pilot.getRightX());
+        drive(oi.pilot.getLeftY(), oi.pilot.getRightX());
         updateEncoders();
         imu.getvalues();
-        System.out.println("Front left encoder velocity is: " + flEncoder.getVelocity() + " Front right encoder velocity is: " + frEncoder.getVelocity() + 
-                           "\nBack left encoder velocity is: " + blEncoder.getVelocity() + " Back right encoder velocity is: " + brEncoder.getVelocity());
+        if (LOGDATA) {
+            SmartDashboard.putNumber("Front left encoder velocity is: ", flEncoder.getVelocity());
+            SmartDashboard.putNumber("Front right encoder velocity is: ", frEncoder.getVelocity());
+            SmartDashboard.putNumber("Back left encoder velocity is: ", blEncoder.getVelocity());
+            SmartDashboard.putNumber("Back right encoder velocity is: ", brEncoder.getVelocity());
+            ml.periodic(oi.pilot.getLeftY() + oi.pilot.getRightX() + flEncoder.getVelocity() + frEncoder.getVelocity() +
+                    blEncoder.getVelocity() + brEncoder.getVelocity() + "");
+        }
     }
 
     public void updateEncoders() {
@@ -99,22 +121,18 @@ public class Chassis {
         brep = brEncoder.getPosition();
     }
 
-    public void drive(double ySpeed, double xSpeed, double zRotation) {
-        drive(ySpeed, xSpeed, zRotation, true);
+    public void drive(double ySpeed, double zRotation) {
+        drive(ySpeed, zRotation, true);
     }
 
-    public void drive(double ySpeed, double xSpeed, double zRotation, boolean squareInputs) {
-        if(DISABLE_STRAFING) {
-            drive.driveCartesian(ySpeed, 0, zRotation, squareInputs);
-        }
-
-        else{
-            drive.driveCartesian(ySpeed, xSpeed, zRotation, squareInputs);
-        }
+    public void drive(double ySpeed, double zRotation, boolean squareInputs) {
+        front.splitDrive(ySpeed, (differpercent / 100.0) * -zRotation, squareInputs);
+        back.splitDrive(ySpeed, -zRotation, squareInputs);
     }
 
     public void pathDrive(double fl, double fr, double bl, double br) {
-        drive.pathDrive(fl, fr, bl, br);
+        front.pathDrive(fl, fr);
+        back.pathDrive(bl, br);
     }
 
     public void setPid(double kp, double ki, double kd, double kf) {
@@ -173,5 +191,11 @@ public class Chassis {
         frEncoder.setPosition(0);
         blEncoder.setPosition(0);
         brEncoder.setPosition(0);
+    }
+
+    public void disable() {
+        if (LOGDATA) {
+            ml.write();
+        }
     }
 }

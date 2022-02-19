@@ -1,8 +1,9 @@
 package frc.robot.components;
+
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.*;
 
-public  class IMU{
+public class IMU {
     AHRS ahrs;
     public double roll = 0;
     public double pitch = 0;
@@ -14,7 +15,7 @@ public  class IMU{
     public double turnRate;
     public double maxAutoYaw = 60;// messured in degrees, may change
 
-  //the init method
+    // the init method
     public IMU() {
         try {
             ahrs = new AHRS(SPI.Port.kMXP);
@@ -26,16 +27,16 @@ public  class IMU{
         }
     }
 
-    //sets the yaw to zero
+    // sets the yaw to zero
     public void zeroYaw() {
         ahrs.zeroYaw();
         ahrs.reset();
         yaw = 0;
     }
 
-    //returns true if the yaw is between the valid range
+    // returns true if the yaw is between the valid range
     public boolean isYawValid() {
-        if(ahrs.getYaw() < maxAutoYaw && ahrs.getYaw() > -maxAutoYaw) {
+        if (ahrs.getYaw() < maxAutoYaw && ahrs.getYaw() > -maxAutoYaw) {
             return true;
         }
 
@@ -44,28 +45,28 @@ public  class IMU{
         }
     }
 
-  //gets all the yaw values
-  public void getvalues() {
+    // gets all the yaw values
+    public void getvalues() {
         x_acceleration = ahrs.getWorldLinearAccelX();
         y_acceleration = ahrs.getWorldLinearAccelY();
         z_acceleration = ahrs.getWorldLinearAccelZ();
         roll = ahrs.getPitch();
         pitch = ahrs.getRoll();
-        yaw = (ahrs.getYaw()) * (Math.PI/180);// normally negated
-        turnRate = ahrs.getRate(); 
+        yaw = (ahrs.getYaw()) * (Math.PI / 180);// normally negated
+        turnRate = ahrs.getRate();
         y_angularVelocity = ahrs.getRate();
-   }
-         
-    /*the following are all the functions avalible*/
+    }
 
-    //SmartDashboard.putNumber("IMU_Yaw", ahrs.getYaw());
-    //SmartDashboard.putNumber("IMU_Pitch", ahrs.getRoll());
-    //SmartDashboard.putNumber("IMU_Roll", ahrs.getPitch());
-    
-    //SmartDashboard.putNumber("IMU_CompassHeading", ahrs.getCompassHeading());
+    /* the following are all the functions avalible */
+
+    // SmartDashboard.putNumber("IMU_Yaw", ahrs.getYaw());
+    // SmartDashboard.putNumber("IMU_Pitch", ahrs.getRoll());
+    // SmartDashboard.putNumber("IMU_Roll", ahrs.getPitch());
+
+    // SmartDashboard.putNumber("IMU_CompassHeading", ahrs.getCompassHeading());
 
     /* Display 9-axis Heading (requires magnetometer calibration to be useful) */
-   // SmartDashboard.putNumber("IMU_FusedHeading", ahrs.getFusedHeading());
+    // SmartDashboard.putNumber("IMU_FusedHeading", ahrs.getFusedHeading());
 
     /* These functions are compatible w/the WPI Gyro Class, providing a simple */
     /* path for upgrading from the Kit-of-Parts gyro to the navx MXP */
@@ -75,9 +76,12 @@ public  class IMU{
 
     /* Display Processed Acceleration Data (Linear Acceleration, Motion Detect) */
 
-    ///////////////////////////////////////////////SmartDashboard.putNumber("IMU_Accel_X", ahrs.getWorldLinearAccelX());
-    ///////////////////////////////////////////////SmartDashboard.putNumber("IMU_Accel_Z", ahrs.getWorldLinearAccelZ());
-    ///////////////////////////////////////////////SmartDashboard.putNumber("IMU_Accel_Y", ahrs.getWorldLinearAccelY());
+    /////////////////////////////////////////////// SmartDashboard.putNumber("IMU_Accel_X",
+    /////////////////////////////////////////////// ahrs.getWorldLinearAccelX());
+    /////////////////////////////////////////////// SmartDashboard.putNumber("IMU_Accel_Z",
+    /////////////////////////////////////////////// ahrs.getWorldLinearAccelZ());
+    /////////////////////////////////////////////// SmartDashboard.putNumber("IMU_Accel_Y",
+    /////////////////////////////////////////////// ahrs.getWorldLinearAccelY());
     // SmartDashboard.putBoolean("IMU_IsMoving", ahrs.isMoving());
     // SmartDashboard.putBoolean("IMU_IsRotating", ahrs.isRotating());
 
@@ -111,20 +115,20 @@ public  class IMU{
 
     /* Omnimount Yaw Axis Information */
     /* For more info, see http://navx-mxp.kauailabs.com/installation/omnimount */
-    
+
     // SmartDashboard.putString("YawAxisDirection", yaw_axis.up ? "Up" : "Down");
     // SmartDashboard.putNumber("YawAxis", yaw_axis.board_axis.getValue());
 
     /* Sensor Board Information */
-    //SmartDashboard.putString("FirmwareVersion", ahrs.getFirmwareVersion());
+    // SmartDashboard.putString("FirmwareVersion", ahrs.getFirmwareVersion());
 
     /* Quaternion Data */
     /* Quaternions are fascinating, and are the most compact representation of */
     /* orientation data. All of the Yaw, Pitch and Roll Values can be derived */
     /* from the Quaternions. If interested in motion processing, knowledge of */
     /* Quaternions is highly recommended. */
-    //SmartDashboard.putNumber("QuaternionW", ahrs.getQuaternionW());
-    //SmartDashboard.putNumber("QuaternionX", ahrs.getQuaternionX());
-    //SmartDashboard.putNumber("QuaternionY", ahrs.getQuaternionY());
-    //SmartDashboard.putNumber("QuaternionZ", ahrs.getQuaternionZ());
+    // SmartDashboard.putNumber("QuaternionW", ahrs.getQuaternionW());
+    // SmartDashboard.putNumber("QuaternionX", ahrs.getQuaternionX());
+    // SmartDashboard.putNumber("QuaternionY", ahrs.getQuaternionY());
+    // SmartDashboard.putNumber("QuaternionZ", ahrs.getQuaternionZ());
 }
