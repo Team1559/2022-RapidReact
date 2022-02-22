@@ -14,7 +14,7 @@ public class UDPClient implements Runnable {
     // private static final String HOST = "169.254.210.151";// "10.15.59.6"; //
     // 169.254.227.6
     private static final int PORT = 5801;
-    Thread  clientThread;
+    Thread clientThread;
     boolean running;
     String data;
     DatagramSocket socket;
@@ -26,8 +26,8 @@ public class UDPClient implements Runnable {
 
         try {
             socket = new DatagramSocket(PORT);
-        } 
-        
+        }
+
         catch (Exception e) {
             System.out.println(e.toString());
         }
@@ -56,7 +56,7 @@ public class UDPClient implements Runnable {
     public String receive() {
         String ret = null;
         DatagramPacket DpReceive = new DatagramPacket(receive, receive.length);
-        
+
         try {
             socket.receive(DpReceive);
             InputStream is = new ByteArrayInputStream(receive);
@@ -64,7 +64,7 @@ public class UDPClient implements Runnable {
 
             ret = bfReader.readLine();
             // System.out.println(ret);
-        } 
+        }
 
         catch (Exception e) {
             System.out.println(e.toString());

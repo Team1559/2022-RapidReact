@@ -72,14 +72,14 @@ public class MachineLearning {
     public String readFile(String fileName) {
         File file = new File("/1559data/" + fileName + ".txt");
         String fileContent = "";
-        
+
         try (FileReader fr = new FileReader(file)) {
             char[] chars = new char[(int) file.length()];
             fr.read(chars);
 
             fileContent = new String(chars);
-        } 
-        
+        }
+
         catch (IOException e) {
             e.printStackTrace();
         }

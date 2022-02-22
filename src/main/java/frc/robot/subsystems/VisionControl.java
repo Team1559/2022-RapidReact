@@ -74,20 +74,6 @@ public class VisionControl {
         }
     }
 
-    public VisionControl(VisionData visionData, OperatorInterface oi, Chassis chassis, IMU imu,
-            String selector) {// , Shooter shooter}) {
-        this.selector = selector;
-        this.oi = oi;
-        this.visionData = visionData;
-        this.chassis = chassis;
-        this.imu = imu;
-        ml = new MachineLearning();
-        if (RECORD_PATH) {
-            ml.createfile(FILE_NAME);
-        }
-        // this.shooter = shooter;
-    }
-
     public void autoInit() {
         path4 p1 = new path4();
         double skip[] = { 0 };
@@ -136,6 +122,9 @@ public class VisionControl {
                 else {
                     System.out.println("Please enable in teleop to record a new path");
                 }
+                break;
+            case SHOOT:
+                break;
         }
     }
 
@@ -300,7 +289,6 @@ public class VisionControl {
                 }
                 break;
             case SHOOT:
-
                 double rpms = calculateShooterRPMS();
                 shooter.startShoter(rpms);
                 shooter.startFeeder();

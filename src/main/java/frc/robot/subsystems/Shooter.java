@@ -236,7 +236,7 @@ public class Shooter {
         else if (shooterRpms > 15000) {
             shooterRpms = 15000;
         }
-        
+
         ml.write(Double.toString(shooterRpms));
     }
 }
