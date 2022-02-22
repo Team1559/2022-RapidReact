@@ -6,6 +6,17 @@ import frc.robot.*;
 
 @SuppressWarnings("unused")
 public class VisionControl {
+    public enum autoState {
+        PATH, SHOOT
+    }
+
+    public enum shooterState {
+        ALIGN, WAIT, SHOOT
+    }
+
+    private autoState autostate = autoState.PATH;
+    private shooterState shooterstate = shooterState.ALIGN;
+
     private OperatorInterface oi;
     private Vision vision = new Vision();
     private VisionData visionData;
@@ -115,13 +126,16 @@ public class VisionControl {
     }
 
     public void autoPeriodic() {
-        if (!RECORD_PATH) {
-            update();
-            followPath();
-        }
+        switch (autostate) {
+            case PATH:
+                if (!RECORD_PATH) {
+                    update();
+                    followPath();
+                }
 
-        else {
-            System.out.println("Please enable in teleop to record a new path");
+                else {
+                    System.out.println("Please enable in teleop to record a new path");
+                }
         }
     }
 
@@ -270,7 +284,39 @@ public class VisionControl {
         return -ball_rotation;
     }
 
-    public double calculateShooterRPMS() {
+    public void autoShoot() {
+        switch (shooterstate) {
+            case ALIGN:
+                trackHoop();
+                if (Math.abs(hoopr) <= hoopChassisThreshold) {
+                    shooterstate = shooterState.WAIT;
+                }
+                break;
+            case WAIT:
+                double rpm = calculateShooterRPMS();
+                shooter.startShoter(rpm);
+                if (Math.abs(shooter.getShooterRpms() / rpm) > 0.90) {
+                    shooterstate = shooterState.SHOOT;
+                }
+                break;
+            case SHOOT:
+
+                double rpms = calculateShooterRPMS();
+                shooter.startShoter(rpms);
+                shooter.startFeeder();
+                if (Math.abs(shooter.getShooterRpms() / rpms) < 0.90) {
+                    shooter.stopFeeder();
+                    shooterstate = shooterState.WAIT;
+                }
+                break;
+        }
+    }
+
+    public boolean isHoopValid() {
+        return visionData.isHoopValid();
+    }
+
+    private double calculateShooterRPMS() {
         double shooterRPM = 0;
         final double angle = 45;
         final double diameter = 0.5; // distance in inches
