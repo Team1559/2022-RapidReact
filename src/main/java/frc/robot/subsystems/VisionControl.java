@@ -13,7 +13,7 @@ public class VisionControl {
     public enum shooterState {
         ALIGN, WAIT, SHOOT
     }
-
+    
     private autoState autostate = autoState.PATH;
     private shooterState shooterstate = shooterState.ALIGN;
 
@@ -25,10 +25,6 @@ public class VisionControl {
     private double hoopr = 0;
     private double ballr = 0;
     private double hoopx = 0;
-
-    // shooter variables
-    private double desiredAngle;// angle of the shooter in degrees
-    private double desiredPower;// desired shooter power in RPMS
 
     private Chassis chassis;
 
@@ -51,7 +47,7 @@ public class VisionControl {
     private final int MAX_SIZE = 2000;// should only need to be 750
     private final double ballChassisThreshold = 1; // angle in degrees
     private final double hoopChassisThreshold = 1; // angle in degrees
-    private final double shooterThreshold = 2;
+    private final double shooterThreshold = 100;
 
     private final boolean SQUARE_DRIVER_INPUTS = true;
 
@@ -248,11 +244,6 @@ public class VisionControl {
         imu.getvalues();
     }
 
-    private void calculateShooter() {
-        // desiredAngle = __calculated_angle__;
-        // desiredPower = __calculated_RPMS__;
-    }
-
     private double calculateHoopRotation() {
         double hoop_rotation = 1.0 * (hoopr / 34.0);
 
@@ -284,7 +275,7 @@ public class VisionControl {
             case WAIT:
                 double rpm = calculateShooterRPMS();
                 shooter.startShoter(rpm);
-                if (Math.abs(shooter.getShooterRpms() / rpm) > 0.90) {
+                if (Math.abs(shooter.getShooterRpms() - rpm) < shooterThreshold) {
                     shooterstate = shooterState.SHOOT;
                 }
                 break;
@@ -292,7 +283,7 @@ public class VisionControl {
                 double rpms = calculateShooterRPMS();
                 shooter.startShoter(rpms);
                 shooter.startFeeder();
-                if (Math.abs(shooter.getShooterRpms() / rpms) < 0.90) {
+                if (Math.abs(shooter.getShooterRpms() - rpms) > shooterThreshold) {
                     shooter.stopFeeder();
                     shooterstate = shooterState.WAIT;
                 }
