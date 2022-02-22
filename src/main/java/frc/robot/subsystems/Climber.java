@@ -26,15 +26,12 @@ public class Climber {
     private double climberRpms = 7500;
 
     private TalonFX climber;
-    private Solenoid left;
-    private Solenoid right;
-    private VisionControl vc;
+    private Solenoid climberSolenoid;
 
 
     public Climber(OperatorInterface operatorinterface) {
         oi = operatorinterface;
-        this.vc = Robot.vc;
-
+        
         // MotorController Config
 
         climber = new TalonFX(Wiring.climberMotor);
@@ -79,23 +76,21 @@ public class Climber {
     }
 
     public void raiseRobot() {
-        climber.set(1.0, TalonFXControlMode.PercentOutput);
+        climber.set(TalonFXControlMode.PercentOutput, 1.0);
     }
 
     public void lowerRobot() {
-        climber.set(-1.0, TalonFXControlMode.PercentOutput);
+        climber.set(TalonFXControlMode.PercentOutput, -1.0);
     }
     public void holdRobot() {
-        climber.set(-0.0, TalonFXControlMode.PercentOutput);
+        climber.set(TalonFXControlMode.PercentOutput, -0.0);
     }
 
     public void extendPistons() {
-        left.set(true);
-        right.set(true);
+        climberSolenoid.set(true);
     }
 
     public void retractPistons() {
-        left.set(false);
-        right.set(false);
+        climberSolenoid.set(false);
     }
 }
