@@ -23,10 +23,12 @@ public class MachineLearning {
         else {
             name += ".txt";
         }
+
         filename = name;
+
         try {
-            new File("/paths/" + name).mkdirs();
-            File myObj = new File("/paths/" + name + ".txt");
+            File myObj = new File("/1559data/" + name + ".txt");
+            myObj.mkdir();
 
             if (myObj.createNewFile()) {
                 System.out.println("File created: " + myObj.getName());
@@ -44,10 +46,15 @@ public class MachineLearning {
     }
 
     public void write() {
-        try {
-            FileWriter myWriter = new FileWriter("/paths/" + filename + ".txt");
+        write(out);
+        out = "";
+    }
 
-            myWriter.write(out);
+    public void write(String data) {
+        try {
+            FileWriter myWriter = new FileWriter("/1559data/" + filename + ".txt");
+
+            myWriter.write(data);
             myWriter.close();
             System.out.println("Successfully wrote to the file.");
         }
@@ -56,8 +63,29 @@ public class MachineLearning {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
+    }
 
-        out = "";
+    public String readFile() {
+        return readFile(filename);
+    }
+
+    public String readFile(String fileName) {
+        File file = new File("/1559data/" + fileName + ".txt");
+        String fileContent = "";
+        
+        try (FileReader fr = new FileReader(file)) {
+            char[] chars = new char[(int) file.length()];
+            fr.read(chars);
+
+            fileContent = new String(chars);
+        } 
+        
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return fileContent;
+
     }
 
     public double interpolate(double counter, double[] value) {

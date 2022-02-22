@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import frc.robot.OperatorInterface;
+import frc.robot.components.MachineLearning;
+
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
 import frc.robot.*;
@@ -9,8 +11,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 
-@SuppressWarnings("unused")
-
 public class Shooter {
 
     private OperatorInterface oi;
@@ -18,6 +18,7 @@ public class Shooter {
     private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(true, 20, 20, 0);
     private final int TIMEOUT = 0;
     private final double cLR = 0.1;
+    private MachineLearning ml = new MachineLearning();
 
     private double shooter_kF = 0.045;
     private double shooter_kP = 0.4;
@@ -34,16 +35,22 @@ public class Shooter {
     private VisionControl vc;
 
     // States for gatherer
-
     public static final int gathererUp = 0;
     public static final int gathererDown = 1;
     public static final int holding = 3;
 
-    public int state = gathererUp;
+    // States for shooter
+    public static final int MANUAL = 0;
+    public static final int AUTOMATIC = 1;
+
+    public int gathererState = gathererUp;
+    public int shooterState = MANUAL;
 
     public Shooter(OperatorInterface operatorinterface) {
         oi = operatorinterface;
-        this.vc = Robot.vc;
+        if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
+            this.vc = Robot.vc;
+        }
 
         // MotorController Config
 
@@ -76,6 +83,19 @@ public class Shooter {
         shooter.setNeutralMode(NeutralMode.Coast);
         shooter.configSupplyCurrentLimit(shooterLimit);
 
+        ml.createfile("shooterRPMS");
+        try {
+            shooterRpms = Double.parseDouble(ml.readFile());
+        }
+
+        catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
+        catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void runShooter() {
@@ -83,27 +103,67 @@ public class Shooter {
         // CONTROL
 
         // Control for FlyWheel
+
         if (oi.runFlyWheelButtonManual()) {
-            startShooter(shooterRpms);
-        } else {
+            shooterState = MANUAL;
+            startShooter();
+        }
+
+        else if (oi.autoShootButton()) {
+            if (checkVision()) {
+                shooterState = AUTOMATIC;
+            }
+
+            else {
+                shooterState = MANUAL;
+            }
+
+            if (shooterState == MANUAL) {
+                updateManualRPMS();
+            }
+            startShooter();
+        }
+
+        else {
             stopShooter();
         }
 
         // Control for lowering intake
-        if (oi.manualIntakeButton() && state == gathererUp) {
-            lowerIntake();
-            startIntake();
-        } else if (!oi.manualIntakeButton() && state == gathererDown) {
-            stopIntake();
-        } else if (oi.manualIntakeButton() && state == holding) {
-            stopIntake();
-            raiseIntake();
+        switch (gathererState) {
+            case gathererUp:
+                if (oi.manualIntakeButton()) {
+                    lowerIntake();
+                    startIntake();
+                }
+                break;
+            case gathererDown:
+                if (!oi.manualIntakeButton()) {
+                    stopIntake();
+                }
+                break;
+            case holding:
+                if (oi.manualIntakeButton()) {
+                    stopIntake();
+                    raiseIntake();
+                }
+                break;
         }
-
     }
 
-    public void startShooter(double rpms) {
-        shooter.set(TalonFXControlMode.Velocity, rpms);
+    public void startShooter() {
+        switch (shooterState) {
+            case AUTOMATIC:
+                shooter.set(TalonFXControlMode.Velocity, calcRPMS());
+                break;
+            case MANUAL:
+                shooter.set(TalonFXControlMode.Velocity, shooterRpms);
+                break;
+        }
+
+        feederMain();
+    }
+
+    public void feederMain() {
         if (oi.shootButton()) {
             feeder.set(feederSpeed);
         }
@@ -118,12 +178,12 @@ public class Shooter {
     }
 
     public void lowerIntake() {
-        state = gathererDown;
+        gathererState = gathererDown;
         lowerIntake.set(true);
     }
 
     public void raiseIntake() {
-        state = gathererUp;
+        gathererState = gathererUp;
         lowerIntake.set(false);
     }
 
@@ -132,8 +192,39 @@ public class Shooter {
     }
 
     public void stopIntake() {
-        state = holding;
+        gathererState = holding;
         intake.set(TalonSRXControlMode.PercentOutput, 0);
     }
 
+    public boolean checkVision() {
+        if (vc.calculateShooterRPMS() == 0.0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public double calcRPMS() {
+        if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
+            return vc.calculateShooterRPMS();
+        }
+
+        shooterState = MANUAL;
+        return 0.0;
+    }
+
+    private void updateManualRPMS() {
+        if (oi.copilot.getDPadPress(oi.DPadUp)) {
+            shooterRpms += 100;
+        } else if (oi.copilot.getDPadPress(oi.DPadDown)) {
+            shooterRpms -= 100;
+        }
+
+        if (shooterRpms < 0) {
+            shooterRpms = 0;
+        } else if (shooterRpms > 15000) {
+            shooterRpms = 15000;
+        }
+        ml.write(Double.toString(shooterRpms));
+    }
 }

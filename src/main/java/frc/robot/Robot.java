@@ -24,7 +24,6 @@ import frc.robot.components.*;
 public class Robot extends TimedRobot {
     private OperatorInterface oi = new OperatorInterface();
     private IMU imu;
-    private Vision vision;
     private VisionData vData;
     public static VisionControl vc;
     private boolean usingVision = false;
@@ -226,8 +225,7 @@ public class Robot extends TimedRobot {
         }
 
         if (FeatureFlags.doVision && !FeatureFlags.visionInitialized) {
-            vision = new Vision();
-            vc = new VisionControl(vision, vData, oi, chassis, imu, shooter);
+            vc = new VisionControl(vData, oi, chassis, imu, shooter);
             FeatureFlags.visionInitialized = true;
         }
     }

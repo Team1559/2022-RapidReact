@@ -7,7 +7,7 @@ import frc.robot.*;
 @SuppressWarnings("unused")
 public class VisionControl {
     private OperatorInterface oi;
-    private Vision vision;
+    private Vision vision = new Vision();
     private VisionData visionData;
     private IMU imu;
     private Shooter shooter;
@@ -49,11 +49,10 @@ public class VisionControl {
     private final String FILE_NAME = "path4";
     private String selector;
 
-    public VisionControl(Vision vision, VisionData visionData, OperatorInterface oi, Chassis chassis, IMU imu,
+    public VisionControl(VisionData visionData, OperatorInterface oi, Chassis chassis, IMU imu,
             Shooter shooter) {
         this.selector = "";
         this.oi = oi;
-        this.vision = vision;
         this.visionData = visionData;
         this.chassis = chassis;
         this.imu = imu;
@@ -64,11 +63,10 @@ public class VisionControl {
         }
     }
 
-    public VisionControl(Vision vision, VisionData visionData, OperatorInterface oi, Chassis chassis, IMU imu,
+    public VisionControl(VisionData visionData, OperatorInterface oi, Chassis chassis, IMU imu,
             String selector) {// , Shooter shooter}) {
         this.selector = selector;
         this.oi = oi;
-        this.vision = vision;
         this.visionData = visionData;
         this.chassis = chassis;
         this.imu = imu;
@@ -275,7 +273,7 @@ public class VisionControl {
     public double calculateShooterRPMS() {
         double shooterRPM = 0;
         final double angle = 45;
-        final double diameter = 0.5;// distance in inches
+        final double diameter = 0.5; // distance in inches
         double velocity = 0;
         if (visionData.isHoopValid()) {
             // math
@@ -283,6 +281,6 @@ public class VisionControl {
             shooterRPM = velocity / diameter;
             return shooterRPM;
         }
-        return 0;
+        return 0.0;
     }
 }
