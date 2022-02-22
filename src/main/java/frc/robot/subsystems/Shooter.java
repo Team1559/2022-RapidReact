@@ -29,8 +29,8 @@ public class Shooter {
     private double shooter_kD = 0;
     private double shooter_kI = 0.000;
     private double shooterRpms = 7500;
-    private double feederSpeed = .2;
-    private double intakeSpeed = .4;
+    private double feederSpeed = 0.2;
+    private double intakeSpeed = 0.4;
 
     private TalonFX shooter;
     private CANSparkMax feeder;
@@ -84,6 +84,7 @@ public class Shooter {
         shooter.configSupplyCurrentLimit(shooterLimit);
 
         ml.createfile("shooterRPMS");
+
         try {
             shooterRpms = Double.parseDouble(ml.readFile());
         }
@@ -212,7 +213,10 @@ public class Shooter {
     }
 
     public boolean checkVision() {
-        return vc.isHoopValid();
+        if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
+            return vc.isHoopValid();
+        }
+        return false;
     }
 
     public void autoShoot() {

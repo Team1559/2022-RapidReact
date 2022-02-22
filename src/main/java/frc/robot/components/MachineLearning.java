@@ -3,8 +3,7 @@ package frc.robot.components;
 import java.io.*;
 
 public class MachineLearning {
-    private String filename;
-    private String out;
+    private String filename, out;
 
     public MachineLearning() {
         out = "";
@@ -28,7 +27,10 @@ public class MachineLearning {
 
         try {
             File myObj = new File("/1559data/" + name + ".txt");
-            myObj.mkdir();
+
+            if (myObj.mkdir()) {
+                System.out.println("Created necessary directories");
+            }
 
             if (myObj.createNewFile()) {
                 System.out.println("File created: " + myObj.getName());

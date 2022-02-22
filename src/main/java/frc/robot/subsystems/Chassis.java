@@ -13,7 +13,6 @@ import frc.robot.components.IMU;
 import frc.robot.components.MachineLearning;
 import frc.robot.components.SplitDrive;
 
-@SuppressWarnings("unused")
 public class Chassis {
     private static final int TIMEOUT = 20;
     public static final double WHEEL_RADIUS_INCHES_MECANUM = 3;
@@ -38,7 +37,8 @@ public class Chassis {
     private IMU imu;
     private MachineLearning ml;
     // these need to be set once
-    private final double differpercent = 12/25.5; // percent the front needs to move compared to the back, needs to be justed
+    private final double differpercent = 12 / 25.5; // percent the front needs to move compared to the back, needs to be
+                                                    // justed
     // these can be changed when needed
     private final boolean LOGDATA = true;
 
@@ -109,8 +109,8 @@ public class Chassis {
             SmartDashboard.putNumber("Front right encoder velocity is: ", frEncoder.getVelocity());
             SmartDashboard.putNumber("Back left encoder velocity is: ", blEncoder.getVelocity());
             SmartDashboard.putNumber("Back right encoder velocity is: ", brEncoder.getVelocity());
-            ml.periodic(oi.pilot.getLeftY() + oi.pilot.getRightX() + flEncoder.getVelocity() + frEncoder.getVelocity() +
-                    blEncoder.getVelocity() + brEncoder.getVelocity() + "");
+            ml.periodic(oi.pilot.getLeftY() + " " + oi.pilot.getRightX() + " " + flEncoder.getVelocity() + " "
+                    + frEncoder.getVelocity() + " " + blEncoder.getVelocity() + brEncoder.getVelocity() + " \n");
         }
     }
 

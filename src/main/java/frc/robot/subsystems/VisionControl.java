@@ -233,7 +233,8 @@ public class VisionControl {
     }
 
     public void record(double _forwardSpeed, double _sideSpeed) {
-        ml.periodic(_forwardSpeed + _sideSpeed + chassis.flep + chassis.frep + chassis.blep + chassis.brep + "");
+        ml.periodic(_forwardSpeed + " " + _sideSpeed + " " + chassis.flep + " " + chassis.frep + " " + chassis.blep
+                + " " + chassis.brep + " \n");
     }
 
     private void update() {
