@@ -47,7 +47,7 @@ public class VisionControl {
     private final int MAX_SIZE = 2000;// should only need to be 750
     private final double ballChassisThreshold = 1; // angle in degrees
     private final double hoopChassisThreshold = 1; // angle in degrees
-    private final double shooterThreshold = 100;
+    private final double shooterThreshold = 50; //threshold in rpm
 
     private final boolean SQUARE_DRIVER_INPUTS = true;
 
