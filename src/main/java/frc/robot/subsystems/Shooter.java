@@ -157,10 +157,9 @@ public class Shooter {
                 break;
             case MANUAL:
                 shooter.set(TalonFXControlMode.Velocity, shooterRpms);
+                feederMain();
                 break;
         }
-
-        feederMain();
     }
 
     public void feederMain() {
@@ -223,16 +222,16 @@ public class Shooter {
     private void updateManualRPMS() {
         if (oi.copilot.getDPadPress(oi.DPadUp)) {
             shooterRpms += 100;
-        } 
-        
+        }
+
         else if (oi.copilot.getDPadPress(oi.DPadDown)) {
             shooterRpms -= 100;
         }
 
         if (shooterRpms < 0) {
             shooterRpms = 0;
-        } 
-        
+        }
+
         else if (shooterRpms > 15000) {
             shooterRpms = 15000;
         }
