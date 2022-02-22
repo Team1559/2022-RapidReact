@@ -250,7 +250,7 @@ def main():
     )
     with open(path + "\\src\\main\\java\\frc\\robot\\routes\\" + name() + ".java", "w") as f:
         f.write(content)
-    time.sleep(30)
+    input("Press Enter To Exit")
     exit(69420)
 
 
@@ -259,5 +259,5 @@ if __name__ == "__main__":
         main()
     except KeyboardInterrupt:
         print("Exiting because of of keyboard interrupt")
-        time.sleep(1)
+        input("Press Enter To Exit")
         exit(69420)
