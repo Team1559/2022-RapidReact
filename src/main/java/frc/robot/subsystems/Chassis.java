@@ -38,7 +38,7 @@ public class Chassis {
     private IMU imu;
     private MachineLearning ml;
     // these need to be set once
-    private final double differpercent = 70; // percent the front needs to move compared to the back, needs to be justed
+    private final double differpercent = 12/25.5; // percent the front needs to move compared to the back, needs to be justed
     // these can be changed when needed
     private final boolean LOGDATA = true;
 
@@ -126,8 +126,8 @@ public class Chassis {
     }
 
     public void drive(double ySpeed, double zRotation, boolean squareInputs) {
-        front.splitDrive(ySpeed, (differpercent / 100.0) * zRotation, squareInputs);
-        back.splitDrive(ySpeed, zRotation, squareInputs);
+        front.splitDrive(ySpeed, (differpercent / 100.0) * -zRotation, squareInputs);
+        back.splitDrive(ySpeed, -zRotation, squareInputs);
     }
 
     public void pathDrive(double fl, double fr, double bl, double br) {
