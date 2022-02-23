@@ -61,7 +61,7 @@ public class DTXboxController extends XboxController {
         }
 
         else {
-            isDPadPressed = !isDpadPressed();
+            isDPadPressed = isDpadPressed();
 
             return false;
         }
@@ -74,7 +74,7 @@ public class DTXboxController extends XboxController {
         }
 
         else {
-            isDPadPressed = !isDpadPressed();
+            isDPadPressed = isDpadPressed();
 
             return -1;
         }
