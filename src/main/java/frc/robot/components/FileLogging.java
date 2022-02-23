@@ -2,10 +2,10 @@ package frc.robot.components;
 
 import java.io.*;
 
-public class MachineLearning {
+public class FileLogging {
     private String filename, out, dir;
 
-    public MachineLearning() {
+    public FileLogging() {
         out = "";
         filename = "";
         dir = "";

@@ -35,7 +35,7 @@ public class VisionControl {
     public boolean usingAuto = false;
     private int invalid_ball_counter = 0;
     private final int invalid_ball_counter_threshold = 20;
-    private MachineLearning ml;
+    private FileLogging fl;
     private double counter = 0;
     private int recordCounter = 0;
     private double counterSpeed;
@@ -68,9 +68,9 @@ public class VisionControl {
         this.chassis = chassis;
         this.imu = imu;
         this.shooter = shooter;
-        ml = new MachineLearning();
+        fl = new FileLogging();
         if (RECORD_PATH) {
-            ml.createfile(FILE_NAME);
+            fl.createfile(FILE_NAME);
         }
     }
 
@@ -165,8 +165,8 @@ public class VisionControl {
 
     public void followPath() {
         if (counter < frontLeftSpeed.length) {
-            chassis.pathDrive(ml.interpolate(counter, frontLeftSpeed), ml.interpolate(counter, frontRightSpeed),
-                    ml.interpolate(counter, backLeftSpeed), ml.interpolate(counter, backRightSpeed));
+            chassis.pathDrive(fl.interpolate(counter, frontLeftSpeed), fl.interpolate(counter, frontRightSpeed),
+                    fl.interpolate(counter, backLeftSpeed), fl.interpolate(counter, backRightSpeed));
             counter += counterSpeed;
         }
 
@@ -177,7 +177,7 @@ public class VisionControl {
 
     public void disable() {
         if (RECORD_PATH) {
-            ml.write();
+            fl.write();
         }
     }
 
@@ -237,7 +237,7 @@ public class VisionControl {
     }
 
     public void record(double _forwardSpeed, double _sideSpeed) {
-        ml.periodic(_forwardSpeed + " " + _sideSpeed + " " + chassis.flep + " " + chassis.frep + " " + chassis.blep
+        fl.periodic(_forwardSpeed + " " + _sideSpeed + " " + chassis.flep + " " + chassis.frep + " " + chassis.blep
                 + " " + chassis.brep + " \n");
     }
 

@@ -10,7 +10,7 @@ import com.revrobotics.SparkMaxPIDController;
 import frc.robot.OperatorInterface;
 import frc.robot.Wiring;
 import frc.robot.components.IMU;
-import frc.robot.components.MachineLearning;
+import frc.robot.components.FileLogging;
 import frc.robot.components.SplitDrive;
 
 public class Chassis {
@@ -35,7 +35,7 @@ public class Chassis {
     public double brep;
     private OperatorInterface oi;
     private IMU imu;
-    private MachineLearning ml;
+    private FileLogging fl;
     // these need to be set once
     private final double differpercent = 12 / 25.5; // percent the front needs to move compared to the back, needs to be
                                                     // justed
@@ -94,9 +94,9 @@ public class Chassis {
         front = new SplitDrive(CANSparkMax1, CANSparkMax2);
         back = new SplitDrive(CANSparkMax3, CANSparkMax4);
 
-        ml = new MachineLearning();
+        fl = new FileLogging();
         if (LOGDATA) {
-            ml.createfile("encoders");
+            fl.createfile("encoders");
         }
     }
 
@@ -109,7 +109,7 @@ public class Chassis {
             SmartDashboard.putNumber("Front right encoder velocity is: ", frEncoder.getVelocity());
             SmartDashboard.putNumber("Back left encoder velocity is: ", blEncoder.getVelocity());
             SmartDashboard.putNumber("Back right encoder velocity is: ", brEncoder.getVelocity());
-            ml.periodic(oi.pilot.getLeftY() + " " + oi.pilot.getRightX() + " " + flEncoder.getVelocity() + " "
+            fl.periodic(oi.pilot.getLeftY() + " " + oi.pilot.getRightX() + " " + flEncoder.getVelocity() + " "
                     + frEncoder.getVelocity() + " " + blEncoder.getVelocity() + brEncoder.getVelocity() + " \n");
         }
     }
@@ -195,7 +195,7 @@ public class Chassis {
 
     public void disable() {
         if (LOGDATA) {
-            ml.write();
+            fl.write();
         }
     }
 }

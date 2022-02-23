@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.OperatorInterface;
-import frc.robot.components.MachineLearning;
+import frc.robot.components.FileLogging;
 import frc.robot.subsystems.VisionControl.shooterState;
 
 import com.ctre.phoenix.motorcontrol.*;
@@ -19,7 +19,7 @@ public class Shooter {
     private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(true, 20, 20, 0);
     private final int TIMEOUT = 0;
     private final double cLR = 0.1;
-    private MachineLearning ml = new MachineLearning();
+    private FileLogging fl = new FileLogging();
 
     private double shooter_kF = 0.045;
     private double shooter_kP = 0.4;
@@ -82,11 +82,11 @@ public class Shooter {
         shooter.configPeakOutputReverse(-1, TIMEOUT);
         shooter.setNeutralMode(NeutralMode.Coast);
         shooter.configSupplyCurrentLimit(shooterLimit, TIMEOUT);
-        ml.setDirectory("Shooter");
-        ml.createfile("shooterRPMS");
+        fl.setDirectory("Shooter");
+        fl.createfile("shooterRPMS");
 
         try {
-            shooterRpms = Double.parseDouble(ml.readFile());
+            shooterRpms = Double.parseDouble(fl.readFile());
         }
 
         catch (NullPointerException e) {
@@ -267,7 +267,7 @@ public class Shooter {
         }
 
         if (rpmOld != shooterRpms) {
-            ml.write(Double.toString(shooterRpms));
+            fl.write(Double.toString(shooterRpms));
         }
     }
 }
