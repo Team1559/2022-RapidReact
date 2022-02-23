@@ -82,7 +82,7 @@ public class Shooter {
         shooter.configPeakOutputReverse(-1, TIMEOUT);
         shooter.setNeutralMode(NeutralMode.Coast);
         shooter.configSupplyCurrentLimit(shooterLimit);
-
+        ml.setDirectory("Shooter");
         ml.createfile("shooterRPMS");
 
         try {
@@ -90,11 +90,11 @@ public class Shooter {
         }
 
         catch (NullPointerException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
 
         catch (NumberFormatException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
 
     }

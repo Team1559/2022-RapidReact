@@ -2,6 +2,9 @@ package frc.robot.subsystems;
 
 import frc.robot.components.*;
 import frc.robot.routes.*;
+
+import com.ctre.phoenix.time.StopWatch;
+
 import frc.robot.*;
 
 @SuppressWarnings("unused")
@@ -11,7 +14,7 @@ public class VisionControl {
     }
 
     public enum shooterState {
-        ALIGN, WAIT, SHOOT
+        ALIGN, WAIT, SHOOT, STOP
     }
 
     private autoState autostate = autoState.PATH;
@@ -40,6 +43,7 @@ public class VisionControl {
     private double frontLeftSpeed[] = {};
     private double backRightSpeed[] = {};
     private double backLeftSpeed[] = {};
+    private StopWatch clock = new StopWatch();
 
     // we need to determine what to set these to
 
@@ -274,16 +278,28 @@ public class VisionControl {
                 }
                 break;
             case WAIT:
+                drive(0, 0);
                 double rpm = calculateShooterRPMS();
                 shooter.startShooter(rpm);
                 if (Math.abs(shooter.getShooterRpms() - rpm) < shooterThreshold) {
                     shooterstate = shooterState.SHOOT;
+                    clock.start();
                 }
                 break;
             case SHOOT:
+                drive(0, 0);
                 double rpms = calculateShooterRPMS();
                 shooter.startShooter(rpms);
                 shooter.startFeeder();
+                if (clock.getDuration() == 2) {
+                    shooterstate = shooterState.STOP;
+                }
+                break;
+            case STOP:
+                drive(0, 0);
+                shooter.stopFeeder();
+                shooter.stopShooter();
+                shooter.stopIntake();
                 break;
         }
     }

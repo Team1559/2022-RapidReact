@@ -3,34 +3,38 @@ package frc.robot.components;
 import java.io.*;
 
 public class MachineLearning {
-    private String filename, out;
+    private String filename, out, dir;
 
     public MachineLearning() {
         out = "";
         filename = "";
+        dir = "";
     }
 
     public void periodic(String data) {
         out += data;
     }
 
+    public void setDirectory(String dir) {
+        if (new File(dir).mkdir()) {
+            System.out.println("Created directory");
+        }
+        this.dir = "/1559data/" + dir;
+    }
+
     public void createfile(String name) {
         if (name.equals("")) {
-            name = "Default_Path.txt";
+            name = dir + "Default_file.txt";
         }
 
         else {
             name += ".txt";
         }
 
-        filename = name;
+        filename += name;
 
         try {
-            File myObj = new File("/1559data/" + name );
-
-            if (new File("/1559data/").mkdir()) {
-                System.out.println("Created necessary directories");
-            }
+            File myObj = new File(dir + name);
 
             if (myObj.createNewFile()) {
                 System.out.println("File created: " + myObj.getName());
@@ -43,7 +47,7 @@ public class MachineLearning {
 
         catch (IOException e) {
             System.out.println("An error occurred.");
-            e.printStackTrace();
+            // // e.printStackTrace();
         }
     }
 
@@ -54,7 +58,7 @@ public class MachineLearning {
 
     public void write(String data) {
         try {
-            FileWriter myWriter = new FileWriter("/1559data/" + filename);
+            FileWriter myWriter = new FileWriter(dir + filename);
 
             myWriter.write(data);
             myWriter.close();
@@ -63,7 +67,7 @@ public class MachineLearning {
 
         catch (IOException e) {
             System.out.println("An error occurred.");
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
@@ -72,7 +76,7 @@ public class MachineLearning {
     }
 
     public String readFile(String fileName) {
-        File file = new File("/1559data/" + fileName);
+        File file = new File(dir + fileName);
         String fileContent = "";
 
         try (FileReader fr = new FileReader(file)) {
@@ -83,7 +87,7 @@ public class MachineLearning {
         }
 
         catch (IOException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
 
         return fileContent;

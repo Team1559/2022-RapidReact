@@ -3,7 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class DTXboxController extends XboxController {
-    public boolean isDPadPressed = false;
+    public boolean wasDpadPressed = false;
 
     public DTXboxController(int port) {
         super(port);
@@ -44,8 +44,8 @@ public class DTXboxController extends XboxController {
     }
 
     public boolean getDPadPress(int angle) {
-        if (!isDPadPressed) {
-            isDPadPressed = isDpadPressed();
+        if (!wasDpadPressed) {
+            wasDpadPressed = isDpadPressed();
 
             if (angle == -1 && getPOV() != -1) {
                 return true;
@@ -61,20 +61,20 @@ public class DTXboxController extends XboxController {
         }
 
         else {
-            isDPadPressed = isDpadPressed();
+            wasDpadPressed = isDpadPressed();
 
             return false;
         }
     }
 
     public int getRawDPadPress() {
-        if (!isDPadPressed) {
-            isDPadPressed = isDpadPressed();
+        if (!wasDpadPressed) {
+            wasDpadPressed = isDpadPressed();
             return getPOV();
         }
 
         else {
-            isDPadPressed = isDpadPressed();
+            wasDpadPressed = isDpadPressed();
 
             return -1;
         }
