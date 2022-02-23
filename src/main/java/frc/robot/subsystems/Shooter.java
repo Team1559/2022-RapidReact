@@ -117,7 +117,8 @@ public class Shooter {
                         lowerIntake();
                         startIntake(intakeSpeed);
                     }
-                    else{
+
+                    else {
                         stopIntake();
                     }
                     break;
@@ -125,7 +126,8 @@ public class Shooter {
                     if (!oi.manualIntakeButton()) {
                         stopIntake();
                     }
-                    else{
+
+                    else {
                         startIntake(intakeSpeed);
                     }
                     break;
@@ -134,7 +136,8 @@ public class Shooter {
                         stopIntake();
                         raiseIntake();
                     }
-                    else{
+
+                    else {
                         stopIntake();
                     }
                     break;
@@ -157,7 +160,9 @@ public class Shooter {
         else if (oi.autoShootButton()) {
             if (checkVision()) {
                 autoShoot();
-            } else {
+            }
+
+            else {
                 if (checkVision()) {
                     vc.shooterstate = shooterState.ALIGN;
                 }
@@ -178,7 +183,9 @@ public class Shooter {
         if (oi.shootButton()) {
             startFeeder(feederSpeed);
             startIntake(-intakeSpeed);
-        } else if (oi.reverseIntake()) {
+        }
+
+        else if (oi.reverseIntake()) {
             startFeeder(-feederSpeed);
         }
 
