@@ -26,9 +26,9 @@ public class MachineLearning {
         filename = name;
 
         try {
-            File myObj = new File("/1559data/" + name + ".txt");
+            File myObj = new File("/1559data/" + name );
 
-            if (myObj.mkdir()) {
+            if (new File("/1559data/").mkdir()) {
                 System.out.println("Created necessary directories");
             }
 
@@ -54,11 +54,11 @@ public class MachineLearning {
 
     public void write(String data) {
         try {
-            FileWriter myWriter = new FileWriter("/1559data/" + filename + ".txt");
+            FileWriter myWriter = new FileWriter("/1559data/" + filename);
 
             myWriter.write(data);
             myWriter.close();
-            System.out.println("Successfully wrote to the file.");
+            // System.out.println("Successfully wrote to the file.");
         }
 
         catch (IOException e) {
@@ -72,7 +72,7 @@ public class MachineLearning {
     }
 
     public String readFile(String fileName) {
-        File file = new File("/1559data/" + fileName + ".txt");
+        File file = new File("/1559data/" + fileName);
         String fileContent = "";
 
         try (FileReader fr = new FileReader(file)) {

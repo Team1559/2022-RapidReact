@@ -45,7 +45,7 @@ public class DTXboxController extends XboxController {
 
     public boolean getDPadPress(int angle) {
         if (!isDPadPressed) {
-            isDPadPressed = true;
+            isDPadPressed = isDpadPressed();
 
             if (angle == -1 && getPOV() != -1) {
                 return true;
@@ -61,9 +61,7 @@ public class DTXboxController extends XboxController {
         }
 
         else {
-            if (getPOV() == -1) {
-                isDPadPressed = false;
-            }
+            isDPadPressed = !isDpadPressed();
 
             return false;
         }
@@ -71,14 +69,12 @@ public class DTXboxController extends XboxController {
 
     public int getRawDPadPress() {
         if (!isDPadPressed) {
-            isDPadPressed = true;
+            isDPadPressed = isDpadPressed();
             return getPOV();
         }
 
         else {
-            if (getPOV() == -1) {
-                isDPadPressed = false;
-            }
+            isDPadPressed = !isDpadPressed();
 
             return -1;
         }

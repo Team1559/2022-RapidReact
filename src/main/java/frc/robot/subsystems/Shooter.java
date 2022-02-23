@@ -25,8 +25,8 @@ public class Shooter {
     private double shooter_kP = 0.4;
     private double shooter_kD = 0;
     private double shooter_kI = 0.000;
-    private double shooterRpms = 75000;
-    private double feederSpeed = 0.2;
+    private double shooterRpms = 10750;
+    private double feederSpeed = -0.2;
     private double intakeSpeed = 0.4;
 
     private TalonFX shooter;
@@ -52,7 +52,9 @@ public class Shooter {
 
         shooter = new TalonFX(Wiring.shooterMotor);
         feeder = new CANSparkMax(Wiring.feederMotor, MotorType.kBrushless);
-        lowerIntake = new Solenoid(PneumaticsModuleType.REVPH, Wiring.lowerIntake);
+        if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
+            lowerIntake = new Solenoid(PneumaticsModuleType.REVPH, Wiring.lowerIntake);
+        }
         intake = new TalonSRX(Wiring.intake);
 
         // Note about pneumatics :
@@ -62,7 +64,9 @@ public class Shooter {
 
         // Set all motors to 0 and pistons up
         feeder.set(0);
-        lowerIntake.set(false);
+        if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
+            lowerIntake.set(false);
+        }
         intake.set(TalonSRXControlMode.PercentOutput, 0);
 
         // Shooter Velocity mode configs
@@ -105,34 +109,38 @@ public class Shooter {
     }
 
     public void gathererMain() {
-        switch (gathererState) {
-            case gathererUp:
-                if (oi.manualIntakeButton()) {
-                    lowerIntake();
-                    startIntake();
-                }
-                break;
-            case gathererDown:
-                if (!oi.manualIntakeButton()) {
-                    stopIntake();
-                }
-                break;
-            case holding:
-                if (oi.manualIntakeButton()) {
-                    stopIntake();
-                    raiseIntake();
-                }
-                break;
+        if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
+            switch (gathererState) {
+                case gathererUp:
+                    if (oi.manualIntakeButton()) {
+                        lowerIntake();
+                        startIntake();
+                    }
+                    break;
+                case gathererDown:
+                    if (!oi.manualIntakeButton()) {
+                        stopIntake();
+                    }
+                    break;
+                case holding:
+                    if (oi.manualIntakeButton()) {
+                        stopIntake();
+                        raiseIntake();
+                    }
+                    break;
+            }
         }
     }
 
     public void ShooterMain() {
+        System.out.println(shooterRpms);
+        updateManualRPMS();
+
         if (oi.runFlyWheelButtonManual()) {
-            if(checkVision()){
+            if (checkVision()) {
                 vc.shooterstate = shooterState.ALIGN;
             }
-            
-            updateManualRPMS();
+
             startShooter(shooterRpms);
         }
 
@@ -142,16 +150,15 @@ public class Shooter {
             }
 
             else {
-                if(checkVision()){
+                if (checkVision()) {
                     vc.shooterstate = shooterState.ALIGN;
                 }
-                updateManualRPMS();
                 startShooter(shooterRpms);
             }
         }
 
         else {
-            if(checkVision()){
+            if (checkVision()) {
                 vc.shooterstate = shooterState.ALIGN;
             }
 
@@ -178,7 +185,7 @@ public class Shooter {
     }
 
     public void startShooter(double rpms) {
-        shooter.set(TalonFXControlMode.Velocity, rpms);
+        shooter.set(TalonFXControlMode.Velocity, -rpms);
     }
 
     public double getShooterRpms() {
