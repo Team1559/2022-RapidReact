@@ -26,7 +26,7 @@ public class Shooter {
     private double shooter_kD = 0;
     private double shooter_kI = 0.000;
     private double shooterRpms = 10750;
-    private double feederSpeed = -0.2;
+    private double feederSpeed = 0.2;
     private double intakeSpeed = 0.4;
 
     private TalonFX shooter;
@@ -38,7 +38,7 @@ public class Shooter {
     // States for gatherer
     public static final int gathererUp = 0;
     public static final int gathererDown = 1;
-    public static final int holding = 3;
+    public static final int holding = 2;
 
     public int gathererState = gathererUp;
 
@@ -52,6 +52,7 @@ public class Shooter {
 
         shooter = new TalonFX(Wiring.shooterMotor);
         feeder = new CANSparkMax(Wiring.feederMotor, MotorType.kBrushless);
+        feeder.setInverted(true);
         if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
             lowerIntake = new Solenoid(PneumaticsModuleType.REVPH, Wiring.lowerIntake);
         }
@@ -106,6 +107,8 @@ public class Shooter {
 
         // Control for lowering intake
         gathererMain();
+
+        reverseAll();
     }
 
     public void gathererMain() {
@@ -148,7 +151,6 @@ public class Shooter {
             if (checkVision()) {
                 autoShoot();
             }
-
             else {
                 if (checkVision()) {
                     vc.shooterstate = shooterState.ALIGN;
@@ -176,6 +178,12 @@ public class Shooter {
         }
     }
 
+    public void reverseAll(){
+        if(oi.reverseIntake()){
+            reverseIntake();
+        }
+    }
+
     public void startFeeder() {
         feeder.set(feederSpeed);
     }
@@ -197,13 +205,13 @@ public class Shooter {
     }
 
     public void lowerIntake() {
-        gathererState = gathererDown;
         lowerIntake.set(true);
+        gathererState = gathererDown;
     }
 
     public void raiseIntake() {
-        gathererState = gathererUp;
         lowerIntake.set(false);
+        gathererState = gathererUp;
     }
 
     public void startIntake() {
@@ -211,8 +219,16 @@ public class Shooter {
     }
 
     public void stopIntake() {
-        gathererState = holding;
         intake.set(TalonSRXControlMode.PercentOutput, 0);
+        gathererState = holding;
+    }
+
+    public void reverseIntake(){
+        feeder.set(-feederSpeed);
+        if(gathererState == gathererUp){
+            lowerIntake();
+        }
+        intake.set(TalonSRXControlMode.PercentOutput, -intakeSpeed);
     }
 
     public boolean checkVision() {

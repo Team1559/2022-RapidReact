@@ -39,6 +39,10 @@ public class OperatorInterface {
         return pilot.getLeftBumper();
     }
 
+    public boolean reverseIntake(){
+        return copilot.getLeftTriggerAxis() > 0.5;
+    }
+
     // Climber
 
 }
