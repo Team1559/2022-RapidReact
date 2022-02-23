@@ -160,7 +160,7 @@ public class Robot extends TimedRobot {
         }
 
         if (FeatureFlags.doShooter && FeatureFlags.shooterInitalized) {
-            shooter.runShooter();
+            shooter.main();
         }
     }
 

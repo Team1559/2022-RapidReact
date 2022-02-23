@@ -15,7 +15,7 @@ public class Wiring {
     // Cargo
 
     public static final int shooterMotor = 0; // NEED TO CHANGE FOR LATER
-    public static final int feederMotor = 33;// NEED TO CHANGE FOR LATER
+    public static final int feederMotor = 16;// NEED TO CHANGE FOR LATER
 
     public static final int lowerIntake = 0;
     public static final int intake = 3; // NEED TO CHANGE FOR LATER

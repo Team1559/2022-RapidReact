@@ -15,7 +15,7 @@ public class VisionControl {
     }
 
     private autoState autostate = autoState.PATH;
-    private shooterState shooterstate = shooterState.ALIGN;
+    public shooterState shooterstate = shooterState.ALIGN;
 
     private OperatorInterface oi;
     private Vision vision = new Vision();
@@ -275,19 +275,15 @@ public class VisionControl {
                 break;
             case WAIT:
                 double rpm = calculateShooterRPMS();
-                shooter.startShoter(rpm);
+                shooter.startShooter(rpm);
                 if (Math.abs(shooter.getShooterRpms() - rpm) < shooterThreshold) {
                     shooterstate = shooterState.SHOOT;
                 }
                 break;
             case SHOOT:
                 double rpms = calculateShooterRPMS();
-                shooter.startShoter(rpms);
+                shooter.startShooter(rpms);
                 shooter.startFeeder();
-                if (Math.abs(shooter.getShooterRpms() - rpms) > shooterThreshold) {
-                    shooter.stopFeeder();
-                    shooterstate = shooterState.WAIT;
-                }
                 break;
         }
     }

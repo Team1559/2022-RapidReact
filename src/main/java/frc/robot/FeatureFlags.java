@@ -7,14 +7,14 @@ public final class FeatureFlags {
     public static boolean doVision = true;
     public static boolean doChassis = true;
     public static boolean doImu = true;
-    public static boolean doShooter = false;
+    public static boolean doShooter = true;
     public static boolean doCompressor = false;
 
     // Set these once the subsystem in installed
     public static final boolean VISION_INSTALLED = true;
     public static final boolean CHASSIS_INSTALLED = true;
     public static final boolean IMU_INSTALLED = true;
-    public static final boolean SHOOTER_INSTALLED = false;
+    public static final boolean SHOOTER_INSTALLED = true;
     public static final boolean COMPRESSOR_INSTALLED = false;
 
     // Leave these values alone
