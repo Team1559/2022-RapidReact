@@ -49,30 +49,29 @@ public class Shooter {
         }
 
         // MotorController Config
-
         shooter = new TalonFX(Wiring.shooterMotor);
-        feeder = new CANSparkMax(Wiring.feederMotor, MotorType.kBrushless);
-        feeder.setInverted(true);
-        if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
-            lowerIntake = new Solenoid(PneumaticsModuleType.REVPH, Wiring.lowerIntake);
-        }
         intake = new TalonSRX(Wiring.intake);
+        feeder = new CANSparkMax(Wiring.feederMotor, MotorType.kBrushless);
+
+        // Invert motors
+        feeder.setInverted(true);
+        shooter.setInverted(true);
 
         // Note about pneumatics :
-
         // PneumaticsModuleType.CTREPCM for ctre stuff
         // PneumaticsModuleType.REVPH for rev stuff
-
-        // Set all motors to 0 and pistons up
-        feeder.set(0);
         if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
+            lowerIntake = new Solenoid(PneumaticsModuleType.REVPH, Wiring.lowerIntake);
             lowerIntake.set(false);
         }
+
+        // Set motors to 0
+        feeder.set(0);
         intake.set(TalonSRXControlMode.PercentOutput, 0);
 
         // Shooter Velocity mode configs
         shooter.configClosedloopRamp(cLR, TIMEOUT);
-        shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, TIMEOUT); // shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+        shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, TIMEOUT);
         shooter.config_kF(0, shooter_kF, TIMEOUT);
         shooter.config_kP(0, shooter_kP, TIMEOUT);
         shooter.config_kD(0, shooter_kD, TIMEOUT);
@@ -203,7 +202,7 @@ public class Shooter {
     }
 
     public void startShooter(double rpms) {
-        shooter.set(TalonFXControlMode.Velocity, -rpms);
+        shooter.set(TalonFXControlMode.Velocity, rpms);
     }
 
     public double getShooterRpms() {
@@ -245,6 +244,7 @@ public class Shooter {
     }
 
     private void updateManualRPMS() {
+        double rpmOld = shooterRpms;
         if (oi.copilot.getDPadPress(oi.DPadUp)) {
             System.out.println("increasing");
             shooterRpms += 100;
@@ -263,6 +263,8 @@ public class Shooter {
             shooterRpms = 15000;
         }
 
-        ml.write(Double.toString(shooterRpms));
+        if (rpmOld != shooterRpms) {
+            ml.write(Double.toString(shooterRpms));
+        }
     }
 }
