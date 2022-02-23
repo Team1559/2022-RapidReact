@@ -290,7 +290,7 @@ public class VisionControl {
                 drive(0, 0);
                 double rpms = calculateShooterRPMS();
                 shooter.startShooter(rpms);
-                shooter.startFeeder();
+                shooter.startFeeder(shooter.feederSpeed);
                 if (clock.getDuration() == 2) {
                     shooterstate = shooterState.STOP;
                 }

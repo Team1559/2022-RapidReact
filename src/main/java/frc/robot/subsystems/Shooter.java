@@ -25,9 +25,9 @@ public class Shooter {
     private double shooter_kP = 0.4;
     private double shooter_kD = 0;
     private double shooter_kI = 0.000;
-    private double shooterRpms = 10750;
-    private double feederSpeed = 0.2;
-    private double intakeSpeed = 0.4;
+    public double shooterRpms = 10750;
+    public double feederSpeed = 0.2;
+    public double intakeSpeed = 0.4;
 
     private TalonFX shooter;
     private CANSparkMax feeder;
@@ -72,17 +72,17 @@ public class Shooter {
 
         // Shooter Velocity mode configs
         shooter.configClosedloopRamp(cLR, TIMEOUT);
-        shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor); // shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-        shooter.config_kF(0, shooter_kF);
-        shooter.config_kP(0, shooter_kP);
-        shooter.config_kD(0, shooter_kD);
-        shooter.config_kI(0, shooter_kI);
+        shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, TIMEOUT); // shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+        shooter.config_kF(0, shooter_kF, TIMEOUT);
+        shooter.config_kP(0, shooter_kP, TIMEOUT);
+        shooter.config_kD(0, shooter_kD, TIMEOUT);
+        shooter.config_kI(0, shooter_kI, TIMEOUT);
         shooter.configNominalOutputForward(0, TIMEOUT);
         shooter.configNominalOutputReverse(0, TIMEOUT);
         shooter.configPeakOutputForward(+1, TIMEOUT);
         shooter.configPeakOutputReverse(-1, TIMEOUT);
         shooter.setNeutralMode(NeutralMode.Coast);
-        shooter.configSupplyCurrentLimit(shooterLimit);
+        shooter.configSupplyCurrentLimit(shooterLimit, TIMEOUT);
         ml.setDirectory("Shooter");
         ml.createfile("shooterRPMS");
 
@@ -107,8 +107,6 @@ public class Shooter {
 
         // Control for lowering intake
         gathererMain();
-
-        reverseAll();
     }
 
     public void gathererMain() {
@@ -117,7 +115,7 @@ public class Shooter {
                 case gathererUp:
                     if (oi.manualIntakeButton()) {
                         lowerIntake();
-                        startIntake();
+                        startIntake(intakeSpeed);
                     }
                     break;
                 case gathererDown:
@@ -150,8 +148,7 @@ public class Shooter {
         else if (oi.autoShootButton()) {
             if (checkVision()) {
                 autoShoot();
-            }
-            else {
+            } else {
                 if (checkVision()) {
                     vc.shooterstate = shooterState.ALIGN;
                 }
@@ -170,7 +167,10 @@ public class Shooter {
 
     public void feederMain() {
         if (oi.shootButton()) {
-            startFeeder();
+            startFeeder(feederSpeed);
+            startIntake(-intakeSpeed);
+        } else if (oi.reverseIntake()) {
+            startFeeder(-feederSpeed);
         }
 
         else {
@@ -178,14 +178,8 @@ public class Shooter {
         }
     }
 
-    public void reverseAll(){
-        if(oi.reverseIntake()){
-            reverseIntake();
-        }
-    }
-
-    public void startFeeder() {
-        feeder.set(feederSpeed);
+    public void startFeeder(double speed) {
+        feeder.set(speed);
     }
 
     public void stopFeeder() {
@@ -214,21 +208,13 @@ public class Shooter {
         gathererState = gathererUp;
     }
 
-    public void startIntake() {
-        intake.set(TalonSRXControlMode.PercentOutput, intakeSpeed);
+    public void startIntake(double speed) {
+        intake.set(TalonSRXControlMode.PercentOutput, speed);
     }
 
     public void stopIntake() {
         intake.set(TalonSRXControlMode.PercentOutput, 0);
         gathererState = holding;
-    }
-
-    public void reverseIntake(){
-        feeder.set(-feederSpeed);
-        if(gathererState == gathererUp){
-            lowerIntake();
-        }
-        intake.set(TalonSRXControlMode.PercentOutput, -intakeSpeed);
     }
 
     public boolean checkVision() {
@@ -244,10 +230,12 @@ public class Shooter {
 
     private void updateManualRPMS() {
         if (oi.copilot.getDPadPress(oi.DPadUp)) {
+            System.out.println("increasing");
             shooterRpms += 100;
         }
 
         else if (oi.copilot.getDPadPress(oi.DPadDown)) {
+            System.out.println("decrease");
             shooterRpms -= 100;
         }
 
