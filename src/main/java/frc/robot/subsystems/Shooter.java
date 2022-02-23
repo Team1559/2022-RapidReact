@@ -25,7 +25,7 @@ public class Shooter {
     private double shooter_kP = 0.4;
     private double shooter_kD = 0;
     private double shooter_kI = 0.000;
-    public double shooterRpms = 10750;
+    public double shooterRpms = 2000;
     public double feederSpeed = 0.2;
     public double intakeSpeed = 0.4;
 
@@ -202,7 +202,7 @@ public class Shooter {
     }
 
     public void startShooter(double rpms) {
-        shooter.set(TalonFXControlMode.Velocity, rpms);
+        shooter.set(TalonFXControlMode.Velocity, rpms * 2048 / 10); // might need to multiply by 60
     }
 
     public double getShooterRpms() {
