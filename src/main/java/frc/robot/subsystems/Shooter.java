@@ -166,6 +166,7 @@ public class Shooter {
                     vc.shooterstate = shooterState.ALIGN;
                 }
                 startShooter(shooterRpms);
+                feederMain();
             }
         }
 
@@ -179,17 +180,19 @@ public class Shooter {
     }
 
     public void feederMain() {
-        if (oi.shootButton()) {
-            startFeeder(feederSpeed);
-            startIntake(-intakeSpeed);
-        }
+        if (!oi.autoShootButton()) {
+            if (oi.shootButton()) {
+                startFeeder(feederSpeed);
+                startIntake(-intakeSpeed);
+            }
 
-        else if (oi.reverseIntake()) {
-            startFeeder(-feederSpeed);
-        }
+            else if (oi.reverseIntake()) {
+                startFeeder(-feederSpeed);
+            }
 
-        else {
-            stopFeeder();
+            else {
+                stopFeeder();
+            }
         }
     }
 
