@@ -117,16 +117,25 @@ public class Shooter {
                         lowerIntake();
                         startIntake(intakeSpeed);
                     }
+                    else{
+                        stopIntake();
+                    }
                     break;
                 case gathererDown:
                     if (!oi.manualIntakeButton()) {
                         stopIntake();
+                    }
+                    else{
+                        startIntake(intakeSpeed);
                     }
                     break;
                 case holding:
                     if (oi.manualIntakeButton()) {
                         stopIntake();
                         raiseIntake();
+                    }
+                    else{
+                        stopIntake();
                     }
                     break;
             }
