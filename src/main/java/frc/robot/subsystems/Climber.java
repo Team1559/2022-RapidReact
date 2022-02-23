@@ -39,17 +39,12 @@ public class Climber {
         // climber Velocity mode configs
         climber.set(0.0, TalonFXControlMode.PercentOutput)
         climber.configClosedloopRamp(cLR, TIMEOUT);
-        climber.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor); // climber.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-        climber.config_kF(0, climber_kF);
-        climber.config_kP(0, climber_kP);
-        climber.config_kD(0, climber_kD);
-        climber.config_kI(0, climber_kI);
         climber.configNominalOutputForward(0, TIMEOUT);
         climber.configNominalOutputReverse(0, TIMEOUT);
         climber.configPeakOutputForward(+1, TIMEOUT);
         climber.configPeakOutputReverse(-1, TIMEOUT);
         climber.setNeutralMode(NeutralMode.Brake);
-        climber.configSupplyCurrentLimit(climberLimit);
+        // climber.configSupplyCurrentLimit(climberLimit);
         climber.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
         climber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
     }
