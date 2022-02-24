@@ -19,10 +19,6 @@ public class Climber {
     private final int TIMEOUT = 0;
     private final double cLR = 0.1;
 
-    private double climber_kF = 0.045;
-    private double climber_kP = 0.4;
-    private double climber_kD = 0;
-    private double climber_kI = 0.000;
     private double climberRpms = 7500;
 
     private TalonFX climber;
@@ -37,7 +33,7 @@ public class Climber {
         climber = new TalonFX(Wiring.climberMotor);
 
         // climber Velocity mode configs
-        climber.set(0.0, TalonFXControlMode.PercentOutput)
+        climber.set(TalonFXControlMode.PercentOutput, 0.0);
         climber.configClosedloopRamp(cLR, TIMEOUT);
         climber.configNominalOutputForward(0, TIMEOUT);
         climber.configNominalOutputReverse(0, TIMEOUT);
@@ -49,15 +45,15 @@ public class Climber {
         climber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
     }
 
-    public void runclimber() {
+    public void runClimber() {
         // Control for Winch
         if (oi.climberEnableButton()) {
             if (oi.climberUpButton()) {
                 raiseRobot();
-            } else if (climberDownButton()) {
+            } else if (oi.climberDownButton()) {
                 lowerRobot();
             } else {
-                holdRobot()
+                holdRobot();
             }
         }
 
