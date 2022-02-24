@@ -51,6 +51,7 @@ public class VisionControl {
     private final int MAX_SIZE = 2000;// should only need to be 750
     public final double ballChassisThreshold = 1; // angle in degrees
     public final double hoopChassisThreshold = 2; // angle in degrees
+    public final double maxHoopDistance = 12; // MAX distance in ft
     public final double shooterThreshold = 50; // threshold in rpm
 
     private final boolean SQUARE_DRIVER_INPUTS = true;
@@ -129,24 +130,18 @@ public class VisionControl {
     }
 
     public void teleopInit() {
-        if (RECORD_PATH) {
+        if (RECORD_PATH)
             chassis.initOdometry();
-        }
     }
 
     public void teleopPeriodic() {
         update();
-
         if (RECORD_PATH && recordCounter <= MAX_SIZE) {
             record(oi.pilot.getLeftY(), oi.pilot.getRightX());
             recordCounter++;
-        }
-
-        else if (RECORD_PATH && recordCounter > MAX_SIZE) {
+        } else if (RECORD_PATH && recordCounter > MAX_SIZE) {
             System.out.println("Max recording size has been reached");
         }
-
-        // visionData.Print();
 
         if (oi.autoSteerToHoopButton()) {
             usingAuto = true;
@@ -162,11 +157,9 @@ public class VisionControl {
     public void followPath() {
         if (counter < frontLeftSpeed.length) {
             chassis.pathDrive(fl.interpolate(counter, frontLeftSpeed), fl.interpolate(counter, frontRightSpeed),
-                    fl.interpolate(counter, backLeftSpeed), fl.interpolate(counter, backRightSpeed));
+                fl.interpolate(counter, backLeftSpeed), fl.interpolate(counter, backRightSpeed));
             counter += counterSpeed;
-        }
-
-        else {
+        } else {
             chassis.drive(0, 0, false);
         }
     }
@@ -182,7 +175,7 @@ public class VisionControl {
             double ySpeed = -oi.pilot.getLeftY();
 
             if (SQUARE_DRIVER_INPUTS) {
-                ySpeed = -1.0 * Math.copySign(ySpeed * ySpeed, ySpeed);
+                ySpeed = -Math.copySign(ySpeed*ySpeed, ySpeed);
             }
 
             if (Math.abs(hoopr) > hoopChassisThreshold) {

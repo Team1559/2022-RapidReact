@@ -26,7 +26,7 @@ public class Robot extends TimedRobot {
     private IMU imu;
     private VisionData vData;
     public static VisionControl vc;
-    private boolean usingVision = false;
+    public boolean usingVision = false;
     private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
     public Chassis chassis;
@@ -149,7 +149,6 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
             vc.teleopPeriodic();
-            usingVision = vc.usingAuto;
         }
         if (FeatureFlags.doChassis && FeatureFlags.chassisInitialized && !usingVision) {
             chassis.main();

@@ -165,13 +165,11 @@ public class Shooter {
             startFeeder(feederSpeed);
             // startIntake(intakeSpeed);
         } else if (oi.autoShootButton() && checkHoopVision()) { // Shoot when ready 
-            if(Math.abs(vc.hoopr) <= vc.hoopChassisThreshold){ // add range check (12 ft) & speed check
-                double rpm = calculateShooterRPMS(vc.hoopx);
-                if(Math.abs(getShooterRpms() - rpm) < vc.shooterThreshold){
-                    startFeeder(feederSpeed);
-                }
-            } else {
-
+            if(Math.abs(vc.hoopr) <= vc.hoopChassisThreshold){ // Angle check
+                if(vc.hoopx <= vc.maxHoopDistance) // distance check
+                    if(oi.pilot.getLeftY() < 0.05) // Speed check (~0)
+                        if(Math.abs(getShooterRpms() - calculateShooterRPMS(vc.hoopx)) < vc.shooterThreshold) // flywheel rpm check
+                            startFeeder(feederSpeed);
             }
         } else if (oi.reverseIntake()) {
             startFeeder(-feederSpeed);
