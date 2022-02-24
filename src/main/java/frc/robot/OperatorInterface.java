@@ -17,10 +17,9 @@ public class OperatorInterface {
     // Use this class to label each button so we don't accidentally assign the same
     // button to 2 different functions
 
-    public boolean autoShootButton() {
+    public boolean autoSteerToHoopButton() { // Rename this to steer to hoop
         return pilot.getBButton();
     }
-
     public boolean autoCollectButton() {
         return pilot.getAButton();
     }
@@ -30,9 +29,11 @@ public class OperatorInterface {
     public boolean runFlyWheelButtonManual() {
         return copilot.getRightBumper();
     }
-
     public boolean shootButton() {
         return copilot.getBButton();
+    }
+    public boolean autoShootButton() {
+        return copilot.getAButton();
     }
 
     public boolean manualIntakeButton() {

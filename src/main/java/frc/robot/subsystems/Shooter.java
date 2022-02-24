@@ -12,6 +12,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 
+import com.ctre.phoenix.time.StopWatch;
+
 public class Shooter {
 
     private OperatorInterface oi;
@@ -39,6 +41,8 @@ public class Shooter {
     public static final int gathererUp = 0;
     public static final int gathererDown = 1;
     public static final int holding = 2;
+
+    private StopWatch feederClock = new StopWatch();
 
     public int gathererState = gathererUp;
 
@@ -112,34 +116,30 @@ public class Shooter {
         if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
             switch (gathererState) {
                 case gathererUp:
-                    if (oi.manualIntakeButton()) {
+                    if (oi.manualIntakeButton()) { // Lower intake if button pressed else stop the intakes
                         lowerIntake();
+                        gathererState = gathererDown;
                         startIntake(intakeSpeed);
-                    }
-
-                    else {
+                    } else {
                         stopIntake();
                     }
                     break;
                 case gathererDown:
-                    if (!oi.manualIntakeButton()) {
+                    if (!oi.manualIntakeButton()) { // Stop the intake and hold ball when button is released
                         stopIntake();
-                    }
-
-                    else {
+                        gathererState = holding;
+                    } else { // otherwise keep running intake
                         startIntake(intakeSpeed);
                     }
                     break;
                 case holding:
-                    if (oi.manualIntakeButton()) {
+                    if (oi.manualIntakeButton()) { // Lift the intake when the button is pressed again
                         stopIntake();
-                        raiseIntake();
-                    }
-
-                    else {
+                        raiseIntake(); 
+                        gathererState = gathererUp;
+                    } else { // otherwise remain still
                         stopIntake();
                     }
-                    break;
             }
         }
     }
@@ -149,97 +149,78 @@ public class Shooter {
         updateManualRPMS();
 
         if (oi.runFlyWheelButtonManual()) {
-            if (checkVision()) {
-                vc.shooterstate = shooterState.ALIGN;
-            }
-
-            startShooter(shooterRpms);
-        }
-
-        else if (oi.autoShootButton()) {
-            if (checkVision()) {
-                autoShoot();
-            }
-
-            else {
-                if (checkVision()) {
-                    vc.shooterstate = shooterState.ALIGN;
-                }
-                startShooter(shooterRpms);
-                feederMain();
-            }
-        }
-
-        else {
-            if (checkVision()) {
-                vc.shooterstate = shooterState.ALIGN;
-            }
-
+            startShooter(calculateShooterRPMS(8)); // Assume distance is 8 ft in manual mode
+        } else if (oi.autoSteerToHoopButton()) {
+            startShooter(calculateShooterRPMS(vc.hoopx));
+        } else {
             stopShooter();
+            stopFeeder();
         }
     }
 
+
+    //FEEDER STUFF
     public void feederMain() {
-        if (!oi.autoShootButton()) {
-            if (oi.shootButton()) {
-                startFeeder(feederSpeed);
-                startIntake(-intakeSpeed);
-            }
+        if (oi.shootButton()) {
+            startFeeder(feederSpeed);
+            // startIntake(intakeSpeed);
+        } else if (oi.autoShootButton() && checkHoopVision()) { // Shoot when ready 
+            if(Math.abs(vc.hoopr) <= vc.hoopChassisThreshold){ // add range check (12 ft) & speed check
+                double rpm = calculateShooterRPMS(vc.hoopx);
+                if(Math.abs(getShooterRpms() - rpm) < vc.shooterThreshold){
+                    startFeeder(feederSpeed);
+                }
+            } else {
 
-            else if (oi.reverseIntake()) {
-                startFeeder(-feederSpeed);
             }
-
-            else {
-                stopFeeder();
-            }
+        } else if (oi.reverseIntake()) {
+            startFeeder(-feederSpeed);
+        } else {
+            stopFeeder();
         }
     }
-
     public void startFeeder(double speed) {
         feeder.set(speed);
     }
-
     public void stopFeeder() {
         feeder.set(0);
     }
 
+
+    //Get and Set shooter states
     public void startShooter(double rpms) {
-        shooter.set(TalonFXControlMode.Velocity, rpms * 2048 / 10); // might need to multiply by 60
+        shooter.set(TalonFXControlMode.Velocity, rpms * 2048 / 10);
     }
-
-    public double getShooterRpms() {
-        return shooter.getSelectedSensorVelocity() / 2048 * 10 / 60;
-    }
-
     public void stopShooter() {
         shooter.set(TalonFXControlMode.PercentOutput, 0);
     }
 
+    public double getShooterRpms() {
+        return shooter.getSelectedSensorVelocity() * 10 / 2048 / 60;
+    }
+
+
+    //INTAKE STUFF
+    //Raise and lower intake
     public void lowerIntake() {
         lowerIntake.set(true);
-        gathererState = gathererDown;
     }
-
     public void raiseIntake() {
         lowerIntake.set(false);
-        gathererState = gathererUp;
     }
-
+    //Start and stop intake
     public void startIntake(double speed) {
         intake.set(TalonSRXControlMode.PercentOutput, speed);
     }
-
     public void stopIntake() {
         intake.set(TalonSRXControlMode.PercentOutput, 0);
-        gathererState = holding;
     }
 
-    public boolean checkVision() {
-        if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
-            return vc.isHoopValid();
-        }
-        return false;
+
+
+    //Validate hoop vision
+    public boolean checkHoopVision() {
+        return FeatureFlags.doVision && FeatureFlags.visionInitialized && vc.isHoopValid();
     }
 
     public void autoShoot() {
@@ -269,5 +250,17 @@ public class Shooter {
         if (rpmOld != shooterRpms) {
             fl.write(Double.toString(shooterRpms));
         }
+    }
+
+    public double calculateShooterRPMS(double distance) {
+        //distance = hoopx
+        double shooterRPM = 0;
+        final double angle = 45;
+        final double diameter = 0.5; // distance in inches
+        double velocity = 0;
+        // math
+        velocity = Math.sqrt(distance * 9.8 / Math.toDegrees(Math.sin(Math.toRadians(2 * angle))));
+        shooterRPM = velocity / diameter;
+        return shooterRPM;
     }
 }
