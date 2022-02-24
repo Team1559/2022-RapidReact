@@ -22,4 +22,5 @@ public class Wiring {
 
     // Climber
 
+    public static final int climberMotor = 0; // NEED TO CHANGE FOR LATER
 }

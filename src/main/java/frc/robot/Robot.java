@@ -31,6 +31,7 @@ public class Robot extends TimedRobot {
     private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
     public Chassis chassis;
+    public Climber climber;
 
     private static final String DEFAULT_PATH = "Default Path";
     private static final String PATH_1 = "Path 1";
@@ -152,6 +153,7 @@ public class Robot extends TimedRobot {
             vc.teleopPeriodic();
             usingVision = vc.usingAuto;
         }
+
         if (FeatureFlags.doChassis && FeatureFlags.chassisInitialized && !usingVision) {
             chassis.main();
         }
@@ -162,6 +164,10 @@ public class Robot extends TimedRobot {
 
         if (FeatureFlags.doShooter && FeatureFlags.shooterInitalized) {
             shooter.runShooter();
+        }
+
+        if (FeatureFlags.doClimber && FeatureFlags.climberInitialized) {
+            climber.runClimber();
         }
     }
 
