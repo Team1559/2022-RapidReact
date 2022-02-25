@@ -3,26 +3,27 @@
 ## Our Pledge
 
 In the interest of fostering an open and welcoming environment, we as
-team 1559 pledge to keep all of our code open source and free to use. There will be no insults or inapropreate comments.  
+team 1559 pledge to keep all of our code open source and free to use. 
+
 
 ## Our Standards
 
 Examples of behavior that contributes to creating a positive environment
 include:
 
-* Using welcoming and inclusive language
-* Gracefully accepting constructive criticism
-
+- Using welcoming and inclusive language
+- Gracefully accepting constructive criticism
+- No insults or inappropriate comments
 Examples of unacceptable behavior by participants include:
 
-* The use of sexualized language or imagery and unwelcome sexual attention or
- advances
-* Trolling, insulting/derogatory comments, and personal or political attacks
-* Public or private harassment
-* Publishing others' private information, such as a physical or electronic
- address, without explicit permission
-* Other conduct which could reasonably be considered inappropriate in a
- professional setting
+- The use of sexualized language or imagery and unwelcome sexual attention or
+  advances
+- Trolling, insulting/derogatory comments, and personal or political attacks
+- Public or private harassment
+- Publishing others' private information, such as a physical or electronic
+  address, without explicit permission
+- Other conduct which could reasonably be considered inappropriate in a
+  professional setting
 
 ## Our Responsibilities
 

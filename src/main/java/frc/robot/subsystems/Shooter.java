@@ -2,8 +2,6 @@ package frc.robot.subsystems;
 
 import frc.robot.OperatorInterface;
 import frc.robot.components.FileLogging;
-import frc.robot.subsystems.VisionControl.shooterState;
-
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
 import frc.robot.*;
@@ -11,8 +9,6 @@ import com.revrobotics.*;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
-
-import com.ctre.phoenix.time.StopWatch;
 
 public class Shooter {
 
@@ -41,9 +37,6 @@ public class Shooter {
     public static final int gathererUp = 0;
     public static final int gathererDown = 1;
     public static final int holding = 2;
-
-    private StopWatch feederClock = new StopWatch();
-
     public int gathererState = gathererUp;
 
     public Shooter(OperatorInterface operatorinterface) {
@@ -135,7 +128,7 @@ public class Shooter {
                 case holding:
                     if (oi.manualIntakeButton()) { // Lift the intake when the button is pressed again
                         stopIntake();
-                        raiseIntake(); 
+                        raiseIntake();
                         gathererState = gathererUp;
                     } else { // otherwise remain still
                         stopIntake();
@@ -158,17 +151,18 @@ public class Shooter {
         }
     }
 
-
-    //FEEDER STUFF
+    // FEEDER STUFF
     public void feederMain() {
         if (oi.shootButton()) {
             startFeeder(feederSpeed);
             // startIntake(intakeSpeed);
-        } else if (oi.autoShootButton() && checkHoopVision()) { // Shoot when ready 
-            if(Math.abs(vc.hoopr) <= vc.hoopChassisThreshold){ // Angle check
-                if(vc.hoopx <= vc.maxHoopDistance) // distance check
-                    if(oi.pilot.getLeftY() < 0.05) // Speed check (~0)
-                        if(Math.abs(getShooterRpms() - calculateShooterRPMS(vc.hoopx)) < vc.shooterThreshold) // flywheel rpm check
+        } else if (oi.autoShootButton() && checkHoopVision()) { // Shoot when ready
+            if (Math.abs(vc.hoopr) <= vc.hoopChassisThreshold) { // Angle check
+                if (vc.hoopx <= vc.maxHoopDistance) // distance check
+                    if (oi.pilot.getLeftY() < 0.05) // Speed check (~0)
+                        if (Math.abs(getShooterRpms() - calculateShooterRPMS(vc.hoopx)) < vc.shooterThreshold) // flywheel
+                                                                                                               // rpm
+                                                                                                               // check
                             startFeeder(feederSpeed);
             }
         } else if (oi.reverseIntake()) {
@@ -177,18 +171,20 @@ public class Shooter {
             stopFeeder();
         }
     }
+
     public void startFeeder(double speed) {
         feeder.set(speed);
     }
+
     public void stopFeeder() {
         feeder.set(0);
     }
 
-
-    //Get and Set shooter states
+    // Get and Set shooter states
     public void startShooter(double rpms) {
         shooter.set(TalonFXControlMode.Velocity, rpms * 2048 / 10);
     }
+
     public void stopShooter() {
         shooter.set(TalonFXControlMode.PercentOutput, 0);
     }
@@ -197,26 +193,26 @@ public class Shooter {
         return shooter.getSelectedSensorVelocity() * 10 / 2048 / 60;
     }
 
-
-    //INTAKE STUFF
-    //Raise and lower intake
+    // INTAKE STUFF
+    // Raise and lower intake
     public void lowerIntake() {
         lowerIntake.set(true);
     }
+
     public void raiseIntake() {
         lowerIntake.set(false);
     }
-    //Start and stop intake
+
+    // Start and stop intake
     public void startIntake(double speed) {
         intake.set(TalonSRXControlMode.PercentOutput, speed);
     }
+
     public void stopIntake() {
         intake.set(TalonSRXControlMode.PercentOutput, 0);
     }
 
-
-
-    //Validate hoop vision
+    // Validate hoop vision
     public boolean checkHoopVision() {
         return FeatureFlags.doVision && FeatureFlags.visionInitialized && vc.isHoopValid();
     }
@@ -251,7 +247,7 @@ public class Shooter {
     }
 
     public double calculateShooterRPMS(double distance) {
-        //distance = hoopx
+        // distance = hoopx
         double shooterRPM = 0;
         final double angle = 45;
         final double diameter = 0.5; // distance in inches

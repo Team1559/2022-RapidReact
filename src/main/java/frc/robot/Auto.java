@@ -1,7 +1,9 @@
-import frc.robot.OperatorInterface;
-import frc.robot.subsystems.Chassis;
-import frc.robot.subsystems.Shooter;
+package frc.robot;
 
+import frc.robot.subsystems.*;
+import frc.robot.components.*;
+
+@SuppressWarnings("unused")
 public class Auto {
     private int stepNumber = 0;
     private int stepCounter = 0;
