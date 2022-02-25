@@ -1,6 +1,14 @@
+import com.revrobotics.CANSparkMax;
+
+import frc.robot.subsystems.Chassis;
+
 public class Auto {
     private int stepNumber = 0;
     private int stepCounter = 0;
+
+    private Chassis chassis;
+    double leftTarget;
+    double rightTarget;
 
     static final int WAIT = 0;
     static final int DRIVE = 1;
@@ -85,13 +93,30 @@ public class Auto {
     }
 
     private void Wait(int cycles) {
+        System.out.println("Wait: " + stepCounter + "/" + cycles);
         if (stepCounter >= cycles) {
             Done();
         }
     }
 
     private void Drive(int inches) {
-        Done();
+        chassis.updateEncoders();
+        double revs = chassis.inchesToRotations(inches);
+        if (stepCounter == 1) {
+            // establish setpoints for end of travel
+            leftTarget = chassis.flep + revs;
+            rightTarget = chassis.frep + revs;
+            chassis.setPositionMode();
+            chassis.setPositionTarget(leftTarget, rightTarget);
+        }
+        double remaining = leftTarget - chassis.flep;
+        double done = revs - remaining;
+        int inchesDone = (int) chassis.rotationsToInches(done);
+        System.out.println("Drive: " + inchesDone + "/" + inches);
+
+        if (remaining < 0.5) {
+            Done();
+        }
     }
 
     private void Turn(int degrees) {
