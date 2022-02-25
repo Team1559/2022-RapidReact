@@ -6,6 +6,9 @@ public class Auto {
     private int stepNumber = 0;
     private int stepCounter = 0;
 
+    double leftTarget;
+    double rightTarget;
+
     static final int WAIT = 0;
     static final int DRIVE = 1;
     static final int TURN = 2;
@@ -17,11 +20,9 @@ public class Auto {
     static final int DRIVE_BALL = 8;
     static final int DRIVE_HOOP = 9;
 
-
     private OperatorInterface oi;
     private Shooter shooter;
     private Chassis chassis;
-
 
     private int[][] steps;
     private int feederCycles = 75;
@@ -95,13 +96,30 @@ public class Auto {
     }
 
     private void Wait(int cycles) {
+        System.out.println("Wait: " + stepCounter + "/" + cycles);
         if (stepCounter >= cycles) {
             Done();
         }
     }
 
     private void Drive(int inches) {
-        Done();
+        chassis.updateEncoders();
+        double revs = chassis.inchesToRotations(inches);
+        if (stepCounter == 1) {
+            // establish setpoints for end of travel
+            leftTarget = chassis.flep + revs;
+            rightTarget = chassis.frep + revs;
+            chassis.setPositionMode();
+            chassis.setPositionTarget(leftTarget, rightTarget);
+        }
+        double remaining = leftTarget - chassis.flep;
+        double done = revs - remaining;
+        int inchesDone = (int) chassis.rotationsToInches(done);
+        System.out.println("Drive: " + inchesDone + "/" + inches);
+
+        if (remaining < 0.5) {
+            Done();
+        }
     }
 
     private void Turn(int degrees) {
