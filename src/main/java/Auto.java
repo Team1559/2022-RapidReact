@@ -1,12 +1,11 @@
-import com.revrobotics.CANSparkMax;
-
+import frc.robot.OperatorInterface;
 import frc.robot.subsystems.Chassis;
+import frc.robot.subsystems.Shooter;
 
 public class Auto {
     private int stepNumber = 0;
     private int stepCounter = 0;
 
-    private Chassis chassis;
     double leftTarget;
     double rightTarget;
 
@@ -21,8 +20,12 @@ public class Auto {
     static final int DRIVE_BALL = 8;
     static final int DRIVE_HOOP = 9;
 
-    private int[][] steps;
+    private OperatorInterface oi;
+    private Shooter shooter;
+    private Chassis chassis;
 
+    private int[][] steps;
+    private int feederCycles = 75;
     // Start gatherer, drive X feet, stop gatherer, start flywheel at known RPM,
     // turn 180, shoot, stop flywheel
     public int[][] basicAutoSteps = {
@@ -124,23 +127,31 @@ public class Auto {
     }
 
     private void StartGatherer() {
+        shooter.lowerIntake();
+        shooter.startIntake(shooter.intakeSpeed);
         Done();
     }
 
     private void StopGatherer() {
+        shooter.stopIntake();
         Done();
     }
 
     private void StartFlywheel(int rpm) {
+        shooter.startShooter(rpm);
         Done();
     }
 
     private void StopFlywheel() {
+        shooter.stopShooter();
         Done();
     }
 
     private void Shoot() {
-        Done();
+        shooter.startFeeder(shooter.feederSpeed);
+        if (stepCounter >= feederCycles) {
+            Done();
+        }
     }
 
     private void DriveBall(int inches) {
