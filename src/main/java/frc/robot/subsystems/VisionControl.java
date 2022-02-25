@@ -2,22 +2,32 @@ package frc.robot.subsystems;
 
 import frc.robot.components.*;
 import frc.robot.routes.*;
+
+import com.ctre.phoenix.time.StopWatch;
+
 import frc.robot.*;
 
 @SuppressWarnings("unused")
 public class VisionControl {
+    public enum autoState {
+        PATH, SHOOT
+    }
+
+    public enum shooterState {
+        ALIGN, WAIT, SHOOT, STOP
+    }
+
+    private autoState autostate = autoState.PATH;
+    public shooterState shooterstate = shooterState.ALIGN;
+
     private OperatorInterface oi;
-    private Vision vision;
+    private Vision vision = new Vision();
     private VisionData visionData;
     private IMU imu;
     private Shooter shooter;
-    private double hoopr = 0;
-    private double ballr = 0;
-    private double hoopx = 0;
-
-    // shooter variables
-    private double desiredAngle;// angle of the shooter in degrees
-    private double desiredPower;// desired shooter power in RPMS
+    public double hoopr = 0;
+    public double ballr = 0;
+    public double hoopx = 0;
 
     private Chassis chassis;
 
@@ -25,7 +35,7 @@ public class VisionControl {
     public boolean usingAuto = false;
     private int invalid_ball_counter = 0;
     private final int invalid_ball_counter_threshold = 20;
-    private MachineLearning ml;
+    private FileLogging fl;
     private double counter = 0;
     private int recordCounter = 0;
     private double counterSpeed;
@@ -33,14 +43,16 @@ public class VisionControl {
     private double frontLeftSpeed[] = {};
     private double backRightSpeed[] = {};
     private double backLeftSpeed[] = {};
+    private StopWatch clock = new StopWatch();
 
     // we need to determine what to set these to
 
     // thresholds
     private final int MAX_SIZE = 2000;// should only need to be 750
-    private final double ballChassisThreshold = 1; // angle in degrees
-    private final double hoopChassisThreshold = 1; // angle in degrees
-    private final double shooterThreshold = 2;
+    public final double ballChassisThreshold = 1; // angle in degrees
+    public final double hoopChassisThreshold = 2; // angle in degrees
+    public final double maxHoopDistance = 12; // MAX distance in ft
+    public final double shooterThreshold = 50; // threshold in rpm
 
     private final boolean SQUARE_DRIVER_INPUTS = true;
 
@@ -49,34 +61,18 @@ public class VisionControl {
     private final String FILE_NAME = "path4";
     private String selector;
 
-    public VisionControl(Vision vision, VisionData visionData, OperatorInterface oi, Chassis chassis, IMU imu,
+    public VisionControl(VisionData visionData, OperatorInterface oi, Chassis chassis, IMU imu,
             Shooter shooter) {
         this.selector = "";
         this.oi = oi;
-        this.vision = vision;
         this.visionData = visionData;
         this.chassis = chassis;
         this.imu = imu;
         this.shooter = shooter;
-        ml = new MachineLearning();
+        fl = new FileLogging();
         if (RECORD_PATH) {
-            ml.createfile(FILE_NAME);
+            fl.createfile(FILE_NAME);
         }
-    }
-
-    public VisionControl(Vision vision, VisionData visionData, OperatorInterface oi, Chassis chassis, IMU imu,
-            String selector) {// , Shooter shooter}) {
-        this.selector = selector;
-        this.oi = oi;
-        this.vision = vision;
-        this.visionData = visionData;
-        this.chassis = chassis;
-        this.imu = imu;
-        ml = new MachineLearning();
-        if (RECORD_PATH) {
-            ml.createfile(FILE_NAME);
-        }
-        // this.shooter = shooter;
     }
 
     public void autoInit() {
@@ -117,66 +113,60 @@ public class VisionControl {
     }
 
     public void autoPeriodic() {
-        if (!RECORD_PATH) {
-            update();
-            followPath();
-        }
+        switch (autostate) {
+            case PATH:
+                if (!RECORD_PATH) {
+                    update();
+                    followPath();
+                }
 
-        else {
-            System.out.println("Please enable in teleop to record a new path");
+                else {
+                    System.out.println("Please enable in teleop to record a new path");
+                }
+                break;
+            case SHOOT:
+                break;
         }
     }
 
     public void teleopInit() {
-        if (RECORD_PATH) {
+        if (RECORD_PATH)
             chassis.initOdometry();
-        }
     }
 
     public void teleopPeriodic() {
         update();
-
         if (RECORD_PATH && recordCounter <= MAX_SIZE) {
             record(oi.pilot.getLeftY(), oi.pilot.getRightX());
             recordCounter++;
-        }
-
-        else if (RECORD_PATH && recordCounter > MAX_SIZE) {
+        } else if (RECORD_PATH && recordCounter > MAX_SIZE) {
             System.out.println("Max recording size has been reached");
         }
 
-        // visionData.Print();
-
-        if (oi.autoShootButton()) {
+        if (oi.autoSteerToHoopButton()) {
             usingAuto = true;
             trackHoop();
-        }
-
-        else if (oi.autoCollectButton()) {
+        } else if (oi.autoCollectButton()) {
             usingAuto = true;
             trackBall();
-        }
-
-        else {
+        } else {
             usingAuto = false;
         }
     }
 
     public void followPath() {
         if (counter < frontLeftSpeed.length) {
-            chassis.pathDrive(ml.interpolate(counter, frontLeftSpeed), ml.interpolate(counter, frontRightSpeed),
-                    ml.interpolate(counter, backLeftSpeed), ml.interpolate(counter, backRightSpeed));
+            chassis.pathDrive(fl.interpolate(counter, frontLeftSpeed), fl.interpolate(counter, frontRightSpeed),
+                fl.interpolate(counter, backLeftSpeed), fl.interpolate(counter, backRightSpeed));
             counter += counterSpeed;
-        }
-
-        else {
+        } else {
             chassis.drive(0, 0, false);
         }
     }
 
     public void disable() {
         if (RECORD_PATH) {
-            ml.write();
+            fl.write();
         }
     }
 
@@ -185,7 +175,7 @@ public class VisionControl {
             double ySpeed = -oi.pilot.getLeftY();
 
             if (SQUARE_DRIVER_INPUTS) {
-                ySpeed = -1.0 * Math.copySign(ySpeed * ySpeed, ySpeed);
+                ySpeed = -Math.copySign(ySpeed*ySpeed, ySpeed);
             }
 
             if (Math.abs(hoopr) > hoopChassisThreshold) {
@@ -236,7 +226,8 @@ public class VisionControl {
     }
 
     public void record(double _forwardSpeed, double _sideSpeed) {
-        ml.periodic(_forwardSpeed + _sideSpeed + chassis.flep + chassis.frep + chassis.blep + chassis.brep + "");
+        fl.periodic(_forwardSpeed + " " + _sideSpeed + " " + chassis.flep + " " + chassis.frep + " " + chassis.blep
+                + " " + chassis.brep + " \n");
     }
 
     private void update() {
@@ -245,11 +236,6 @@ public class VisionControl {
         ballr = visionData.br;
         chassis.updateEncoders();
         imu.getvalues();
-    }
-
-    private void calculateShooter() {
-        // desiredAngle = __calculated_angle__;
-        // desiredPower = __calculated_RPMS__;
     }
 
     private double calculateHoopRotation() {
@@ -272,17 +258,42 @@ public class VisionControl {
         return -ball_rotation;
     }
 
-    public double calculateShooterRPMS() {
-        double shooterRPM = 0;
-        final double angle = 45;
-        final double diameter = 0.5;// distance in inches
-        double velocity = 0;
-        if (visionData.isHoopValid()) {
-            // math
-            velocity = Math.sqrt(hoopx * 9.8 / Math.toDegrees(Math.sin(Math.toRadians(2 * angle))));
-            shooterRPM = velocity / diameter;
-            return shooterRPM;
+    public void autoShoot() {
+        switch (shooterstate) {
+            case ALIGN:
+                trackHoop();
+                if (Math.abs(hoopr) <= hoopChassisThreshold) {
+                    shooterstate = shooterState.WAIT;
+                }
+                break;
+            case WAIT:
+                drive(0, 0);
+                double rpm = visionData.isHoopValid() ? shooter.calculateShooterRPMS(hoopx) : 0;
+                shooter.startShooter(rpm);
+                if (Math.abs(shooter.getShooterRpms() - rpm) < shooterThreshold) {
+                    shooterstate = shooterState.SHOOT;
+                    clock.start();
+                }
+                break;
+            case SHOOT:
+                drive(0, 0);
+                double rpms = visionData.isHoopValid() ? shooter.calculateShooterRPMS(hoopx) : 0;
+                shooter.startShooter(rpms);
+                shooter.startFeeder(shooter.feederSpeed);
+                if (clock.getDuration() == 2) {
+                    shooterstate = shooterState.STOP;
+                }
+                break;
+            case STOP:
+                drive(0, 0);
+                shooter.stopFeeder();
+                shooter.stopShooter();
+                shooter.stopIntake();
+                break;
         }
-        return 0;
+    }
+
+    public boolean isHoopValid() {
+        return visionData.isHoopValid();
     }
 }

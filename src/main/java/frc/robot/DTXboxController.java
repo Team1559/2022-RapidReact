@@ -3,7 +3,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class DTXboxController extends XboxController {
-    public boolean isDPadPressed = false;
+    public boolean wasDpadPressed = false;
+
     public DTXboxController(int port) {
         super(port);
     }
@@ -11,11 +12,11 @@ public class DTXboxController extends XboxController {
     public boolean getDpad(int angle) {
         int pov = getPOV();
 
-        if(angle == -1 && pov != -1) {
+        if (angle == -1 && pov != -1) {
             return true;
         }
 
-        else if(pov == angle) {
+        else if (pov == angle) {
             return true;
         }
 
@@ -23,52 +24,48 @@ public class DTXboxController extends XboxController {
             return false;
         }
     }
+
     public int getRawDPad() {
         return getPOV();
     }
-    
 
     public boolean isDpadPressed() {
         return getPOV() != -1;
     }
 
     public boolean getDPadPress(int angle) {
-        if (!isDPadPressed) {
-            isDPadPressed = true;
+        if (!wasDpadPressed) {
+            wasDpadPressed = isDpadPressed();
 
-            if(angle == -1 && getPOV() != -1) {
+            if (angle == -1 && getPOV() != -1) {
                 return true;
             }
 
-            if(getPOV() == angle) {
+            if (getPOV() == angle) {
                 return true;
             }
 
             else {
                 return false;
             }
-        } 
+        }
 
         else {
-            if (getPOV() == -1) {
-                isDPadPressed = false;
-            }
+            wasDpadPressed = isDpadPressed();
 
             return false;
         }
     }
 
     public int getRawDPadPress() {
-        if (!isDPadPressed) {
-            isDPadPressed = true;
+        if (!wasDpadPressed) {
+            wasDpadPressed = isDpadPressed();
             return getPOV();
-        } 
+        }
 
         else {
-            if (getPOV() == -1) {
-                isDPadPressed = false;
-            }
-            
+            wasDpadPressed = isDpadPressed();
+
             return -1;
         }
     }

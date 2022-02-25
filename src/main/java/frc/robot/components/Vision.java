@@ -24,7 +24,7 @@ public class Vision {
             NewData.hoopStatus = 2;
             NewData.ballStatus = 2;
             String in = client.get();
-            
+
             if (in != null) {
                 String[] parameters = in.split(" ");
 
@@ -32,13 +32,13 @@ public class Vision {
                     NewData.ballStatus = Integer.parseInt(parameters[6]);
                     NewData.hoopStatus = Integer.parseInt(parameters[7]);
 
-                    if(NewData.ballStatus == 1) {
+                    if (NewData.ballStatus == 1) {
                         NewData.br = -(Double.parseDouble(parameters[3]) - ballCameraXOffset);
                         NewData.by = Double.parseDouble(parameters[4]) - ballCameraYOffset;
                         NewData.bx = Double.parseDouble(parameters[5]) - ballCameraYOffset;
                     }
 
-                    if(NewData.hoopStatus == 1) {
+                    if (NewData.hoopStatus == 1) {
                         NewData.hx = -(Double.parseDouble(parameters[0]) - hoopCameraXOffset);
                         NewData.hy = Double.parseDouble(parameters[2]) - hoopCameraYOffset;
                         NewData.hr = Double.parseDouble(parameters[1]) - hoopCameraROffset;
@@ -46,7 +46,7 @@ public class Vision {
 
                     if (Integer.parseInt(parameters[8]) == 1) {
                         NewData.waitForOtherRobot = true;
-                    } 
+                    }
 
                     else {
                         NewData.waitForOtherRobot = false;
@@ -54,8 +54,7 @@ public class Vision {
                 }
             }
             VData = NewData;
-        } 
-        catch (NumberFormatException | NullPointerException e) {
+        } catch (NumberFormatException | NullPointerException e) {
             System.err.println(e.toString());
         }
     }

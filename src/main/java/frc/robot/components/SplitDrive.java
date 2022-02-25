@@ -8,7 +8,6 @@ import static java.util.Objects.requireNonNull;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxPIDController;
-
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
@@ -121,7 +120,8 @@ public class SplitDrive extends RobotDriveBase implements Sendable, AutoCloseabl
   private final CANSparkMax m_rightMotor;
 
   private boolean m_reported;
-  private final double m_maxOutput = 30000; // that should be the theoretical max encoder tics per second
+  private final double m_maxOutput = 5676 * 42 / 10; // might need to multiply by 60 // Should give us the correct
+                                                     // conversion from rpm to encoder tics per 100 miliseconds
 
   /**
    * Wheel speeds for a differential drive.
@@ -219,7 +219,6 @@ public class SplitDrive extends RobotDriveBase implements Sendable, AutoCloseabl
     var speeds = arcadeDriveIK(xSpeed, zRotation, squareInputs);
     SparkMaxPIDController leftPid = m_leftMotor.getPIDController();
     SparkMaxPIDController rightPid = m_rightMotor.getPIDController();
-
     leftPid.setReference(speeds.left * m_maxOutput, CANSparkMax.ControlType.kVelocity);
     rightPid.setReference(speeds.right * m_maxOutput, CANSparkMax.ControlType.kVelocity);
     // m_leftMotor.set(speeds.left * m_maxOutput);

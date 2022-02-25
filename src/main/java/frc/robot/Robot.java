@@ -24,10 +24,9 @@ import frc.robot.components.*;
 public class Robot extends TimedRobot {
     private OperatorInterface oi = new OperatorInterface();
     private IMU imu;
-    private Vision vision;
     private VisionData vData;
     public static VisionControl vc;
-    private boolean usingVision = false;
+    public boolean usingVision = false;
     private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
     public Chassis chassis;
@@ -151,7 +150,6 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
             vc.teleopPeriodic();
-            usingVision = vc.usingAuto;
         }
 
         if (FeatureFlags.doChassis && FeatureFlags.chassisInitialized && !usingVision) {
@@ -163,7 +161,7 @@ public class Robot extends TimedRobot {
         }
 
         if (FeatureFlags.doShooter && FeatureFlags.shooterInitalized) {
-            shooter.runShooter();
+            shooter.main();
         }
 
         if (FeatureFlags.doClimber && FeatureFlags.climberInitialized) {
@@ -232,8 +230,7 @@ public class Robot extends TimedRobot {
         }
 
         if (FeatureFlags.doVision && !FeatureFlags.visionInitialized) {
-            vision = new Vision();
-            vc = new VisionControl(vision, vData, oi, chassis, imu, shooter);
+            vc = new VisionControl(vData, oi, chassis, imu, shooter);
             FeatureFlags.visionInitialized = true;
         }
     }

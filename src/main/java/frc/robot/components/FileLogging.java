@@ -2,31 +2,39 @@ package frc.robot.components;
 
 import java.io.*;
 
-public class MachineLearning {
-    private String filename;
-    private String out;
+public class FileLogging {
+    private String filename, out, dir;
 
-    public MachineLearning() {
+    public FileLogging() {
         out = "";
         filename = "";
+        dir = "";
     }
 
     public void periodic(String data) {
         out += data;
     }
 
+    public void setDirectory(String dir) {
+        if (new File(dir).mkdir()) {
+            System.out.println("Created directory");
+        }
+        this.dir = "/1559data/" + dir;
+    }
+
     public void createfile(String name) {
         if (name.equals("")) {
-            name = "Default_Path.txt";
+            name = dir + "Default_file.txt";
         }
 
         else {
             name += ".txt";
         }
-        filename = name;
+
+        filename += name;
+
         try {
-            new File("/paths/" + name).mkdirs();
-            File myObj = new File("/paths/" + name + ".txt");
+            File myObj = new File(dir + name);
 
             if (myObj.createNewFile()) {
                 System.out.println("File created: " + myObj.getName());
@@ -39,25 +47,51 @@ public class MachineLearning {
 
         catch (IOException e) {
             System.out.println("An error occurred.");
-            e.printStackTrace();
+            // // e.printStackTrace();
         }
     }
 
     public void write() {
-        try {
-            FileWriter myWriter = new FileWriter("/paths/" + filename + ".txt");
+        write(out);
+        out = "";
+    }
 
-            myWriter.write(out);
+    public void write(String data) {
+        try {
+            FileWriter myWriter = new FileWriter(dir + filename);
+
+            myWriter.write(data);
             myWriter.close();
-            System.out.println("Successfully wrote to the file.");
+            // System.out.println("Successfully wrote to the file.");
         }
 
         catch (IOException e) {
             System.out.println("An error occurred.");
-            e.printStackTrace();
+            // e.printStackTrace();
+        }
+    }
+
+    public String readFile() {
+        return readFile(filename);
+    }
+
+    public String readFile(String fileName) {
+        File file = new File(dir + fileName);
+        String fileContent = "";
+
+        try (FileReader fr = new FileReader(file)) {
+            char[] chars = new char[(int) file.length()];
+            fr.read(chars);
+
+            fileContent = new String(chars);
         }
 
-        out = "";
+        catch (IOException e) {
+            // e.printStackTrace();
+        }
+
+        return fileContent;
+
     }
 
     public double interpolate(double counter, double[] value) {

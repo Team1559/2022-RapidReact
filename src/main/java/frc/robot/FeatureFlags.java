@@ -12,10 +12,10 @@ public final class FeatureFlags {
     public static boolean doClimber = true;
 
     // Set these once the subsystem in installed
-    public static final boolean VISION_INSTALLED = false;
-    public static final boolean CHASSIS_INSTALLED = false;
-    public static final boolean IMU_INSTALLED = false;
-    public static final boolean SHOOTER_INSTALLED = false;
+    public static final boolean VISION_INSTALLED = true;
+    public static final boolean CHASSIS_INSTALLED = true;
+    public static final boolean IMU_INSTALLED = true;
+    public static final boolean SHOOTER_INSTALLED = true;
     public static final boolean COMPRESSOR_INSTALLED = false;
     public static final boolean CLIMBER_INSTALLED = true;
 
@@ -62,6 +62,25 @@ public final class FeatureFlags {
             }
         }
 
+        if (!CHASSIS_INSTALLED) {
+            doChassis = false;
+        }
+
+        if (!IMU_INSTALLED) {
+            doImu = false;
+        }
+
+        if (!SHOOTER_INSTALLED) {
+            doShooter = false;
+        }
+
+        if (!COMPRESSOR_INSTALLED) {
+            doCompressor = false;
+        }
+
+        if (!VISION_INSTALLED || !CHASSIS_INSTALLED || !IMU_INSTALLED || !SHOOTER_INSTALLED || !COMPRESSOR_INSTALLED) {
+            doVision = false;
+        }
         if (doClimber && CLIMBER_INSTALLED) {
             if (COMPRESSOR_INSTALLED) {
                 doCompressor = true;
