@@ -3,10 +3,10 @@ package frc.robot.subsystems;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import com.revrobotics.SparkMaxPIDController;
 import frc.robot.OperatorInterface;
 import frc.robot.Wiring;
 import frc.robot.components.IMU;
@@ -34,13 +34,12 @@ public class Chassis {
     public double blep;
     public double brep;
     private OperatorInterface oi;
-    private IMU imu;
+    public IMU imu;
     private FileLogging fl;
 
     private final double SLOWMODE_COEFFICIENT = 0.5;
     // these need to be set once
-    private final double differpercent = 12 / 25.5; // percent the front needs to move compared to the back, needs to be
-                                                    // justed
+    private final double differpercent = 12 / 25.5; // percent the front needs to move compared to the back, needs to be justed
     // these can be changed when needed
     private final boolean LOGDATA = true;
 
@@ -228,6 +227,10 @@ public class Chassis {
         pid2.setP(kf);
         pid3.setP(kf);
         pid4.setP(kf);
+    }
+
+    public double degreesToZRotation(double desiredAngle){
+        return (desiredAngle-this.imu.yaw) * 0.03; // TODO: modify proportion (and calibrate IMU yaw)
     }
 
     public double inchesToRotations(double inches) {

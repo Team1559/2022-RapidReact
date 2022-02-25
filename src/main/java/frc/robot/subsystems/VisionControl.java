@@ -60,6 +60,7 @@ public class VisionControl {
     private final boolean RECORD_PATH = false;
     private final String FILE_NAME = "path4";
     private String selector;
+    
 
     public VisionControl(VisionData visionData, OperatorInterface oi, Chassis chassis, IMU imu,
             Shooter shooter) {
@@ -145,10 +146,16 @@ public class VisionControl {
 
         if (oi.autoSteerToHoopButton()) {
             usingAuto = true;
-            trackHoop();
+            double ySpeed = -oi.pilot.getLeftY();
+            if (SQUARE_DRIVER_INPUTS)
+                ySpeed = -Math.copySign(ySpeed*ySpeed, ySpeed);
+            trackHoop(ySpeed);
         } else if (oi.autoCollectButton()) {
             usingAuto = true;
-            trackBall();
+            double ySpeed = -oi.pilot.getLeftY();
+            if (SQUARE_DRIVER_INPUTS)
+                ySpeed = -1.0 * Math.copySign(ySpeed * ySpeed, ySpeed);
+            trackBall(ySpeed);
         } else {
             usingAuto = false;
         }
@@ -170,50 +177,26 @@ public class VisionControl {
         }
     }
 
-    public void trackHoop() {
-        if (visionData.isHoopValid()) {
-            double ySpeed = -oi.pilot.getLeftY();
-
-            if (SQUARE_DRIVER_INPUTS) {
-                ySpeed = -Math.copySign(ySpeed*ySpeed, ySpeed);
-            }
-
-            if (Math.abs(hoopr) > hoopChassisThreshold) {
+    public void trackHoop(double ySpeed) {
+        if (visionData.isHoopValid())
+            if (Math.abs(hoopr) > hoopChassisThreshold)
                 drive(ySpeed, calculateHoopRotation());
-            }
-
-            else {
+            else
                 chassis.main();
-            }
-        }
-
-        else {
+        else
             chassis.main();
-        }
     }
 
-    public void trackBall() {
-        if (visionData.isBallValid()) {
+    public void trackBall(double ySpeed) {
+        if (visionData.isBallValid())
             invalid_ball_counter = 0;
-        }
-
-        else {
+        else
             invalid_ball_counter++;
-        }
 
-        if (invalid_ball_counter < invalid_ball_counter_threshold) {
-            double ySpeed = -oi.pilot.getLeftY();
-
-            if (SQUARE_DRIVER_INPUTS) {
-                ySpeed = -1.0 * Math.copySign(ySpeed * ySpeed, ySpeed);
-            }
-
+        if (invalid_ball_counter < invalid_ball_counter_threshold)
             drive(ySpeed, calculateBallRotation());
-        }
-
-        else {
+        else // Default to driver control when invalid frames exceeds limit 
             chassis.main();
-        }
     }
 
     public void drive(double fs, double r) {
@@ -261,7 +244,7 @@ public class VisionControl {
     public void autoShoot() {
         switch (shooterstate) {
             case ALIGN:
-                trackHoop();
+                trackHoop(0);
                 if (Math.abs(hoopr) <= hoopChassisThreshold) {
                     shooterstate = shooterState.WAIT;
                 }

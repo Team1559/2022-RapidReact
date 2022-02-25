@@ -22,6 +22,8 @@ public class Auto {
     static final int DRIVE_BALL = 8;
     static final int DRIVE_HOOP = 9;
 
+    static final int MAX_TURN_SECONDS = 3;
+
     private OperatorInterface oi;
     private Shooter shooter;
     private Chassis chassis;
@@ -41,8 +43,12 @@ public class Auto {
             { STOP_FLYWHEEL },
     };
 
-    public Auto(int[][] stepsToRun) {
-        steps = stepsToRun;
+    public Auto(){
+        this.steps = this.basicAutoSteps;
+    }
+
+    public Auto(int[][] steps) {
+        this.steps = steps;
     }
 
     public void periodic() {
@@ -96,6 +102,11 @@ public class Auto {
         stepNumber++;
         stepCounter = 0;
     }
+    
+    private void Fail(String errorMessage) {
+        stepNumber = steps.length;
+        System.out.println("AUTO FAILED: " + errorMessage);
+    }
 
     private void Wait(int cycles) {
         System.out.println("Wait: " + stepCounter + "/" + cycles);
@@ -119,13 +130,17 @@ public class Auto {
         int inchesDone = (int) chassis.rotationsToInches(done);
         System.out.println("Drive: " + inchesDone + "/" + inches);
 
-        if (remaining < 0.5) {
+        if (remaining < 0.5)
             Done();
-        }
     }
 
     private void Turn(int degrees) {
-        Done();
+        chassis.setVelocityMode();
+        chassis.drive(0, chassis.degreesToZRotation(degrees));
+        if(Math.abs(degrees - chassis.imu.yaw) < 1.5)
+            Done();
+        else if (stepCounter > 50 * MAX_TURN_SECONDS)
+            Fail("Turned for too long");
     }
 
     private void StartGatherer() {
@@ -156,11 +171,15 @@ public class Auto {
         }
     }
 
-    private void DriveBall(int inches) {
-        Done();
+    private void DriveBall(int inchesToBall) {
+        double ySpeed = inchesToBall * 0.4; // FIXME: I have no idea what this proportion should be (pid controller?)
+        if(inchesToBall < 3) // FIXME: Should be roughly gatherer extension length
+            Done();
     }
 
     private void DriveHoop(int inches) {
-        Done();
+        double ySpeed = inches * 0.4; // FIXME: I have no idea what this proportion should be (pid controller?)
+        if(inches < 4)
+            Done();
     }
 }
