@@ -160,9 +160,7 @@ public class Shooter {
             if (Math.abs(vc.hoopr) <= vc.hoopChassisThreshold) { // Angle check
                 if (vc.hoopx <= vc.maxHoopDistance) // distance check
                     if (oi.pilot.getLeftY() < 0.05) // Speed check (~0)
-                        if (Math.abs(getShooterRpms() - calculateShooterRPMS(vc.hoopx)) < vc.shooterThreshold) // flywheel
-                                                                                                               // rpm
-                                                                                                               // check
+                        if (Math.abs(getShooterRpms() - calculateShooterRPMS(vc.hoopx)) < vc.shooterThreshold) // flywheel rpm check
                             startFeeder(feederSpeed);
             }
         } else if (oi.reverseIntake()) {

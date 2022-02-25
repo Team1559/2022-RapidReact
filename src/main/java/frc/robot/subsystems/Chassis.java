@@ -36,6 +36,8 @@ public class Chassis {
     private OperatorInterface oi;
     private IMU imu;
     private FileLogging fl;
+
+    private final double SLOWMODE_COEFFICIENT = 0.5;
     // these need to be set once
     private final double differpercent = 12 / 25.5; // percent the front needs to move compared to the back, needs to be
                                                     // justed
@@ -166,6 +168,8 @@ public class Chassis {
     }
 
     public void drive(double ySpeed, double zRotation, boolean squareInputs) {
+        ySpeed *= oi.slowModeButton() ? SLOWMODE_COEFFICIENT : 1;
+        zRotation *= oi.slowModeButton() ? SLOWMODE_COEFFICIENT : 1;
         front.splitDrive(ySpeed, (differpercent / 100.0) * -zRotation, squareInputs);
         back.splitDrive(ySpeed, -zRotation, squareInputs);
     }

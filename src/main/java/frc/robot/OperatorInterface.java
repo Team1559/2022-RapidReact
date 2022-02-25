@@ -25,6 +25,9 @@ public class OperatorInterface {
         return pilot.getAButton();
     }
     // DriveTrain
+    public boolean slowModeButton(){
+        return pilot.getLeftTriggerAxis() > 0.5;
+    }
 
     // Shooter/Intake
     public boolean runFlyWheelButtonManual() {
