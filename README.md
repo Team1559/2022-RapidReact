@@ -23,7 +23,9 @@ Visit us on the web at http://victorrobotics.org
 * Jordan Cieslinski
 
 **Autonomous**
-* TBD
+* Anna Marchetti
+* Eric Marchetti
+* Jack Dunfey
 
 **Shooter**
 * Jordan Cieslinski
