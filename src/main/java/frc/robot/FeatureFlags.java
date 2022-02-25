@@ -6,9 +6,10 @@ public final class FeatureFlags {
     // Modify these values
     public static boolean doVision = false;
     public static boolean doChassis = false;
-    public static boolean doImu = true;
-    public static boolean doShooter = true;
+    public static boolean doImu = false;
+    public static boolean doShooter = false;
     public static boolean doCompressor = false;
+    public static boolean doClimber = true;
 
     // Set these once the subsystem in installed
     public static final boolean VISION_INSTALLED = true;
@@ -16,6 +17,7 @@ public final class FeatureFlags {
     public static final boolean IMU_INSTALLED = true;
     public static final boolean SHOOTER_INSTALLED = true;
     public static final boolean COMPRESSOR_INSTALLED = false;
+    public static final boolean CLIMBER_INSTALLED = true;
 
     // Leave these values alone
     public static boolean visionInitialized = false;
@@ -23,6 +25,7 @@ public final class FeatureFlags {
     public static boolean imuInitialized = false;
     public static boolean shooterInitalized = false;
     public static boolean compressorInitialized = false;
+    public static boolean climberInitialized = false;
 
     public static void updateDependencies() {
         if (doVision && VISION_INSTALLED) {
@@ -35,6 +38,10 @@ public final class FeatureFlags {
             }
 
             if (SHOOTER_INSTALLED) {
+                doShooter = true;
+            }
+
+            if (CLIMBER_INSTALLED) {
                 doShooter = true;
             }
 
@@ -74,5 +81,11 @@ public final class FeatureFlags {
         if (!VISION_INSTALLED || !CHASSIS_INSTALLED || !IMU_INSTALLED || !SHOOTER_INSTALLED || !COMPRESSOR_INSTALLED) {
             doVision = false;
         }
+        if (doClimber && CLIMBER_INSTALLED) {
+            if (COMPRESSOR_INSTALLED) {
+                doCompressor = true;
+            }
+        }
+
     }
 }

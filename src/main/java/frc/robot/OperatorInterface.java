@@ -20,6 +20,7 @@ public class OperatorInterface {
     public boolean autoSteerToHoopButton() { // Rename this to steer to hoop
         return pilot.getBButton();
     }
+
     public boolean autoCollectButton() {
         return pilot.getAButton();
     }
@@ -29,9 +30,11 @@ public class OperatorInterface {
     public boolean runFlyWheelButtonManual() {
         return copilot.getRightBumper();
     }
+
     public boolean shootButton() {
         return copilot.getBButton();
     }
+
     public boolean autoShootButton() {
         return copilot.getAButton();
     }
@@ -40,10 +43,28 @@ public class OperatorInterface {
         return pilot.getLeftBumper();
     }
 
-    public boolean reverseIntake(){
+    public boolean reverseIntake() {
         return copilot.getLeftTriggerAxis() > 0.5;
     }
 
     // Climber
+    public boolean climberUpButton() {
+        return copilot.getDpad(0);
+    }
 
+    public boolean climberDownButton() {
+        return copilot.getDpad(180);
+    }
+
+    public boolean climberEnableButton() {
+        return copilot.getRightTriggerAxis() > .25;
+    }
+
+    public boolean extendClimberPistonsButton() {
+        return copilot.getXButton();
+    }
+
+    public boolean retractClimberPistonsButton() {
+        return copilot.getYButton();
+    }
 }
