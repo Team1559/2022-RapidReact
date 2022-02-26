@@ -248,7 +248,7 @@ public class Shooter {
         // distance = hoopx
         double shooterRPM = 0;
         final double angle = 45;
-        final double diameter = 0.5; // distance in inches
+        final double diameter = 0.5;
         double velocity = 0;
         // math
         velocity = Math.sqrt(distance * 9.8 / Math.toDegrees(Math.sin(Math.toRadians(2 * angle))));
