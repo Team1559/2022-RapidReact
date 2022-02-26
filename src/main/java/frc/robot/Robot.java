@@ -4,7 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.subsystems.Shooter;
 import frc.robot.components.VisionData;
 
@@ -31,6 +33,8 @@ public class Robot extends TimedRobot {
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
     public Chassis chassis;
     public Climber climber;
+
+    public static PowerDistribution PDM = new PowerDistribution(1, ModuleType.kRev);
 
     private static final String DEFAULT_PATH = "Default Path";
     private static final String PATH_1 = "Path 1";
@@ -91,6 +95,7 @@ public class Robot extends TimedRobot {
         }
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
             m_autoSelected = m_chooser.getSelected();
+            PDM.setSwitchableChannel(true);
 
             switch (m_autoSelected) {
                 case DEFAULT_PATH:

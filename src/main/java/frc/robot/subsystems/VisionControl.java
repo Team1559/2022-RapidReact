@@ -146,6 +146,7 @@ public class VisionControl {
         }
 
         if (oi.autoSteerToHoopButton()) {
+            Robot.PDM.setSwitchableChannel(true);
             usingAuto = true;
             double ySpeed = -oi.pilot.getLeftY();
             if (SQUARE_DRIVER_INPUTS)
@@ -161,6 +162,7 @@ public class VisionControl {
                 chassis.main();
         } else {
             usingAuto = false;
+            Robot.PDM.setSwitchableChannel(true);
         }
     }
 
