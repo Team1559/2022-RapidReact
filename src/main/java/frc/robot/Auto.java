@@ -5,6 +5,7 @@ import frc.robot.components.*;
 
 @SuppressWarnings("unused")
 public class Auto {
+
     private int stepNumber = 0;
     private int stepCounter = 0;
 
@@ -22,29 +23,32 @@ public class Auto {
     static final int DRIVE_BALL = 8;
     static final int DRIVE_HOOP = 9;
 
+    static final int FEEDER_CYCLES = 75;
+
     static final int MAX_TURN_SECONDS = 3;
 
     private OperatorInterface oi;
     private Shooter shooter;
     private Chassis chassis;
 
+    private VisionData vData;
+
     private int[][] steps;
-    private int feederCycles = 75;
     // Start gatherer, drive X feet, stop gatherer, start flywheel at known RPM,
     // turn 180, shoot, stop flywheel
-    public int[][] basicAutoSteps = {
-            { WAIT, 50 },
-            { START_GATHERER },
-            { DRIVE, 6 },
-            { STOP_GATHERER },
-            { START_FLYWHEEL, 2000 },
-            { TURN, 180 },
-            { SHOOT },
-            { STOP_FLYWHEEL },
+    public static int[][] basicAutoSteps = {
+        { WAIT, 50 },
+        { START_GATHERER },
+        { DRIVE, 6 },
+        { STOP_GATHERER },
+        { START_FLYWHEEL, 2000 },
+        { TURN, 180 },
+        { SHOOT },
+        { STOP_FLYWHEEL },
     };
 
     public Auto(){
-        this.steps = this.basicAutoSteps;
+        this(basicAutoSteps);
     }
 
     public Auto(int[][] steps) {
@@ -110,9 +114,8 @@ public class Auto {
 
     private void Wait(int cycles) {
         System.out.println("Wait: " + stepCounter + "/" + cycles);
-        if (stepCounter >= cycles) {
+        if (stepCounter >= cycles)
             Done();
-        }
     }
 
     private void Drive(int inches) {
@@ -166,20 +169,23 @@ public class Auto {
 
     private void Shoot() {
         shooter.startFeeder(shooter.feederSpeed);
-        if (stepCounter >= feederCycles) {
+        if (stepCounter >= FEEDER_CYCLES)
             Done();
-        }
     }
 
     private void DriveBall(int inchesToBall) {
-        double ySpeed = inchesToBall * 0.4; // FIXME: I have no idea what this proportion should be (pid controller?)
-        if(inchesToBall < 3) // FIXME: Should be roughly gatherer extension length
-            Done();
+        double ySpeed = Robot.vc.ballx * 0.4; // FIXME: I have no idea what this proportion should be (pid controller?)
+        if(!Robot.vc.trackBall(ySpeed)) // FIXME: This check could lead to false fails
+            Fail("No ball found");
     }
 
-    private void DriveHoop(int inches) {
-        double ySpeed = inches * 0.4; // FIXME: I have no idea what this proportion should be (pid controller?)
-        if(inches < 4)
+    private void DriveHoop(int desiredDistanceFromTarget) { // 8 ft
+        if(stepCounter == 1)
+            chassis.setVelocityMode();
+        double ySpeed = Robot.vc.hoopx * 0.4; // FIXME: I have no idea what this proportion should be (pid controller?)
+        if(!Robot.vc.trackHoop(ySpeed))
+            Fail("No hoop found");
+        else if(Robot.vc.hoopx < 0.5) // <-- in ft
             Done();
     }
 }

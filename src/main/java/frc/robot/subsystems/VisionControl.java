@@ -28,6 +28,7 @@ public class VisionControl {
     public double hoopr = 0;
     public double ballr = 0;
     public double hoopx = 0;
+    public double ballx = 0;
 
     private Chassis chassis;
 
@@ -149,19 +150,21 @@ public class VisionControl {
             double ySpeed = -oi.pilot.getLeftY();
             if (SQUARE_DRIVER_INPUTS)
                 ySpeed = -Math.copySign(ySpeed*ySpeed, ySpeed);
-            trackHoop(ySpeed);
+            if(!trackHoop(ySpeed))
+                chassis.main();
         } else if (oi.autoCollectButton()) {
             usingAuto = true;
             double ySpeed = -oi.pilot.getLeftY();
             if (SQUARE_DRIVER_INPUTS)
                 ySpeed = -1.0 * Math.copySign(ySpeed * ySpeed, ySpeed);
-            trackBall(ySpeed);
+            if(!trackBall(ySpeed))
+                chassis.main();
         } else {
             usingAuto = false;
         }
     }
 
-    public void followPath() {
+    public void followPath() { //FIXME: Move this to chassis
         if (counter < frontLeftSpeed.length) {
             chassis.pathDrive(fl.interpolate(counter, frontLeftSpeed), fl.interpolate(counter, frontRightSpeed),
                 fl.interpolate(counter, backLeftSpeed), fl.interpolate(counter, backRightSpeed));
@@ -177,26 +180,28 @@ public class VisionControl {
         }
     }
 
-    public void trackHoop(double ySpeed) {
+    public boolean trackHoop(double ySpeed) {
         if (visionData.isHoopValid())
-            if (Math.abs(hoopr) > hoopChassisThreshold)
+            if (Math.abs(hoopr) > hoopChassisThreshold){
                 drive(ySpeed, calculateHoopRotation());
-            else
-                chassis.main();
+                return true;
+            } else
+                return false;
         else
-            chassis.main();
+            return false;
     }
 
-    public void trackBall(double ySpeed) {
+    public boolean trackBall(double ySpeed) {
         if (visionData.isBallValid())
             invalid_ball_counter = 0;
         else
             invalid_ball_counter++;
 
-        if (invalid_ball_counter < invalid_ball_counter_threshold)
+        if (invalid_ball_counter < invalid_ball_counter_threshold){
             drive(ySpeed, calculateBallRotation());
-        else // Default to driver control when invalid frames exceeds limit 
-            chassis.main();
+            return true;
+        } else
+            return false;
     }
 
     public void drive(double fs, double r) {
@@ -216,9 +221,10 @@ public class VisionControl {
     private void update() {
         visionData = vision.getData();
         hoopr = visionData.hr;
+        hoopx = visionData.bx;
         ballr = visionData.br;
         chassis.updateEncoders();
-        imu.getvalues();
+        imu.getvalues(); // <--- FIXME: This souldn't be in vision control
     }
 
     private double calculateHoopRotation() {
