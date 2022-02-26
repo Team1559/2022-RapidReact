@@ -14,7 +14,7 @@ public class Shooter {
 
     private OperatorInterface oi;
 
-    private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(true, 20, 20, 0);
+    private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(true, 40, 40, 0);
     private final int TIMEOUT = 0;
     private final double cLR = 0.1;
     private FileLogging fl = new FileLogging();
@@ -23,7 +23,7 @@ public class Shooter {
     private double shooter_kP = 0.4;
     private double shooter_kD = 0;
     private double shooter_kI = 0.000;
-    public double shooterRpms = 2000;
+    public double shooterRpms = 7500;
     public double feederSpeed = 0.2;
     public double intakeSpeed = 0.4;
 

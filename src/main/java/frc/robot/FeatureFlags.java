@@ -5,11 +5,11 @@ public final class FeatureFlags {
 
     // Modify these values
     public static boolean doVision = false;
-    public static boolean doChassis = false;
+    public static boolean doChassis = true;
     public static boolean doImu = false;
-    public static boolean doShooter = false;
+    public static boolean doShooter = true;
     public static boolean doCompressor = false;
-    public static boolean doClimber = true;
+    public static boolean doClimber = false;
 
     // Set these once the subsystem in installed
     public static final boolean VISION_INSTALLED = true;
@@ -17,7 +17,7 @@ public final class FeatureFlags {
     public static final boolean IMU_INSTALLED = true;
     public static final boolean SHOOTER_INSTALLED = true;
     public static final boolean COMPRESSOR_INSTALLED = false;
-    public static final boolean CLIMBER_INSTALLED = true;
+    public static final boolean CLIMBER_INSTALLED = false;
 
     // Leave these values alone
     public static boolean visionInitialized = false;
