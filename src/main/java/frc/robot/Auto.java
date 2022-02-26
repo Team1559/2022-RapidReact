@@ -195,7 +195,7 @@ public class Auto {
         // GET terminal and human player ball
         { TURN, -168.5 },
         { DRIVE, 80 },
-        { DRIVE_BALL, 83-12},
+        { DRIVE_BALL, 12},
         { START_GATHERER },
         { DRIVE, 14 },
         { WAIT, 10+50*2 },
