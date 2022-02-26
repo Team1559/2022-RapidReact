@@ -26,6 +26,7 @@ public class Auto {
     static final int FEEDER_CYCLES = 75;
 
     static final int MAX_TURN_SECONDS = 3;
+    static final int MAX_BALL_SECONDS = 5;
 
     private OperatorInterface oi;
     private Shooter shooter;
@@ -173,16 +174,20 @@ public class Auto {
             Done();
     }
 
-    private void DriveBall(int inchesToBall) {
+    private void DriveBall(int desiredDistanceFromBall) {
         double ySpeed = Robot.vc.ballx * 0.4; // FIXME: I have no idea what this proportion should be (pid controller?)
-        if(!Robot.vc.trackBall(ySpeed)) // FIXME: This check could lead to false fails
+        if(!Robot.vc.trackBall(ySpeed))
             Fail("No ball found");
+        if(Robot.vc.ballx < desiredDistanceFromBall && Robot.vc.ballx != 0)
+            Done();
+        if(stepCounter > MAX_BALL_SECONDS * 50)
+            Fail("Took too long");
     }
 
     private void DriveHoop(int desiredDistanceFromTarget) { // 8 ft
         if(stepCounter == 1)
             chassis.setVelocityMode();
-        double ySpeed = Robot.vc.hoopx * 0.4; // FIXME: I have no idea what this proportion should be (pid controller?)
+        double ySpeed = Robot.vc.hoopx * 0.4;
         if(!Robot.vc.trackHoop(ySpeed))
             Fail("No hoop found");
         else if(Robot.vc.hoopx < 0.5) // <-- in ft
