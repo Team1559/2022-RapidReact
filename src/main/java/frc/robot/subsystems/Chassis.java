@@ -185,6 +185,11 @@ public class Chassis {
         setKF(kf);
     }
 
+    public double getAverageVelocity() {
+        return (flEncoder.getVelocity() + frEncoder.getVelocity() + blEncoder.getVelocity() + brEncoder.getVelocity())
+                / 4;
+    }
+
     public void setKP(double kp) {
         SparkMaxPIDController pid1 = CANSparkMax1.getPIDController();
         SparkMaxPIDController pid2 = CANSparkMax2.getPIDController();
@@ -235,6 +240,10 @@ public class Chassis {
 
     public double inchesToRotations(double inches) {
         return inches / (2 * Math.PI * WHEEL_RADIUS_INCHES_MECANUM);
+    }
+
+    public double rpmToFps(double rpm) {
+        return (rpm * 2 * Math.PI * (WHEEL_RADIUS_INCHES_MECANUM / 12)) / 60;
     }
 
     public double rotationsToInches(double revs) {

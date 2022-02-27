@@ -31,7 +31,7 @@ public class Robot extends TimedRobot {
     public boolean usingVision = false;
     private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
-    public Chassis chassis;
+    public static Chassis chassis;
     public Climber climber;
 
     public static PowerDistribution PDM = new PowerDistribution(1, ModuleType.kRev);

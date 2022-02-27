@@ -26,12 +26,15 @@ public class Shooter {
     public double shooterRpms = 7500;
     public double feederSpeed = 0.2;
     public double intakeSpeed = 0.4;
+    private final double DEFAULT_DISTANCE = 8;
+    private final boolean TESTING = true;
 
     private TalonFX shooter;
     private CANSparkMax feeder;
     private Solenoid lowerIntake;
     private TalonSRX intake;
     private VisionControl vc;
+    private Chassis chassis;
 
     // States for gatherer
     public static final int gathererUp = 0;
@@ -43,6 +46,7 @@ public class Shooter {
         oi = operatorinterface;
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
             this.vc = Robot.vc;
+            this.chassis = Robot.chassis;
         }
 
         // MotorController Config
@@ -138,13 +142,20 @@ public class Shooter {
     }
 
     public void ShooterMain() {
-        System.out.println(shooterRpms);
-        updateManualRPMS();
+        if (TESTING) {
+            System.out.println(shooterRpms);
+            updateManualRPMS();
+        }
 
         if (oi.runFlyWheelButtonManual()) {
-            startShooter(calculateShooterRPMS(8)); // Assume distance is 8 ft in manual mode
+            startShooter(calculateShooterRPMS(DEFAULT_DISTANCE)); // Assume distance is 8 ft in manual mode
         } else if (oi.autoSteerToHoopButton()) {
-            startShooter(calculateShooterRPMS(vc.hoopx));
+            if (checkDependencies()) {
+                shooterRpms = vc.hoopx;
+                startShooter(calculateShooterRPMS(vc.hoopx));
+            } else if (TESTING) {
+                startShooter(calculateShooterRPMS(DEFAULT_DISTANCE));
+            }
         } else {
             stopShooter();
             stopFeeder();
@@ -156,12 +167,13 @@ public class Shooter {
         if (oi.shootButton()) {
             startFeeder(feederSpeed);
             // startIntake(intakeSpeed);
-        } else if (oi.autoShootButton() && checkHoopVision()) { // Shoot when ready
+        } else if (oi.autoShootButton() && checkDependencies()) { // Shoot when ready
             if (Math.abs(vc.hoopr) <= vc.hoopChassisThreshold) { // Angle check
                 if (vc.hoopx <= vc.maxHoopDistance) // distance check
-                    if (oi.pilot.getLeftY() < 0.05) // Speed check (~0)
-                        if (Math.abs(getShooterRpms() - calculateShooterRPMS(vc.hoopx)) < vc.shooterThreshold) // flywheel rpm check
-                            startFeeder(feederSpeed);
+                    if (oi.pilot.getLeftY() < 0.05 && chassis.rpmToFps(chassis.getAverageVelocity()) < 2) // Speed check
+                                                                                                          // (~0)
+                        if (Math.abs(getShooterRpms() - calculateShooterRPMS(vc.hoopx)) < vc.shooterThreshold)
+                            startFeeder(feederSpeed); // flywheel rpm check ^
             }
         } else if (oi.reverseIntake()) {
             startFeeder(-feederSpeed);
@@ -210,9 +222,17 @@ public class Shooter {
         intake.set(TalonSRXControlMode.PercentOutput, 0);
     }
 
+    public boolean checkDependencies() {
+        return checkHoopVision() && checkChassis();
+    }
+
     // Validate hoop vision
     public boolean checkHoopVision() {
         return FeatureFlags.doVision && FeatureFlags.visionInitialized && vc.isHoopValid();
+    }
+
+    public boolean checkChassis() {
+        return FeatureFlags.doChassis && FeatureFlags.chassisInitialized;
     }
 
     public void autoShoot() {
@@ -247,11 +267,11 @@ public class Shooter {
     public double calculateShooterRPMS(double distance) {
         // distance = hoopx
         double shooterRPM = 0;
-        final double angle = 45;
-        final double diameter = 0.5;
+        final double angle = 45; // angle in degrees
+        final double diameter = 6; // distance in inches
         double velocity = 0;
         // math
-        velocity = Math.sqrt(distance * 9.8 / Math.toDegrees(Math.sin(Math.toRadians(2 * angle))));
+        velocity = Math.sqrt(distance * 12 * 9.8 / Math.toDegrees(Math.sin(Math.toRadians(2 * angle))));
         shooterRPM = velocity / diameter;
         return shooterRPM;
     }
