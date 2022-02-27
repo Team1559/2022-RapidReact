@@ -165,7 +165,7 @@ public class Robot extends TimedRobot {
             compressorControl.enable();
         }
 
-        if (FeatureFlags.doShooter && FeatureFlags.shooterInitalized) {
+        if (FeatureFlags.doShooter && FeatureFlags.shooterInitialized) {
             shooter.main();
         }
 
@@ -229,9 +229,9 @@ public class Robot extends TimedRobot {
             FeatureFlags.chassisInitialized = true;
         }
 
-        if (FeatureFlags.doShooter && !FeatureFlags.shooterInitalized) {
+        if (FeatureFlags.doShooter && !FeatureFlags.shooterInitialized) {
             shooter = new Shooter(oi);
-            FeatureFlags.shooterInitalized = true;
+            FeatureFlags.shooterInitialized = true;
         }
 
         if (FeatureFlags.doVision && !FeatureFlags.visionInitialized) {
