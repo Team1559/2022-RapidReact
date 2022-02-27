@@ -39,7 +39,8 @@ public class Chassis {
 
     private final double SLOWMODE_COEFFICIENT = 0.5;
     // these need to be set once
-    private final double differpercent = 12 / 25.5; // percent the front needs to move compared to the back, needs to be justed
+    private final double differpercent = 12 / 25.5; // percent the front needs to move compared to the back, needs to be
+                                                    // justed
     // these can be changed when needed
     private final boolean LOGDATA = true;
 
@@ -122,10 +123,10 @@ public class Chassis {
     public Chassis(OperatorInterface oi, IMU imu) {
         this.oi = oi;
         this.imu = imu;
-        CANSparkMax1 = initMotor(Wiring.flMotor);
-        CANSparkMax2 = initMotor(Wiring.frMotor);
-        CANSparkMax3 = initMotor(Wiring.blMotor);
-        CANSparkMax4 = initMotor(Wiring.brMotor);
+        CANSparkMax1 = initMotor(Wiring.FLMOTOR);
+        CANSparkMax2 = initMotor(Wiring.FRMOTOR);
+        CANSparkMax3 = initMotor(Wiring.BLMOTOR);
+        CANSparkMax4 = initMotor(Wiring.BRMOTOR);
 
         // encoders
         CANSparkMax2.setInverted(true);
@@ -144,7 +145,6 @@ public class Chassis {
     public void main() {
         drive(oi.pilot.getLeftY(), oi.pilot.getRightX());
         updateEncoders();
-        imu.getvalues();
         if (LOGDATA) {
             SmartDashboard.putNumber("Front left encoder velocity is: ", flEncoder.getVelocity());
             SmartDashboard.putNumber("Front right encoder velocity is: ", frEncoder.getVelocity());
@@ -178,14 +178,24 @@ public class Chassis {
         back.pathDrive(bl, br);
     }
 
-    public void setPid(double kp, double ki, double kd, double kf) {
+    public void setPid(double kp, double ki, double kd, double kf){
+        setPid(kp, ki, kd, kf, 0);
+    }
+
+    public void setPid(double kp, double ki, double kd, double kf, double kiz) {
         setKP(kp);
         setKI(ki);
         setKD(kd);
         setKF(kf);
+        setKIZ(kiz);
     }
 
-    public double getAverageVelocity() {
+    /**
+     * Averages the rpm of all 4 wheels
+     * 
+     * @return The average velocity of the chassis wheels in RPM
+     */
+    public double getAverageRPM() {
         return (flEncoder.getVelocity() + frEncoder.getVelocity() + blEncoder.getVelocity() + brEncoder.getVelocity())
                 / 4;
     }
@@ -212,6 +222,17 @@ public class Chassis {
         pid4.setI(ki);
     }
 
+    public void setKIZ(double kiz) {
+        SparkMaxPIDController pid1 = CANSparkMax1.getPIDController();
+        SparkMaxPIDController pid2 = CANSparkMax2.getPIDController();
+        SparkMaxPIDController pid3 = CANSparkMax3.getPIDController();
+        SparkMaxPIDController pid4 = CANSparkMax4.getPIDController();
+        pid1.setIZone(kiz);
+        pid2.setIZone(kiz);
+        pid3.setIZone(kiz);
+        pid4.setIZone(kiz);
+    }
+
     public void setKD(double kd) {
         SparkMaxPIDController pid1 = CANSparkMax1.getPIDController();
         SparkMaxPIDController pid2 = CANSparkMax2.getPIDController();
@@ -234,14 +255,20 @@ public class Chassis {
         pid4.setP(kf);
     }
 
-    public double degreesToZRotation(double desiredAngle){
-        return (desiredAngle-this.imu.yaw) * 0.03; // TODO: modify proportion (and calibrate IMU yaw)
+    public double degreesToZRotation(double desiredAngle) {
+        return (desiredAngle - this.imu.yaw) * 0.03; // TODO: modify proportion (and calibrate IMU yaw)
     }
 
     public double inchesToRotations(double inches) {
         return inches / (2 * Math.PI * WHEEL_RADIUS_INCHES_MECANUM);
     }
 
+    /**
+     * Converts rotations per minute into feet per second
+     * 
+     * @param rpm The wheel speed in RPM
+     * @return The current velocity in feet per second
+     */
     public double rpmToFps(double rpm) {
         return (rpm * 2 * Math.PI * (WHEEL_RADIUS_INCHES_MECANUM / 12)) / 60;
     }

@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import frc.robot.OperatorInterface;
-import frc.robot.components.FileLogging;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
 import frc.robot.*;
@@ -11,13 +10,10 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class Shooter {
-
     private OperatorInterface oi;
-
     private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(true, 40, 40, 0);
     private final int TIMEOUT = 0;
     private final double cLR = 0.1;
-    private FileLogging fl = new FileLogging();
 
     private double shooter_kF = 0.045;
     private double shooter_kP = 0.4;
@@ -50,9 +46,9 @@ public class Shooter {
         }
 
         // MotorController Config
-        shooter = new TalonFX(Wiring.shooterMotor);
-        intake = new TalonSRX(Wiring.intake);
-        feeder = new CANSparkMax(Wiring.feederMotor, MotorType.kBrushless);
+        shooter = new TalonFX(Wiring.SHOOTER_MOTOR);
+        intake = new TalonSRX(Wiring.INTAKE_MOTOR);
+        feeder = new CANSparkMax(Wiring.FEEDER_MOTOR, MotorType.kBrushless);
 
         // Invert motors
         feeder.setInverted(true);
@@ -62,7 +58,7 @@ public class Shooter {
         // PneumaticsModuleType.CTREPCM for ctre stuff
         // PneumaticsModuleType.REVPH for rev stuff
         if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
-            lowerIntake = new Solenoid(PneumaticsModuleType.REVPH, Wiring.lowerIntake);
+            lowerIntake = new Solenoid(PneumaticsModuleType.REVPH, Wiring.INTAKE_SOLENOID);
             lowerIntake.set(false);
         }
 
@@ -83,20 +79,6 @@ public class Shooter {
         shooter.configPeakOutputReverse(-1, TIMEOUT);
         shooter.setNeutralMode(NeutralMode.Coast);
         shooter.configSupplyCurrentLimit(shooterLimit, TIMEOUT);
-        fl.setDirectory("Shooter");
-        fl.createfile("shooterRPMS");
-
-        try {
-            shooterRpms = Double.parseDouble(fl.readFile());
-        }
-
-        catch (NullPointerException e) {
-            // e.printStackTrace();
-        }
-
-        catch (NumberFormatException e) {
-            // e.printStackTrace();
-        }
 
     }
 
@@ -142,16 +124,12 @@ public class Shooter {
     }
 
     public void ShooterMain() {
-        if (TESTING) {
-            System.out.println(shooterRpms);
-            updateManualRPMS();
-        }
-
         if (oi.runFlyWheelButtonManual()) {
             startShooter(calculateShooterRPMS(DEFAULT_DISTANCE)); // Assume distance is 8 ft in manual mode
+            shooterRpms = calculateShooterRPMS(8);
         } else if (oi.autoSteerToHoopButton()) {
             if (checkDependencies()) {
-                shooterRpms = vc.hoopx;
+                shooterRpms = calculateShooterRPMS(vc.hoopx);
                 startShooter(calculateShooterRPMS(vc.hoopx));
             } else if (TESTING) {
                 startShooter(calculateShooterRPMS(DEFAULT_DISTANCE));
@@ -170,7 +148,7 @@ public class Shooter {
         } else if (oi.autoShootButton() && checkDependencies()) { // Shoot when ready
             if (Math.abs(vc.hoopr) <= vc.hoopChassisThreshold) { // Angle check
                 if (vc.hoopx <= vc.maxHoopDistance) // distance check
-                    if (oi.pilot.getLeftY() < 0.05 && chassis.rpmToFps(chassis.getAverageVelocity()) < 2) // Speed check
+                    if (oi.pilot.getLeftY() < 0.05 && chassis.rpmToFps(chassis.getAverageRPM()) < 2) // Speed check
                                                                                                           // (~0)
                         if (Math.abs(getShooterRpms() - calculateShooterRPMS(vc.hoopx)) < vc.shooterThreshold)
                             startFeeder(feederSpeed); // flywheel rpm check ^
@@ -237,31 +215,6 @@ public class Shooter {
 
     public void autoShoot() {
         vc.autoShoot();
-    }
-
-    private void updateManualRPMS() {
-        double rpmOld = shooterRpms;
-        if (oi.copilot.getDPadPress(oi.DPadUp)) {
-            System.out.println("increasing");
-            shooterRpms += 100;
-        }
-
-        else if (oi.copilot.getDPadPress(oi.DPadDown)) {
-            System.out.println("decrease");
-            shooterRpms -= 100;
-        }
-
-        if (shooterRpms < 0) {
-            shooterRpms = 0;
-        }
-
-        else if (shooterRpms > 15000) {
-            shooterRpms = 15000;
-        }
-
-        if (rpmOld != shooterRpms) {
-            fl.write(Double.toString(shooterRpms));
-        }
     }
 
     public double calculateShooterRPMS(double distance) {

@@ -166,7 +166,7 @@ public class VisionControl {
         }
     }
 
-    public void followPath() { //FIXME: Move this to chassis
+    public void followPath() {
         if (counter < frontLeftSpeed.length) {
             chassis.pathDrive(fl.interpolate(counter, frontLeftSpeed), fl.interpolate(counter, frontRightSpeed),
                 fl.interpolate(counter, backLeftSpeed), fl.interpolate(counter, backRightSpeed));
@@ -226,7 +226,6 @@ public class VisionControl {
         hoopx = visionData.bx;
         ballr = visionData.br;
         chassis.updateEncoders();
-        imu.getvalues(); // <--- FIXME: This souldn't be in vision control
     }
 
     private double calculateHoopRotation() {
