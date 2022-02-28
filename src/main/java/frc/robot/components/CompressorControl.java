@@ -13,7 +13,7 @@ public class CompressorControl {
 
     public CompressorControl() {
         ph = new PneumaticHub(Wiring.PNEUMATICS_HUB);
-        airCompressor = new Compressor(PneumaticsModuleType.REVPH);
+        airCompressor = new Compressor(16, PneumaticsModuleType.REVPH);
     }
 
     public void enable() {
