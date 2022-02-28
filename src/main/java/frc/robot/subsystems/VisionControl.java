@@ -153,7 +153,7 @@ public class VisionControl {
                 ySpeed = -Math.copySign(ySpeed*ySpeed, ySpeed);
             if(!trackHoop(ySpeed))
                 chassis.main();
-        } else if (oi.autoCollectButton()) {
+        } else if (oi.autoCollectButton()) { // <-- PDM not turned off in this case 
             usingAuto = true;
             double ySpeed = -oi.pilot.getLeftY();
             if (SQUARE_DRIVER_INPUTS)
