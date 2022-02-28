@@ -34,7 +34,7 @@ public class Robot extends TimedRobot {
     public Chassis chassis;
     public Climber climber;
 
-    public static PowerDistribution PDM = new PowerDistribution(1, ModuleType.kRev);
+    public static PowerDistribution PDM = new PowerDistribution(Wiring.PDP, ModuleType.kRev);
 
     private static final String DEFAULT_PATH = "Default Path";
     private static final String PATH_1 = "Path 1";
@@ -74,6 +74,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotPeriodic() {
+        if(FeatureFlags.doImu && FeatureFlags.imuInitialized){
+            imu.updateValues();
+        }
     }
 
     /**
@@ -165,7 +168,7 @@ public class Robot extends TimedRobot {
             compressorControl.enable();
         }
 
-        if (FeatureFlags.doShooter && FeatureFlags.shooterInitalized) {
+        if (FeatureFlags.doShooter && FeatureFlags.shooterInitialized) {
             shooter.main();
         }
 
@@ -229,9 +232,9 @@ public class Robot extends TimedRobot {
             FeatureFlags.chassisInitialized = true;
         }
 
-        if (FeatureFlags.doShooter && !FeatureFlags.shooterInitalized) {
-            shooter = new Shooter(oi);
-            FeatureFlags.shooterInitalized = true;
+        if (FeatureFlags.doShooter && !FeatureFlags.shooterInitialized) {
+            shooter = new Shooter(oi, chassis);
+            FeatureFlags.shooterInitialized = true;
         }
 
         if (FeatureFlags.doVision && !FeatureFlags.visionInitialized) {

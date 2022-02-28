@@ -46,7 +46,7 @@ public class IMU {
     }
 
     // gets all the yaw values
-    public void getvalues() {
+    public void updateValues() {
         x_acceleration = ahrs.getWorldLinearAccelX();
         y_acceleration = ahrs.getWorldLinearAccelY();
         z_acceleration = ahrs.getWorldLinearAccelZ();
