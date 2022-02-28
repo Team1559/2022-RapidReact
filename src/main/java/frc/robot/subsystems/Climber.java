@@ -6,6 +6,8 @@ import com.ctre.phoenix.motorcontrol.can.*;
 import frc.robot.*;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.PneumaticsControlModule;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 
@@ -15,7 +17,7 @@ public class Climber {
 
     private OperatorInterface oi;
 
-    private SupplyCurrentLimitConfiguration climberLimit = new SupplyCurrentLimitConfiguration(true, 20, 20, 0);
+    private SupplyCurrentLimitConfiguration climberLimit = new SupplyCurrentLimitConfiguration(true, 40, 90, 2);
     private final int TIMEOUT = 0;
     private final double cLR = 0.1;
 
@@ -24,10 +26,10 @@ public class Climber {
     private TalonFX climber;
     private Solenoid climberSolenoid;
 
+    public Climber(OperatorInterface oi) {
+        this.oi = oi;
+        climberSolenoid = new Solenoid(PneumaticsModuleType.REVPH, Wiring.CLIMBER_SOLENOID);
 
-    public Climber(OperatorInterface operatorinterface) {
-        oi = operatorinterface;
-        
         // MotorController Config
 
         climber = new TalonFX(Wiring.climberMotor);
@@ -40,7 +42,7 @@ public class Climber {
         climber.configPeakOutputForward(+1, TIMEOUT);
         climber.configPeakOutputReverse(-1, TIMEOUT);
         climber.setNeutralMode(NeutralMode.Brake);
-        // climber.configSupplyCurrentLimit(climberLimit);
+        climber.configSupplyCurrentLimit(climberLimit, TIMEOUT);
         climber.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
         climber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
     }
@@ -60,10 +62,9 @@ public class Climber {
         // Control for moving pistons
         if (oi.extendClimberPistonsButton()) {
             extendPistons();
-        } 
-        else if(oi.retractClimberPistonsButton()) {
+        } else if (oi.retractClimberPistonsButton()) {
             retractPistons();
-        } 
+        }
     }
 
     public void raiseRobot() {
@@ -73,6 +74,7 @@ public class Climber {
     public void lowerRobot() {
         climber.set(TalonFXControlMode.PercentOutput, -1.0);
     }
+
     public void holdRobot() {
         climber.set(TalonFXControlMode.PercentOutput, -0.0);
     }

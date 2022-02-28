@@ -6,8 +6,8 @@ import frc.robot.routes.*;
 import com.ctre.phoenix.time.StopWatch;
 
 import frc.robot.*;
-
 @SuppressWarnings("unused")
+
 public class VisionControl {
     public enum autoState {
         PATH, SHOOT
@@ -165,8 +165,10 @@ public class VisionControl {
             Robot.PDM.setSwitchableChannel(true);
         }
     }
-
-    public void followPath() { //FIXME: Move this to chassis
+    /**Follows a preplanned path using encoder positions
+     * @deprecated
+     */
+    public void followPath() {
         if (counter < frontLeftSpeed.length) {
             chassis.pathDrive(fl.interpolate(counter, frontLeftSpeed), fl.interpolate(counter, frontRightSpeed),
                 fl.interpolate(counter, backLeftSpeed), fl.interpolate(counter, backRightSpeed));
@@ -181,7 +183,6 @@ public class VisionControl {
             fl.write();
         }
     }
-
     public boolean trackHoop(double ySpeed) {
         if (visionData.isHoopValid())
             if (Math.abs(hoopr) > hoopChassisThreshold){
@@ -226,7 +227,6 @@ public class VisionControl {
         hoopx = visionData.bx;
         ballr = visionData.br;
         chassis.updateEncoders();
-        imu.getvalues(); // <--- FIXME: This souldn't be in vision control
     }
 
     private double calculateHoopRotation() {

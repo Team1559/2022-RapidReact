@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import frc.robot.OperatorInterface;
-import frc.robot.components.FileLogging;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
 import frc.robot.*;
@@ -11,13 +10,10 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class Shooter {
-
     private OperatorInterface oi;
-
     private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(true, 40, 40, 0);
     private final int TIMEOUT = 0;
     private final double cLR = 0.1;
-    private FileLogging fl = new FileLogging();
 
     private double shooter_kF = 0.045;
     private double shooter_kP = 0.4;
@@ -26,12 +22,15 @@ public class Shooter {
     public double shooterRpms = 7500;
     public double feederSpeed = 0.2;
     public double intakeSpeed = 0.4;
+    private final double DEFAULT_DISTANCE = 8;
+    private final boolean TESTING = true;
 
     private TalonFX shooter;
     private CANSparkMax feeder;
     private Solenoid lowerIntake;
     private TalonSRX intake;
     private VisionControl vc;
+    private Chassis chassis;
 
     // States for gatherer
     public static final int gathererUp = 0;
@@ -39,16 +38,17 @@ public class Shooter {
     public static final int holding = 2;
     public int gathererState = gathererUp;
 
-    public Shooter(OperatorInterface operatorinterface) {
+    public Shooter(OperatorInterface operatorinterface, Chassis chassis) {
         oi = operatorinterface;
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
             this.vc = Robot.vc;
+            this.chassis = chassis;
         }
 
         // MotorController Config
-        shooter = new TalonFX(Wiring.shooterMotor);
-        intake = new TalonSRX(Wiring.intake);
-        feeder = new CANSparkMax(Wiring.feederMotor, MotorType.kBrushless);
+        shooter = new TalonFX(Wiring.SHOOTER_MOTOR);
+        intake = new TalonSRX(Wiring.INTAKE_MOTOR);
+        feeder = new CANSparkMax(Wiring.FEEDER_MOTOR, MotorType.kBrushless);
 
         // Invert motors
         feeder.setInverted(true);
@@ -58,7 +58,7 @@ public class Shooter {
         // PneumaticsModuleType.CTREPCM for ctre stuff
         // PneumaticsModuleType.REVPH for rev stuff
         if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
-            lowerIntake = new Solenoid(PneumaticsModuleType.REVPH, Wiring.lowerIntake);
+            lowerIntake = new Solenoid(PneumaticsModuleType.REVPH, Wiring.INTAKE_SOLENOID);
             lowerIntake.set(false);
         }
 
@@ -79,20 +79,6 @@ public class Shooter {
         shooter.configPeakOutputReverse(-1, TIMEOUT);
         shooter.setNeutralMode(NeutralMode.Coast);
         shooter.configSupplyCurrentLimit(shooterLimit, TIMEOUT);
-        fl.setDirectory("Shooter");
-        fl.createfile("shooterRPMS");
-
-        try {
-            shooterRpms = Double.parseDouble(fl.readFile());
-        }
-
-        catch (NullPointerException e) {
-            // e.printStackTrace();
-        }
-
-        catch (NumberFormatException e) {
-            // e.printStackTrace();
-        }
 
     }
 
@@ -138,13 +124,16 @@ public class Shooter {
     }
 
     public void ShooterMain() {
-        System.out.println(shooterRpms);
-        updateManualRPMS();
-
         if (oi.runFlyWheelButtonManual()) {
-            startShooter(calculateShooterRPMS(8)); // Assume distance is 8 ft in manual mode
+            startShooter(calculateShooterRPMS(DEFAULT_DISTANCE)); // Assume distance is 8 ft in manual mode
+            shooterRpms = calculateShooterRPMS(8);
         } else if (oi.autoSteerToHoopButton()) {
-            startShooter(calculateShooterRPMS(vc.hoopx));
+            if (checkDependencies()) {
+                shooterRpms = calculateShooterRPMS(vc.hoopx);
+                startShooter(calculateShooterRPMS(vc.hoopx));
+            } else if (TESTING) {
+                startShooter(calculateShooterRPMS(DEFAULT_DISTANCE));
+            }
         } else {
             stopShooter();
             stopFeeder();
@@ -156,12 +145,13 @@ public class Shooter {
         if (oi.shootButton()) {
             startFeeder(feederSpeed);
             // startIntake(intakeSpeed);
-        } else if (oi.autoShootButton() && checkHoopVision()) { // Shoot when ready
+        } else if (oi.autoShootButton() && checkDependencies()) { // Shoot when ready
             if (Math.abs(vc.hoopr) <= vc.hoopChassisThreshold) { // Angle check
                 if (vc.hoopx <= vc.maxHoopDistance) // distance check
-                    if (oi.pilot.getLeftY() < 0.05) // Speed check (~0)
-                        if (Math.abs(getShooterRpms() - calculateShooterRPMS(vc.hoopx)) < vc.shooterThreshold) // flywheel rpm check
-                            startFeeder(feederSpeed);
+                    if (oi.pilot.getLeftY() < 0.05 && Math.abs(chassis.rpmToFps(chassis.getFrontAverageWheelRPM())) < 2)
+                        // Speed check ^^
+                        if (Math.abs(getShooterRpms() - calculateShooterRPMS(vc.hoopx)) < vc.shooterThreshold)
+                            startFeeder(feederSpeed); // flywheel rpm check ^
             }
         } else if (oi.reverseIntake()) {
             startFeeder(-feederSpeed);
@@ -210,48 +200,30 @@ public class Shooter {
         intake.set(TalonSRXControlMode.PercentOutput, 0);
     }
 
+    public boolean checkDependencies() {
+        return checkHoopVision() && checkChassis();
+    }
+
     // Validate hoop vision
     public boolean checkHoopVision() {
         return FeatureFlags.doVision && FeatureFlags.visionInitialized && vc.isHoopValid();
+    }
+
+    public boolean checkChassis() {
+        return FeatureFlags.doChassis && FeatureFlags.chassisInitialized;
     }
 
     public void autoShoot() {
         vc.autoShoot();
     }
 
-    private void updateManualRPMS() {
-        double rpmOld = shooterRpms;
-        if (oi.copilot.getDPadPress(oi.DPadUp)) {
-            System.out.println("increasing");
-            shooterRpms += 100;
-        }
-
-        else if (oi.copilot.getDPadPress(oi.DPadDown)) {
-            System.out.println("decrease");
-            shooterRpms -= 100;
-        }
-
-        if (shooterRpms < 0) {
-            shooterRpms = 0;
-        }
-
-        else if (shooterRpms > 15000) {
-            shooterRpms = 15000;
-        }
-
-        if (rpmOld != shooterRpms) {
-            fl.write(Double.toString(shooterRpms));
-        }
-    }
-
     public double calculateShooterRPMS(double distance) {
         // distance = hoopx
         double shooterRPM = 0;
-        final double angle = 45;
-        final double diameter = 0.5;
+        final double diameter = 6; // distance in inches
         double velocity = 0;
         // math
-        velocity = Math.sqrt(distance * 9.8 / Math.toDegrees(Math.sin(Math.toRadians(2 * angle))));
+        velocity = 2000 + 1000 * (distance - 100) / 120; // TODO fix this
         shooterRPM = velocity / diameter;
         return shooterRPM;
     }
