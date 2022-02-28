@@ -19,6 +19,7 @@ public class Chassis {
     public static final double MAX_SPEED_FPS_TRACTION = 9.67 * 1.01;
     public static final double MAX_TICKS_PER_100MS = MAX_SPEED_FPS_TRACTION * 4096.0
             / (Math.PI * WHEEL_RADIUS_INCHES_MECANUM * 2.0 / 12.0) / 10.0;
+    public static final double CHASSIS_GEAR_RATIO = 4; // gear ratio with referance to 1 for exaple 4 is really 4:1
     private SplitDrive front;
     private SplitDrive back;
     public CANSparkMax CANSparkMax1;
@@ -195,8 +196,8 @@ public class Chassis {
      * 
      * @return The average velocity of the chassis wheels in RPM
      */
-    public double getFrontAverageRPM() {
-        return (flEncoder.getVelocity() + frEncoder.getVelocity()) / 2;
+    public double getFrontAverageWheelRPM() {
+        return (flEncoder.getVelocity() / CHASSIS_GEAR_RATIO + frEncoder.getVelocity() / CHASSIS_GEAR_RATIO) / 2;
     }
 
     public void setKP(double kp) {
