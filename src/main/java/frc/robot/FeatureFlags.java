@@ -4,20 +4,20 @@ package frc.robot;
 public final class FeatureFlags {
 
     // Modify these values
-    public static boolean doVision = false;
+    public static boolean doVision = true;
     public static boolean doChassis = true;
-    public static boolean doImu = false;
+    public static boolean doImu = true;
     public static boolean doShooter = true;
-    public static boolean doCompressor = false;
-    public static boolean doClimber = false;
+    public static boolean doCompressor = true;
+    public static boolean doClimber = true;
 
     // Set these once the subsystem in installed
     public static final boolean VISION_INSTALLED = true;
     public static final boolean CHASSIS_INSTALLED = true;
     public static final boolean IMU_INSTALLED = true;
     public static final boolean SHOOTER_INSTALLED = true;
-    public static final boolean COMPRESSOR_INSTALLED = false;
-    public static final boolean CLIMBER_INSTALLED = false;
+    public static final boolean COMPRESSOR_INSTALLED = true;
+    public static final boolean CLIMBER_INSTALLED = true;
 
     // Leave these values alone
     public static boolean visionInitialized = false;
