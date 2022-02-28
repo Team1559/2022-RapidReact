@@ -1,7 +1,7 @@
 # 2022-RapidReact
 ## Official code for the 2022 First season
 
-Visit us on the web at http://victorrobotics.org
+Visit us on the web at https://victorrobotics.org
 
 ## Software Team
 
@@ -16,7 +16,7 @@ Visit us on the web at http://victorrobotics.org
 **Vision**
 * Eric Marchetti
 * Jack Dunfey
-* Rylan Meilutis
+* [Rylan Meilutis](https://github.com/rylan-meilutis)
 
 **Business Website**
 * Jack Dunfey
@@ -38,9 +38,9 @@ Visit us on the web at http://victorrobotics.org
 
 **Chassis**
 * Jason Vanderlinden
-* Rylan Meilutis
+* [Rylan Meilutis](https://github.com/rylan-meilutis)
 
 
 
-### Use [The Dependency Installer](https://rylanswebdav.cf/Team1559%20Stuff/Team-1559-Dependency-Installer.exe) to install the latest versions of all the dependencies
-- For help please reach out to us on either GitHub or Slack
+### Use [The Dependency Installer](https://rylanswebdav.cf/Team1559%20Stuff/Team-1559-Dependency-Installer.exe) to install the latest versions of all required dependencies
+- For help or suport, please reach out to us on either GitHub or Slack
