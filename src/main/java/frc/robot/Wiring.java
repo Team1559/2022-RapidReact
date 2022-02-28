@@ -19,10 +19,10 @@ public class Wiring {
     public static final int SHOOTER_MOTOR = 16;
     public static final int FEEDER_MOTOR = 15;
 
-    public static final int INTAKE_SOLENOID = 0;
+    public static final int INTAKE_SOLENOID = 15;
     public static final int INTAKE_MOTOR = 17;
 
     // Climber
-    public static final int CLIMBER_SOLENOID = 1;
+    public static final int CLIMBER_SOLENOID = 8;
     public static final int climberMotor = 18; // NEED TO SET FALCON ID FOR CLIMBER
 }
