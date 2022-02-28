@@ -59,6 +59,7 @@ public final class FeatureFlags {
         if (doShooter && SHOOTER_INSTALLED) {
             if (COMPRESSOR_INSTALLED) {
                 doCompressor = true;
+                doChassis = true;
             }
         }
 
@@ -70,7 +71,7 @@ public final class FeatureFlags {
             doImu = false;
         }
 
-        if (!SHOOTER_INSTALLED) {
+        if (!SHOOTER_INSTALLED || !CHASSIS_INSTALLED) {
             doShooter = false;
         }
 

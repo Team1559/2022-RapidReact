@@ -37,10 +37,10 @@ public class Chassis {
     public IMU imu;
     private FileLogging fl;
 
-    private final double SLOWMODE_COEFFICIENT = 0.5;
     // these need to be set once
-    private final double differpercent = 12 / 25.5; // percent the front needs to move compared to the back, needs to be
-                                                    // justed
+    private final double differpercent = 12 / 25.5; // percent the front needs to move compared to the back
+    private final double SLOWMODE_COEFFICIENT = 0.5;
+
     // these can be changed when needed
     private final boolean LOGDATA = true;
 
@@ -178,7 +178,7 @@ public class Chassis {
         back.pathDrive(bl, br);
     }
 
-    public void setPid(double kp, double ki, double kd, double kf){
+    public void setPid(double kp, double ki, double kd, double kf) {
         setPid(kp, ki, kd, kf, 0);
     }
 
@@ -195,9 +195,8 @@ public class Chassis {
      * 
      * @return The average velocity of the chassis wheels in RPM
      */
-    public double getAverageRPM() {
-        return (flEncoder.getVelocity() + frEncoder.getVelocity() + blEncoder.getVelocity() + brEncoder.getVelocity())
-                / 4;
+    public double getFrontAverageRPM() {
+        return (flEncoder.getVelocity() + frEncoder.getVelocity()) / 2;
     }
 
     public void setKP(double kp) {

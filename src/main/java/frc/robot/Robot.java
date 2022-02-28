@@ -31,7 +31,7 @@ public class Robot extends TimedRobot {
     public boolean usingVision = false;
     private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
-    public static Chassis chassis;
+    public Chassis chassis;
     public Climber climber;
 
     public static PowerDistribution PDM = new PowerDistribution(Wiring.PDP, ModuleType.kRev);
@@ -233,7 +233,7 @@ public class Robot extends TimedRobot {
         }
 
         if (FeatureFlags.doShooter && !FeatureFlags.shooterInitialized) {
-            shooter = new Shooter(oi);
+            shooter = new Shooter(oi, chassis);
             FeatureFlags.shooterInitialized = true;
         }
 

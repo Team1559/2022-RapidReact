@@ -17,7 +17,7 @@ public class Climber {
 
     private OperatorInterface oi;
 
-    private SupplyCurrentLimitConfiguration climberLimit = new SupplyCurrentLimitConfiguration(true, 40, 40, 0);
+    private SupplyCurrentLimitConfiguration climberLimit = new SupplyCurrentLimitConfiguration(true, 40, 90, 2);
     private final int TIMEOUT = 0;
     private final double cLR = 0.1;
 

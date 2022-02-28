@@ -38,11 +38,11 @@ public class Shooter {
     public static final int holding = 2;
     public int gathererState = gathererUp;
 
-    public Shooter(OperatorInterface operatorinterface) {
+    public Shooter(OperatorInterface operatorinterface, Chassis chassis) {
         oi = operatorinterface;
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
             this.vc = Robot.vc;
-            this.chassis = Robot.chassis;
+            this.chassis = chassis;
         }
 
         // MotorController Config
@@ -148,8 +148,8 @@ public class Shooter {
         } else if (oi.autoShootButton() && checkDependencies()) { // Shoot when ready
             if (Math.abs(vc.hoopr) <= vc.hoopChassisThreshold) { // Angle check
                 if (vc.hoopx <= vc.maxHoopDistance) // distance check
-                    if (oi.pilot.getLeftY() < 0.05 && chassis.rpmToFps(chassis.getAverageRPM()) < 2) // Speed check
-                                                                                                          // (~0)
+                    if (oi.pilot.getLeftY() < 0.05 && Math.abs(chassis.rpmToFps(chassis.getFrontAverageRPM())) < 2)
+                        // Speed check ^^
                         if (Math.abs(getShooterRpms() - calculateShooterRPMS(vc.hoopx)) < vc.shooterThreshold)
                             startFeeder(feederSpeed); // flywheel rpm check ^
             }
@@ -220,11 +220,10 @@ public class Shooter {
     public double calculateShooterRPMS(double distance) {
         // distance = hoopx
         double shooterRPM = 0;
-        final double angle = 45; // angle in degrees
         final double diameter = 6; // distance in inches
         double velocity = 0;
         // math
-        velocity = Math.sqrt(distance * 12 * 9.8 / Math.toDegrees(Math.sin(Math.toRadians(2 * angle))));
+        velocity = 2000 + 1000 * (distance - 100) / 120; // TODO fix this
         shooterRPM = velocity / diameter;
         return shooterRPM;
     }
