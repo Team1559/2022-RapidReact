@@ -43,4 +43,4 @@ Visit us on the web at http://victorrobotics.org
 
 
 ### Use [The Dependency Installer](https://rylanswebdav.cf/Team1559%20Stuff/Team-1559-Dependency-Installer.exe) to install the latest versions of all the dependencies
-for help please reach out to me on either GitHub or Slack
+- For help please reach out to us on either GitHub or Slack
