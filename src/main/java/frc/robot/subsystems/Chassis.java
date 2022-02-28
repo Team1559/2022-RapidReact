@@ -19,7 +19,7 @@ public class Chassis {
     public static final double MAX_SPEED_FPS_TRACTION = 9.67 * 1.01;
     public static final double MAX_TICKS_PER_100MS = MAX_SPEED_FPS_TRACTION * 4096.0
             / (Math.PI * WHEEL_RADIUS_INCHES_MECANUM * 2.0 / 12.0) / 10.0;
-    public static final double CHASSIS_GEAR_RATIO = 4; // gear ratio with referance to 1 for exaple 4 is really 4:1
+    public static final double CHASSIS_GEAR_RATIO = 10; // gear ratio with reference to 1, for exaple 4 is really 4:1
     private SplitDrive front;
     private SplitDrive back;
     public CANSparkMax CANSparkMax1;
