@@ -98,6 +98,10 @@ public class Climber {
         climber.set(TalonFXControlMode.Velocity, 0.0);
     }
 
+    public void stopClimber(){
+        climber.set(TalonFXControlMode.PercentOutput, 0.0);
+    }
+
     public void extendPistons() {
         climberSolenoid.set(true);
     }
@@ -107,6 +111,7 @@ public class Climber {
     }
 
     public void disable() {
+        stopClimber();
         climber.setNeutralMode(NeutralMode.Coast);
         retractPistons();
     }
