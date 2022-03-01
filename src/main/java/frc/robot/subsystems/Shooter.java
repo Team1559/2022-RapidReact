@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
 import frc.robot.*;
 import com.revrobotics.*;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -15,11 +16,19 @@ public class Shooter {
     private final int TIMEOUT = 0;
     private final double cLR = 0.75;
 
-    private double shooter_kF = 0.045;
-    private double shooter_kP = 0.4;
-    private double shooter_kD = 0;
-    private double shooter_kI = 0.000;
-    private double shooter_kiz = 0.0;
+    private final double shooter_kF = 0.045;
+    private final double shooter_kP = 0.4;
+    private final double shooter_kD = 0;
+    private final double shooter_kI = 0.000;
+    private final double shooter_kiz = 0.0;
+
+    // TODO Tune these
+    private final double feeder_kF = 0.045;
+    private final double feeder_kP = 0.4;
+    private final double feeder_kD = 0;
+    private final double feeder_kI = 0.000;
+    private final double feeder_kiz = 0.0;
+
     public double shooterRpms = 7500;
     public double feederSpeed = 0.2;
     public double intakeSpeed = 0.4;
@@ -32,6 +41,10 @@ public class Shooter {
     private TalonSRX intake;
     private VisionControl vc;
     private Chassis chassis;
+    private RelativeEncoder feederEncoder;
+    private SparkMaxPIDController feederPid;
+
+    private boolean RESET_ENCODER = true;
 
     // States for gatherer
     public static final int gathererUp = 0;
@@ -65,6 +78,14 @@ public class Shooter {
 
         // Set motors to 0
         feeder.set(0);
+        feederEncoder = feeder.getEncoder();
+        feederPid = feeder.getPIDController();
+        feederPid.setP(feeder_kP);
+        feederPid.setI(feeder_kI);
+        feederPid.setD(feeder_kD);
+        feederPid.setFF(feeder_kF);
+        feederPid.setIZone(feeder_kiz);
+
         intake.set(TalonSRXControlMode.PercentOutput, 0);
 
         // Shooter Velocity mode configs
@@ -93,7 +114,7 @@ public class Shooter {
         gathererMain();
     }
 
-    public void gathererMain() { // FIXME WON'T RETRACT THE CLIMBER
+    public void gathererMain() { // TODO make sure the fix works
         if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
             switch (gathererState) {
                 case gathererUp:
@@ -139,7 +160,7 @@ public class Shooter {
             }
         } else {
             stopShooter();
-            stopFeeder();
+            holdFeeder();
         }
     }
 
@@ -159,16 +180,25 @@ public class Shooter {
         } else if (oi.reverseIntake()) {
             startFeeder(-feederSpeed);
         } else {
-            stopFeeder();
+            holdFeeder();
         }
     }
 
     public void startFeeder(double speed) {
-        feeder.set(speed);
+        RESET_ENCODER = true;
+        feederPid.setReference(speed, ControlType.kDutyCycle);
+    }
+
+    public void holdFeeder() {
+        if (RESET_ENCODER) {
+            feederEncoder.setPosition(0);
+            RESET_ENCODER = false;
+        }
+        feederPid.setReference(0, ControlType.kPosition);
     }
 
     public void stopFeeder() {
-        feeder.set(0);
+        feederPid.setReference(0, ControlType.kDutyCycle);
     }
 
     // Get and Set shooter states

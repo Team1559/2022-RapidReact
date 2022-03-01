@@ -332,7 +332,7 @@ public class Auto {
     private void Shoot() {
         shooter.startFeeder(shooter.feederSpeed);
         if (stepCounter >= FEEDER_CYCLES) {
-            shooter.stopFeeder();
+            shooter.holdFeeder();
             Done();
         }
     }
