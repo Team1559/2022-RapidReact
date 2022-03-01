@@ -15,7 +15,6 @@ public class Wiring {
     public static final int BRMOTOR = 14;
 
     // Cargo
-
     public static final int SHOOTER_MOTOR = 16;
     public static final int FEEDER_MOTOR = 15;
 

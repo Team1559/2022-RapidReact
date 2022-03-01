@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.rmi.registry.LocateRegistry;
+
 import frc.robot.*;
 import frc.robot.components.*;
 
@@ -9,8 +11,8 @@ public class Auto {
     private int stepNumber = 0;
     private int stepCounter = 0;
 
-    double leftTarget;
-    double rightTarget;
+    private double leftTarget;
+    private double rightTarget;
 
     static final int WAIT = 0;
     static final int DRIVE = 1;
@@ -283,8 +285,8 @@ public class Auto {
             // establish setpoints for end of travel
             leftTarget = chassis.flep + revs;
             rightTarget = chassis.frep + revs;
-            chassis.setPositionMode();
-            chassis.setPositionTarget(leftTarget, rightTarget);
+
+            chassis.pathDrive(leftTarget, rightTarget);
         }
         double remaining = leftTarget - chassis.flep;
         double done = revs - remaining;
@@ -296,7 +298,6 @@ public class Auto {
     }
 
     private void Turn(int degrees) {
-        chassis.setVelocityMode();
         chassis.drive(0, chassis.degreesToZRotation(degrees));
         if (Math.abs(degrees - chassis.imu.yaw) % 360 < 1.5) {
             chassis.imu.zeroYaw();
@@ -331,7 +332,7 @@ public class Auto {
     private void Shoot() {
         shooter.startFeeder(shooter.feederSpeed);
         if (stepCounter >= FEEDER_CYCLES) {
-            shooter.stopFeeder();
+            shooter.holdFeeder();
             Done();
         }
     }
@@ -348,8 +349,6 @@ public class Auto {
     }
 
     private void DriveHoop(int desiredDistanceFromTarget) { // 8 ft
-        if (stepCounter == 1)
-            chassis.setVelocityMode();
         double ySpeed = Robot.vc.hoopx * 0.4;
         if (!Robot.vc.trackHoop(desiredDistanceFromTarget > 0 ? ySpeed : 0))
             Fail("No hoop found");

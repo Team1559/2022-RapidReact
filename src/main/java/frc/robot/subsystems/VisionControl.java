@@ -6,6 +6,7 @@ import frc.robot.routes.*;
 import com.ctre.phoenix.time.StopWatch;
 
 import frc.robot.*;
+
 @SuppressWarnings("unused")
 
 public class VisionControl {
@@ -61,7 +62,6 @@ public class VisionControl {
     private final boolean RECORD_PATH = false;
     private final String FILE_NAME = "path4";
     private String selector;
-    
 
     public VisionControl(VisionData visionData, OperatorInterface oi, Chassis chassis, IMU imu,
             Shooter shooter) {
@@ -150,28 +150,31 @@ public class VisionControl {
             usingAuto = true;
             double ySpeed = -oi.pilot.getLeftY();
             if (SQUARE_DRIVER_INPUTS)
-                ySpeed = -Math.copySign(ySpeed*ySpeed, ySpeed);
-            if(!trackHoop(ySpeed))
+                ySpeed = -Math.copySign(ySpeed * ySpeed, ySpeed);
+            if (!trackHoop(ySpeed))
                 chassis.main();
-        } else if (oi.autoCollectButton()) { // <-- PDM not turned off in this case 
+        } else if (oi.autoCollectButton()) { // <-- PDM not turned off in this case
             usingAuto = true;
             double ySpeed = -oi.pilot.getLeftY();
             if (SQUARE_DRIVER_INPUTS)
                 ySpeed = -1.0 * Math.copySign(ySpeed * ySpeed, ySpeed);
-            if(!trackBall(ySpeed))
+            if (!trackBall(ySpeed))
                 chassis.main();
         } else {
             usingAuto = false;
             Robot.PDM.setSwitchableChannel(true);
         }
     }
-    /**Follows a preplanned path using encoder positions
+
+    /**
+     * Follows a preplanned path using encoder positions
+     * 
      * @deprecated
      */
     public void followPath() {
         if (counter < frontLeftSpeed.length) {
             chassis.pathDrive(fl.interpolate(counter, frontLeftSpeed), fl.interpolate(counter, frontRightSpeed),
-                fl.interpolate(counter, backLeftSpeed), fl.interpolate(counter, backRightSpeed));
+                    fl.interpolate(counter, backLeftSpeed), fl.interpolate(counter, backRightSpeed));
             counter += counterSpeed;
         } else {
             chassis.drive(0, 0, false);
@@ -183,9 +186,10 @@ public class VisionControl {
             fl.write();
         }
     }
+
     public boolean trackHoop(double ySpeed) {
         if (visionData.isHoopValid())
-            if (Math.abs(hoopr) > hoopChassisThreshold){
+            if (Math.abs(hoopr) > hoopChassisThreshold) {
                 drive(ySpeed, calculateHoopRotation());
                 return true;
             } else
@@ -200,7 +204,7 @@ public class VisionControl {
         else
             invalid_ball_counter++;
 
-        if (invalid_ball_counter < invalid_ball_counter_threshold){
+        if (invalid_ball_counter < invalid_ball_counter_threshold) {
             drive(ySpeed, calculateBallRotation());
             return true;
         } else
@@ -277,7 +281,7 @@ public class VisionControl {
                 break;
             case STOP:
                 drive(0, 0);
-                shooter.stopFeeder();
+                shooter.holdFeeder();
                 shooter.stopShooter();
                 shooter.stopIntake();
                 break;

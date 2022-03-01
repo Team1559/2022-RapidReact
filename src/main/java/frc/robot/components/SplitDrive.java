@@ -120,8 +120,9 @@ public class SplitDrive extends RobotDriveBase implements Sendable, AutoCloseabl
   private final CANSparkMax m_rightMotor;
 
   private boolean m_reported;
-  private final double m_maxOutput = 5676 * 42 / 10; // might need to multiply by 60 // Should give us the correct
-                                                     // conversion from rpm to encoder tics per 100 miliseconds
+  private final double m_maxOutput = 5676 / 10 / 60 * 42;
+  // Should give us the correct conversion from rpm to encoder tics per 100
+  // miliseconds
 
   /**
    * Wheel speeds for a differential drive.
@@ -240,6 +241,23 @@ public class SplitDrive extends RobotDriveBase implements Sendable, AutoCloseabl
 
     leftPid.setReference(l, CANSparkMax.ControlType.kPosition);
     rightPid.setReference(r, CANSparkMax.ControlType.kPosition);
+
+    feed();
+  }
+
+  /** Enables the wheels free spin */
+  @SuppressWarnings("ParameterName")
+  public void coast() {
+    if (!m_reported) {
+      HAL.report(
+          tResourceType.kResourceType_RobotDrive, tInstances.kRobotDrive2_MecanumCartesian, 4);
+      m_reported = true;
+    }
+
+    SparkMaxPIDController leftPid = m_leftMotor.getPIDController();
+    SparkMaxPIDController rightPid = m_rightMotor.getPIDController();
+    leftPid.setReference(0, CANSparkMax.ControlType.kDutyCycle);
+    rightPid.setReference(0, CANSparkMax.ControlType.kDutyCycle);
 
     feed();
   }

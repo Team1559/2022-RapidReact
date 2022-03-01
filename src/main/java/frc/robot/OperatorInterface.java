@@ -24,8 +24,13 @@ public class OperatorInterface {
     public boolean autoCollectButton() {
         return pilot.getAButton();
     }
+
+    public boolean autoCollectButtonRelease() {
+        return pilot.getAButtonReleased();
+    }
+
     // DriveTrain
-    public boolean slowModeButton(){
+    public boolean slowModeButton() {
         return pilot.getLeftTriggerAxis() > 0.5;
     }
 
@@ -46,17 +51,25 @@ public class OperatorInterface {
         return pilot.getLeftBumper();
     }
 
+    public boolean manualIntakeButtonPress() {
+        return pilot.getLeftBumperPressed();
+    }
+
+    public boolean manualIntakeButtonRelease() {
+        return pilot.getLeftBumperReleased();
+    }
+
     public boolean reverseIntake() {
         return copilot.getLeftTriggerAxis() > 0.5;
     }
 
     // Climber
     public boolean climberUpButton() {
-        return copilot.getDpad(0);
+        return copilot.getDpad(DPadUp);
     }
 
     public boolean climberDownButton() {
-        return copilot.getDpad(180);
+        return copilot.getDpad(DPadDown);
     }
 
     public boolean climberEnableButton() {
