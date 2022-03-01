@@ -245,6 +245,23 @@ public class SplitDrive extends RobotDriveBase implements Sendable, AutoCloseabl
     feed();
   }
 
+  /** Enables the wheels free spin */
+  @SuppressWarnings("ParameterName")
+  public void coast() {
+    if (!m_reported) {
+      HAL.report(
+          tResourceType.kResourceType_RobotDrive, tInstances.kRobotDrive2_MecanumCartesian, 4);
+      m_reported = true;
+    }
+
+    SparkMaxPIDController leftPid = m_leftMotor.getPIDController();
+    SparkMaxPIDController rightPid = m_rightMotor.getPIDController();
+    leftPid.setReference(0, CANSparkMax.ControlType.kDutyCycle);
+    rightPid.setReference(0, CANSparkMax.ControlType.kDutyCycle);
+
+    feed();
+  }
+
   /**
    * Arcade drive inverse kinematics for differential drive platform.
    *

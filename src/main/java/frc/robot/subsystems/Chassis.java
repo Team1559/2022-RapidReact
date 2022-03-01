@@ -137,6 +137,11 @@ public class Chassis {
         back.splitDrive(ySpeed, -zRotation, squareInputs);
     }
 
+    public void pathDrive(double l, double r) {
+        front.pathDrive(l, r);
+        back.coast();
+    }
+
     public void pathDrive(double fl, double fr, double bl, double br) {
         front.pathDrive(fl, fr);
         back.pathDrive(bl, br);

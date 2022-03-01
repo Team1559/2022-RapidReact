@@ -286,7 +286,7 @@ public class Auto {
             leftTarget = chassis.flep + revs;
             rightTarget = chassis.frep + revs;
 
-            chassis.pathDrive(leftTarget, rightTarget, leftTarget, rightTarget);
+            chassis.pathDrive(leftTarget, rightTarget);
         }
         double remaining = leftTarget - chassis.flep;
         double done = revs - remaining;
