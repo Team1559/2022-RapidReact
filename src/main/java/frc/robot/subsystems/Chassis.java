@@ -55,8 +55,6 @@ public class Chassis {
      */
     private CANSparkMax initMotor(int id) {
         CANSparkMax sparky = new CANSparkMax(id, MotorType.kBrushless);
-        sparky.restoreFactoryDefaults();
-        sparky.setCANTimeout(TIMEOUT);
         SparkMaxPIDController pid = sparky.getPIDController();
         final double kP = 6e-5;
         final double kI = 0;
@@ -65,6 +63,11 @@ public class Chassis {
         final double kFF = 0.000015;
         final double kMaxOutput = 1;
         final double kMinOutput = -1;
+        final double rr = 0.1;
+        sparky.restoreFactoryDefaults();
+        sparky.setCANTimeout(TIMEOUT);
+        sparky.setClosedLoopRampRate(rr);
+        sparky.setOpenLoopRampRate(rr);
         pid.setP(kP);
         pid.setI(kI);
         pid.setD(kD);
