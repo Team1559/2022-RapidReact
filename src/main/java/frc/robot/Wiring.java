@@ -6,7 +6,7 @@ public class Wiring {
 
     // Other
     public static final int PDP = 1;
-    public static final int PNEUMATICS_HUB = 16;
+    public static final int PNEUMATICS_HUB = 2;
 
     // Drivetrain
     public static final int FLMOTOR = 11;

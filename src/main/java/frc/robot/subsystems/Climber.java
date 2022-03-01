@@ -23,12 +23,20 @@ public class Climber {
 
     private double climberRpms = 7500;
 
+    private boolean resetEncoder = true;
+
     // TODO Tune this PID controller, It will need an I value
-    private final double kF = 0.045;
-    private final double kP = 0.4;
-    private final double kD = 0;
+    private final double kF = 0.015;
+    private final double kP = 0.1;
+    private final double kD = 0.06;
     private final double kI = 0.000;
     private final double kiz = 0;
+
+    private final double pkF = 0.0;
+    private final double pkP = 0.1;
+    private final double pkD = 0.06;
+    private final double pkI = 0.001;
+    private final double pkiz = 0;
 
     private TalonFX climber;
     private Solenoid climberSolenoid;
@@ -44,7 +52,8 @@ public class Climber {
         climber = new TalonFX(Wiring.climberMotor);
 
         // climber Velocity mode configs
-        climber.set(TalonFXControlMode.PercentOutput, 0.0);
+        climber.set(TalonFXControlMode.Velocity, 0.0);
+        climber.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, TIMEOUT);
         climber.configClosedloopRamp(cLR, TIMEOUT);
         climber.configNominalOutputForward(0, TIMEOUT);
         climber.configNominalOutputReverse(0, TIMEOUT);
@@ -58,8 +67,15 @@ public class Climber {
         climber.config_kP(0, kP, TIMEOUT);
         climber.config_kD(0, kD, TIMEOUT);
         climber.config_kI(0, kI, TIMEOUT);
+        climber.config_kF(0, kF, TIMEOUT);
         climber.config_IntegralZone(0, kiz, TIMEOUT);
+        climber.config_kP(1, pkP, TIMEOUT);
+        climber.config_kD(1, pkD, TIMEOUT);
+        climber.config_kI(1, pkI, TIMEOUT);
+        climber.config_IntegralZone(1, pkiz, TIMEOUT);
         climber.setInverted(true);
+        climber.selectProfileSlot(0, 0);
+
     }
 
     public void main() {
@@ -87,18 +103,31 @@ public class Climber {
     }
 
     public void raiseRobot() {
+        if(!resetEncoder){
+            climber.selectProfileSlot(0, 0);
+            resetEncoder = true;
+        }
         climber.set(TalonFXControlMode.Velocity, climberRpms);
     }
 
     public void lowerRobot() {
+        if(!resetEncoder){
+            climber.selectProfileSlot(0, 0);
+            resetEncoder = true;
+        }
         climber.set(TalonFXControlMode.Velocity, -climberRpms);
     }
 
     public void holdRobot() {
-        climber.set(TalonFXControlMode.Velocity, 0.0);
+        if (resetEncoder) {
+            climber.setSelectedSensorPosition(0);
+            resetEncoder = false;
+            climber.selectProfileSlot(1, 0);
+        }
+        climber.set(TalonFXControlMode.Position, 0);
     }
 
-    public void stopClimber(){
+    public void stopClimber() {
         climber.set(TalonFXControlMode.PercentOutput, 0.0);
     }
 

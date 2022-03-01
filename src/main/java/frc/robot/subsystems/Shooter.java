@@ -117,6 +117,7 @@ public class Shooter {
     public void gathererMain() { // TODO make sure the fix works
 
         if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
+           System.out.println(gathererState);
             switch (gathererState) {
                 case gathererUp:
                     if (oi.manualIntakeButtonPress()) { // Lower intake if button pressed else stop the intakes
@@ -131,7 +132,8 @@ public class Shooter {
                     if (oi.manualIntakeButtonRelease()) { // Stop the intake and hold ball when button is released
                         stopIntake();
                         gathererState = holding;
-                    } else { // otherwise keep running intake
+                    } 
+                    if(oi.manualIntakeButton()) { // otherwise keep running intake
                         startIntake(intakeSpeed);
                     }
                     break;
