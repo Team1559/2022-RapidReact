@@ -203,7 +203,7 @@ public class Shooter {
 
     // Get and Set shooter states
     public void startShooter(double rpms) {
-        shooter.set(TalonFXControlMode.Velocity, rpms * 2048 / 10 * 60);
+        shooter.set(TalonFXControlMode.Velocity, rpms * 2048 / 10 / 60);
     }
 
     public void stopShooter() {
