@@ -138,6 +138,9 @@ public class Shooter {
                     } else { // otherwise keep running intake
                         startIntake(intakeSpeed);
                     }
+                    if (oi.autoCollectButton()) {
+                        startIntake(intakeSpeed);
+                    }
                     break;
                 case holding:
                     if (oi.manualIntakeButtonPress()) { // intake when the button is pressed again
