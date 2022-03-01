@@ -23,12 +23,21 @@ public class Climber {
 
     private double climberRpms = 7500;
 
+    // TODO Tune this PID controller, It will need an I value
+    private final double kF = 0.045;
+    private final double kP = 0.4;
+    private final double kD = 0;
+    private final double kI = 0.000;
+    private final double kiz = 0;
+
     private TalonFX climber;
     private Solenoid climberSolenoid;
 
+    private double climberSpeed = 1; // FIXME CHANGE THIS FOR MOTOR SPEED
+
     public Climber(OperatorInterface oi) {
         this.oi = oi;
-        climberSolenoid = new Solenoid(PneumaticsModuleType.REVPH, Wiring.CLIMBER_SOLENOID);
+        climberSolenoid = new Solenoid(Wiring.PNEUMATICS_HUB, PneumaticsModuleType.REVPH, Wiring.CLIMBER_SOLENOID);
 
         // MotorController Config
 
@@ -45,9 +54,15 @@ public class Climber {
         climber.configSupplyCurrentLimit(climberLimit, TIMEOUT);
         climber.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
         climber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
+        climber.config_kF(0, kF, TIMEOUT);
+        climber.config_kP(0, kP, TIMEOUT);
+        climber.config_kD(0, kD, TIMEOUT);
+        climber.config_kI(0, kI, TIMEOUT);
+        climber.config_IntegralZone(0, kiz, TIMEOUT);
+        climber.setInverted(true);
     }
 
-    public void runClimber() {
+    public void main() {
         // Control for Winch
         if (oi.climberEnableButton()) {
             if (oi.climberUpButton()) {
@@ -59,6 +74,10 @@ public class Climber {
             }
         }
 
+        else {
+            holdRobot();
+        }
+
         // Control for moving pistons
         if (oi.extendClimberPistonsButton()) {
             extendPistons();
@@ -68,15 +87,15 @@ public class Climber {
     }
 
     public void raiseRobot() {
-        climber.set(TalonFXControlMode.PercentOutput, 1.0);
+        climber.set(TalonFXControlMode.Velocity, climberRpms);
     }
 
     public void lowerRobot() {
-        climber.set(TalonFXControlMode.PercentOutput, -1.0);
+        climber.set(TalonFXControlMode.Velocity, -climberRpms);
     }
 
     public void holdRobot() {
-        climber.set(TalonFXControlMode.PercentOutput, -0.0);
+        climber.set(TalonFXControlMode.Velocity, 0.0);
     }
 
     public void extendPistons() {
@@ -85,5 +104,10 @@ public class Climber {
 
     public void retractPistons() {
         climberSolenoid.set(false);
+    }
+
+    public void disable() {
+        climber.setNeutralMode(NeutralMode.Coast);
+        retractPistons();
     }
 }

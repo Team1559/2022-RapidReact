@@ -11,14 +11,15 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class Shooter {
     private OperatorInterface oi;
-    private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(true, 40, 40, 0);
+    private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(true, 60, 40, 2);
     private final int TIMEOUT = 0;
-    private final double cLR = 0.1;
+    private final double cLR = 0.75;
 
     private double shooter_kF = 0.045;
     private double shooter_kP = 0.4;
     private double shooter_kD = 0;
     private double shooter_kI = 0.000;
+    private double shooter_kiz = 0.0;
     public double shooterRpms = 7500;
     public double feederSpeed = 0.2;
     public double intakeSpeed = 0.4;
@@ -58,7 +59,7 @@ public class Shooter {
         // PneumaticsModuleType.CTREPCM for ctre stuff
         // PneumaticsModuleType.REVPH for rev stuff
         if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
-            lowerIntake = new Solenoid(PneumaticsModuleType.REVPH, Wiring.INTAKE_SOLENOID);
+            lowerIntake = new Solenoid(Wiring.PNEUMATICS_HUB, PneumaticsModuleType.REVPH, Wiring.INTAKE_SOLENOID);
             lowerIntake.set(false);
         }
 
@@ -78,6 +79,7 @@ public class Shooter {
         shooter.configPeakOutputForward(+1, TIMEOUT);
         shooter.configPeakOutputReverse(-1, TIMEOUT);
         shooter.setNeutralMode(NeutralMode.Coast);
+        shooter.config_IntegralZone(0, shooter_kiz, TIMEOUT);
         shooter.configSupplyCurrentLimit(shooterLimit, TIMEOUT);
 
     }
@@ -91,11 +93,11 @@ public class Shooter {
         gathererMain();
     }
 
-    public void gathererMain() {
+    public void gathererMain() { // FIXME WON'T RETRACT THE CLIMBER
         if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
             switch (gathererState) {
                 case gathererUp:
-                    if (oi.manualIntakeButton()) { // Lower intake if button pressed else stop the intakes
+                    if (oi.manualIntakeButtonPress()) { // Lower intake if button pressed else stop the intakes
                         lowerIntake();
                         gathererState = gathererDown;
                         startIntake(intakeSpeed);
@@ -112,13 +114,14 @@ public class Shooter {
                     }
                     break;
                 case holding:
-                    if (oi.manualIntakeButton()) { // Lift the intake when the button is pressed again
+                    if (oi.manualIntakeButtonPress()) { // intake when the button is pressed again
                         stopIntake();
                         raiseIntake();
                         gathererState = gathererUp;
                     } else { // otherwise remain still
                         stopIntake();
                     }
+                    break;
             }
         }
     }
@@ -170,7 +173,7 @@ public class Shooter {
 
     // Get and Set shooter states
     public void startShooter(double rpms) {
-        shooter.set(TalonFXControlMode.Velocity, rpms * 2048 / 10);
+        shooter.set(TalonFXControlMode.Velocity, rpms * 2048 / 10 * 60);
     }
 
     public void stopShooter() {
@@ -226,5 +229,12 @@ public class Shooter {
         velocity = 2000 + 1000 * (distance - 100) / 120; // TODO fix this
         shooterRPM = velocity / diameter;
         return shooterRPM;
+    }
+
+    public void disable() {
+        raiseIntake();
+        stopShooter();
+        stopIntake();
+        stopFeeder();
     }
 }

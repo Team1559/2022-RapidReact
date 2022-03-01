@@ -120,8 +120,9 @@ public class SplitDrive extends RobotDriveBase implements Sendable, AutoCloseabl
   private final CANSparkMax m_rightMotor;
 
   private boolean m_reported;
-  private final double m_maxOutput = 5676 * 42 / 10; // might need to multiply by 60 // Should give us the correct
-                                                     // conversion from rpm to encoder tics per 100 miliseconds
+  private final double m_maxOutput = 5676 * 42 / 10 * 60;
+  // Should give us the correct conversion from rpm to encoder tics per 100
+  // miliseconds
 
   /**
    * Wheel speeds for a differential drive.

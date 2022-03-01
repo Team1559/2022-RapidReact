@@ -33,7 +33,6 @@ public class Robot extends TimedRobot {
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
     public Chassis chassis;
     public Climber climber;
-
     public static PowerDistribution PDM = new PowerDistribution(Wiring.PDP, ModuleType.kRev);
 
     private static final String DEFAULT_PATH = "Default Path";
@@ -74,7 +73,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotPeriodic() {
-        if(FeatureFlags.doImu && FeatureFlags.imuInitialized){
+        if (FeatureFlags.doImu && FeatureFlags.imuInitialized) {
             imu.updateValues();
         }
     }
@@ -173,7 +172,7 @@ public class Robot extends TimedRobot {
         }
 
         if (FeatureFlags.doClimber && FeatureFlags.climberInitialized) {
-            climber.runClimber();
+            climber.main();
         }
     }
 
@@ -203,7 +202,13 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testInit() {
+        if (FeatureFlags.doClimber && FeatureFlags.climberInitialized) {
+            climber.disable();
+        }
 
+        if (FeatureFlags.doShooter && FeatureFlags.shooterInitialized) {
+            shooter.disable();
+        }
     }
 
     /** This function is called periodically during test mode. */
@@ -235,6 +240,11 @@ public class Robot extends TimedRobot {
         if (FeatureFlags.doShooter && !FeatureFlags.shooterInitialized) {
             shooter = new Shooter(oi, chassis);
             FeatureFlags.shooterInitialized = true;
+        }
+
+        if (FeatureFlags.doClimber && !FeatureFlags.climberInitialized) {
+            climber = new Climber(oi);
+            FeatureFlags.climberInitialized = true;
         }
 
         if (FeatureFlags.doVision && !FeatureFlags.visionInitialized) {

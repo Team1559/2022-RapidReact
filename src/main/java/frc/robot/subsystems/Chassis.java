@@ -57,18 +57,6 @@ public class Chassis {
         CANSparkMax sparky = new CANSparkMax(id, MotorType.kBrushless);
         sparky.restoreFactoryDefaults();
         sparky.setCANTimeout(TIMEOUT);
-        setVelocityMode(sparky);
-        return sparky;
-    }
-
-    public void setVelocityMode() {
-        setVelocityMode(CANSparkMax1);
-        setVelocityMode(CANSparkMax2);
-        setVelocityMode(CANSparkMax3);
-        setVelocityMode(CANSparkMax4);
-    }
-
-    private void setVelocityMode(CANSparkMax sparky) {
         SparkMaxPIDController pid = sparky.getPIDController();
         final double kP = 6e-5;
         final double kI = 0;
@@ -83,35 +71,7 @@ public class Chassis {
         pid.setIZone(kIz);
         pid.setFF(kFF);
         pid.setOutputRange(kMinOutput, kMaxOutput);
-    }
-
-    public void setPositionMode() {
-        setPositionMode(CANSparkMax1);
-        setPositionMode(CANSparkMax2);
-        setPositionMode(CANSparkMax3);
-        setPositionMode(CANSparkMax4);
-    }
-
-    public void setPositionTarget(double left, double right) {
-        CANSparkMax1.getPIDController().setReference(left, CANSparkMax.ControlType.kPosition);
-        CANSparkMax2.getPIDController().setReference(right, CANSparkMax.ControlType.kPosition);
-    }
-
-    private void setPositionMode(CANSparkMax sparky) {
-        SparkMaxPIDController pid = sparky.getPIDController();
-        final double kP = 1.0 / 30.0;
-        final double kI = 0;
-        final double kD = 0;
-        final double kIz = 0;
-        final double kFF = 0;
-        final double kMaxOutput = 0.3; // limit max speed for auto driving
-        final double kMinOutput = -kMaxOutput;
-        pid.setP(kP);
-        pid.setI(kI);
-        pid.setD(kD);
-        pid.setIZone(kIz);
-        pid.setFF(kFF);
-        pid.setOutputRange(kMinOutput, kMaxOutput);
+        return sparky;
     }
 
     public void initEncoders() {
