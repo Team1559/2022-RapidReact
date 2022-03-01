@@ -25,6 +25,10 @@ public class OperatorInterface {
         return pilot.getAButton();
     }
 
+    public boolean autoCollectButtonRelease() {
+        return pilot.getAButtonReleased();
+    }
+
     // DriveTrain
     public boolean slowModeButton() {
         return pilot.getLeftTriggerAxis() > 0.5;
@@ -49,6 +53,10 @@ public class OperatorInterface {
 
     public boolean manualIntakeButtonPress() {
         return pilot.getLeftBumperPressed();
+    }
+
+    public boolean manualIntakeButtonRelease() {
+        return pilot.getLeftBumperReleased();
     }
 
     public boolean reverseIntake() {

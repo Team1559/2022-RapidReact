@@ -115,10 +115,12 @@ public class Shooter {
     }
 
     public void gathererMain() { // TODO make sure the fix works
+
         if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
             switch (gathererState) {
                 case gathererUp:
-                    if (oi.manualIntakeButtonPress()) { // Lower intake if button pressed else stop the intakes
+                    if (oi.manualIntakeButtonPress() || oi.autoCollectButton()) {
+                        // Lower intake if button pressed else stop the intakes
                         lowerIntake();
                         gathererState = gathererDown;
                         startIntake(intakeSpeed);
@@ -127,9 +129,12 @@ public class Shooter {
                     }
                     break;
                 case gathererDown:
-                    if (!oi.manualIntakeButton()) { // Stop the intake and hold ball when button is released
+                    if (oi.manualIntakeButtonRelease()) { // Stop the intake and hold ball when button is released
                         stopIntake();
                         gathererState = holding;
+                    } else if (oi.autoCollectButtonRelease()) {
+                        stopIntake();
+                        gathererState = gathererUp;
                     } else { // otherwise keep running intake
                         startIntake(intakeSpeed);
                     }
@@ -150,7 +155,7 @@ public class Shooter {
     public void ShooterMain() {
         if (oi.runFlyWheelButtonManual()) {
             startShooter(calculateShooterRPMS(DEFAULT_DISTANCE)); // Assume distance is 8 ft in manual mode
-            shooterRpms = calculateShooterRPMS(8);
+            shooterRpms = calculateShooterRPMS(DEFAULT_DISTANCE);
         } else if (oi.autoSteerToHoopButton()) {
             if (checkDependencies()) {
                 shooterRpms = calculateShooterRPMS(vc.hoopx);
