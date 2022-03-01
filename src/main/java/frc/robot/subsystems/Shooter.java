@@ -254,13 +254,10 @@ public class Shooter {
     }
 
     public double calculateShooterRPMS(double distance) {
-        // distance = hoopx
         double shooterRPM = 0;
-        final double diameter = 6; // distance in inches
-        double velocity = 0;
         // math
-        velocity = 2000 + 1000 * (distance - 100) / 120; // TODO fix this
-        shooterRPM = velocity / diameter;
+        shooterRPM = 2000 + 1000 * (distance - 100) / 120; // TODO fix this
+        
         return shooterRPM;
     }
 
