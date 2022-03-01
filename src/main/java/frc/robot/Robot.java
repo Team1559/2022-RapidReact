@@ -209,6 +209,9 @@ public class Robot extends TimedRobot {
         if (FeatureFlags.doShooter && FeatureFlags.shooterInitialized) {
             shooter.disable();
         }
+        if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
+            compressorControl.disable();
+        }
     }
 
     /** This function is called periodically during test mode. */
