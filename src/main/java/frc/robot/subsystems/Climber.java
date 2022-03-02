@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.PneumaticsControlModule;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
 @SuppressWarnings("unused")
 
@@ -33,9 +34,9 @@ public class Climber {
     private final double kiz = 0;
 
     private final double pkF = 0.0;
-    private final double pkP = 0.1;
+    private final double pkP = 0.05;
     private final double pkD = 0.06;
-    private final double pkI = 0.001;
+    private final double pkI = 0.00;
     private final double pkiz = 0;
 
     private TalonFX climber;
@@ -81,6 +82,8 @@ public class Climber {
     public void main() {
         // Control for Winch
         if (oi.climberEnableButton()) {
+            oi.copilot.setRumble(RumbleType.kLeftRumble, 1);
+            oi.copilot.setRumble(RumbleType.kRightRumble, 1);
             if (oi.climberUpButton()) {
                 raiseRobot();
             } else if (oi.climberDownButton()) {
@@ -119,6 +122,8 @@ public class Climber {
     }
 
     public void holdRobot() {
+        oi.copilot.setRumble(RumbleType.kLeftRumble, 0);
+        oi.copilot.setRumble(RumbleType.kRightRumble, 0);
         if (resetEncoder) {
             climber.setSelectedSensorPosition(0);
             resetEncoder = false;

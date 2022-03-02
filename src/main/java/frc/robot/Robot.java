@@ -53,6 +53,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         initialize();
+        PDM.setSwitchableChannel(false);
         m_chooser.setDefaultOption("Default Auto Path", DEFAULT_PATH);
         m_chooser.addOption("Path 1", PATH_1);
         m_chooser.addOption("Path 2", PATH_2);
@@ -180,6 +181,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
+        PDM.setSwitchableChannel(false);
+
         if (FeatureFlags.doChassis && FeatureFlags.chassisInitialized && !usingVision) {
             chassis.disable();
         }
@@ -202,6 +205,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testInit() {
+        PDM.setSwitchableChannel(false);
+
         if (FeatureFlags.doClimber && FeatureFlags.climberInitialized) {
             climber.disable();
         }

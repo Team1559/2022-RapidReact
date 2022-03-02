@@ -59,6 +59,10 @@ public class OperatorInterface {
         return pilot.getLeftBumperReleased();
     }
 
+    public boolean raiseIntakeButton(){
+        return pilot.getRightBumper();
+    }
+
     public boolean reverseIntake() {
         return copilot.getLeftTriggerAxis() > 0.5;
     }
