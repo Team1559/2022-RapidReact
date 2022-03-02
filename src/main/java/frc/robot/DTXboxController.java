@@ -128,17 +128,14 @@ public class DTXboxController extends XboxController {
         this.duration = duration;
         this.power = power;
         this.side = side;
+        stopWatch.start();
     }
 
     /**
      * Runs the rumble periodically
      */
     public void rumblePeriodic() {
-        if (duration <= 0 && duration != -1) {
-            return;
-        }
-
-        stopWatch.start();
+        if(stopWatch.getDuration() < duration && duration > 0 || duration == -1){
         if (side == Side.LEFT) {
             setRumble(RumbleType.kLeftRumble, power);
         } else if (side == Side.RIGHT) {
@@ -147,8 +144,10 @@ public class DTXboxController extends XboxController {
             setRumble(RumbleType.kLeftRumble, power);
             setRumble(RumbleType.kRightRumble, power);
         }
+    }
 
         if (duration > 0 && stopWatch.getDuration() >= duration) {
+            duration = 0;
             if (side == Side.LEFT) {
                 setRumble(RumbleType.kLeftRumble, 0);
             } else if (side == Side.RIGHT) {
