@@ -109,6 +109,7 @@ public class DTXboxController extends XboxController {
      * 
      * @param duration Time in seconds for the rumble to last
      * @param power    Strength of rumble. Values range from 0-1
+     * 
      */
     public void startRumble(double duration, double power) {
         startRumble(duration, power, Side.BOTH);
@@ -170,7 +171,7 @@ public class DTXboxController extends XboxController {
      * Stops the rumbe on a certain side
      * 
      * @param side What side to stop the ruble on <code>LEFT<code>,
-     *                 <code>RIGHT<code>, <code>BOTH<code>
+     *             <code>RIGHT<code>, <code>BOTH<code>
      */
     public void stopRumble(Side side) {
         if (side == Side.LEFT) {

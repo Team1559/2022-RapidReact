@@ -84,7 +84,7 @@ public class Climber {
     public void main() {
         // Control for Winch
         if (oi.climberEnableButton()) {
-            oi.pilot.startRumble(-1, 1, Side.BOTH);
+            oi.pilot.startRumble(-1);
             if (oi.climberUpButton()) {
                 raiseRobot();
             } else if (oi.climberDownButton()) {
