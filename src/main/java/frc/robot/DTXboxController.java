@@ -109,7 +109,6 @@ public class DTXboxController extends XboxController {
      * 
      * @param duration Time in seconds for the rumble to last
      * @param power    Strength of rumble. Values range from 0-1
-     * 
      */
     public void startRumble(double duration, double power) {
         startRumble(duration, power, Side.BOTH);
@@ -135,16 +134,16 @@ public class DTXboxController extends XboxController {
      * Runs the rumble periodically
      */
     public void rumblePeriodic() {
-        if(stopWatch.getDuration() < duration && duration > 0 || duration == -1){
-        if (side == Side.LEFT) {
-            setRumble(RumbleType.kLeftRumble, power);
-        } else if (side == Side.RIGHT) {
-            setRumble(RumbleType.kRightRumble, power);
-        } else {
-            setRumble(RumbleType.kLeftRumble, power);
-            setRumble(RumbleType.kRightRumble, power);
+        if (stopWatch.getDuration() < duration && duration > 0 || duration == -1) {
+            if (side == Side.LEFT) {
+                setRumble(RumbleType.kLeftRumble, power);
+            } else if (side == Side.RIGHT) {
+                setRumble(RumbleType.kRightRumble, power);
+            } else {
+                setRumble(RumbleType.kLeftRumble, power);
+                setRumble(RumbleType.kRightRumble, power);
+            }
         }
-    }
 
         if (duration > 0 && stopWatch.getDuration() >= duration) {
             duration = 0;

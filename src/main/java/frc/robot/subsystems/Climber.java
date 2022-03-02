@@ -1,20 +1,13 @@
 package frc.robot.subsystems;
 
 import frc.robot.OperatorInterface;
-import frc.robot.DTXboxController.Side;
-
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
 import frc.robot.*;
-import com.revrobotics.*;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.PneumaticsControlModule;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
-@SuppressWarnings("unused")
 
 public class Climber {
 
@@ -44,7 +37,6 @@ public class Climber {
     private TalonFX climber;
     private Solenoid climberSolenoid;
 
-    private double climberSpeed = 1; // FIXME CHANGE THIS FOR MOTOR SPEED
 
     public Climber(OperatorInterface oi) {
         this.oi = oi;
@@ -75,6 +67,7 @@ public class Climber {
         climber.config_kP(1, pkP, TIMEOUT);
         climber.config_kD(1, pkD, TIMEOUT);
         climber.config_kI(1, pkI, TIMEOUT);
+        climber.config_kF(1, pkF, TIMEOUT);
         climber.config_IntegralZone(1, pkiz, TIMEOUT);
         climber.setInverted(true);
         climber.selectProfileSlot(0, 0);

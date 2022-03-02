@@ -9,7 +9,6 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter {
@@ -33,7 +32,7 @@ public class Shooter {
 
     public double shooterRpms = 7500;
     public double feederSpeed = 0.2;
-    public double intakeSpeed = 1; //0.4;
+    public double intakeSpeed = 1; // 0.4;
     private final double DEFAULT_DISTANCE = 2500;
     private final boolean TESTING = true;
 
@@ -47,11 +46,13 @@ public class Shooter {
     private SparkMaxPIDController feederPid;
 
     private boolean RESET_ENCODER = true;
+    public boolean disableManual = false;
 
     // States for gatherer
     public static final int gathererUp = 0;
     public static final int gathererDown = 1;
     public static final int holding = 2;
+
     public int gathererState = gathererUp;
 
     public Shooter(OperatorInterface operatorinterface, Chassis chassis) {
@@ -117,47 +118,53 @@ public class Shooter {
     }
 
     public void gathererMain() { // TODO make sure the fix works
-
-        if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
-            System.out.println(gathererState == gathererUp ? "gatherUp" : (gathererState == gathererDown ? "gatherDown" : "holding"));
-            switch (gathererState) {
-                case gathererUp:
-                    if (oi.manualIntakeButtonPress()) { // Lower intake if button pressed else stop the intakes
-                        lowerIntake();
-                        gathererState = gathererDown;
-                        startIntake(intakeSpeed);
-                    } else {
-                        stopIntake();
-                    }
-                    break;
-                case gathererDown:
-                    if (!oi.manualIntakeButton()) { // Stop the intake and hold ball when button is released
-                        stopIntake();
-                        gathererState = holding;
-                    } 
-                    if(oi.manualIntakeButton()) { // otherwise keep running intake
-                        startIntake(intakeSpeed);
-                    }
-                    break;
-                case holding:
-                    if (oi.raiseIntakeButton()) { // intake when the button is pressed again
-                        stopIntake();
-                        raiseIntake();
-                        gathererState = gathererUp;
-                    } else if (oi.manualIntakeButton()) {
-                        gathererState = gathererDown;
-                    } else { // otherwise remain still
-                        stopIntake();
-                    }
-                    break;
+        if (!disableManual) {
+            if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
+                System.out.println(gathererState == gathererUp ? "gatherUp"
+                        : (gathererState == gathererDown ? "gatherDown" : "holding"));
+                switch (gathererState) {
+                    case gathererUp:
+                        if (oi.manualIntakeButtonPress()) { // Lower intake if button pressed else stop the intakes
+                            gathererState = gathererDown;
+                        }
+                        break;
+                    case gathererDown:
+                        if (!oi.manualIntakeButton()) { // Stop the intake and hold ball when button is released
+                            gathererState = holding;
+                        }
+                        break;
+                    case holding:
+                        if (oi.raiseIntakeButton()) { // intake when the button is pressed again
+                            gathererState = gathererUp;
+                        } else if (oi.manualIntakeButton()) {
+                            gathererState = gathererDown;
+                        }
+                        break;
+                }
             }
+            gathererState();
+        }
+    }
+
+    public void gathererState() {
+        switch (gathererState) {
+            case gathererUp:
+                stopIntake();
+                raiseIntake();
+                break;
+            case gathererDown:
+                lowerIntake();
+                startIntake(intakeSpeed);
+                break;
+            case holding:
+                stopIntake();
+                break;
         }
     }
 
     public void ShooterMain() {
         if (oi.runFlyWheelButtonManual()) {
-            oi.copilot.setRumble(RumbleType.kLeftRumble, 1);
-            oi.copilot.setRumble(RumbleType.kRightRumble, 1);
+            oi.copilot.startRumble(-1);
             startShooter(calculateShooterRPMS(DEFAULT_DISTANCE)); // Assume distance is 8 ft in manual mode
             shooterRpms = calculateShooterRPMS(DEFAULT_DISTANCE);
         } else if (oi.autoSteerToHoopButton()) {
@@ -168,8 +175,7 @@ public class Shooter {
                 startShooter(calculateShooterRPMS(DEFAULT_DISTANCE));
             }
         } else {
-            oi.copilot.setRumble(RumbleType.kLeftRumble, 0);
-            oi.copilot.setRumble(RumbleType.kRightRumble, 0);
+            oi.copilot.stopRumble();
             stopShooter();
         }
     }
@@ -190,6 +196,7 @@ public class Shooter {
         } else if (oi.reverseIntake()) {
             startFeeder(-feederSpeed);
         } else {
+            gathererState = gathererUp;
             holdFeeder();
         }
     }
@@ -197,6 +204,8 @@ public class Shooter {
     public void startFeeder(double speed) {
         RESET_ENCODER = true;
         feederPid.setReference(speed, ControlType.kDutyCycle);
+        gathererState = gathererDown;
+
     }
 
     public void holdFeeder() {
@@ -204,10 +213,12 @@ public class Shooter {
             feederEncoder.setPosition(0);
             RESET_ENCODER = false;
         }
+        gathererState = gathererUp;
         feederPid.setReference(0, ControlType.kPosition);
     }
 
     public void stopFeeder() {
+        gathererState = gathererUp;
         feederPid.setReference(0, ControlType.kDutyCycle);
     }
 
@@ -250,7 +261,7 @@ public class Shooter {
 
     // Validate hoop vision
     public boolean checkHoopVision() {
-    
+
         return FeatureFlags.doVision && FeatureFlags.visionInitialized && vc.isHoopValid();
     }
 
@@ -266,8 +277,9 @@ public class Shooter {
         return distance;
         // double shooterRPM = 0;
         // // math
-        // shooterRPM = 2000 + 1000 * (distance * 12 - 100) / 120 * 2/3; // TODO: fix this
-        
+        // shooterRPM = 2000 + 1000 * (distance * 12 - 100) / 120 * 2/3; // TODO: fix
+        // this
+
         // return shooterRPM;
     }
 

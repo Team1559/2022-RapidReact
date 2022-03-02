@@ -307,13 +307,14 @@ public class Auto {
     }
 
     private void StartGatherer() {
-        shooter.lowerIntake();
-        shooter.startIntake(shooter.intakeSpeed);
+        shooter.gathererState = Shooter.gathererDown;
+        shooter.disableManual = true;
         Done();
     }
 
     private void StopGatherer() {
-        shooter.stopIntake();
+        shooter.gathererState = Shooter.gathererUp;
+        shooter.disableManual = false;
         Done();
     }
 
