@@ -84,7 +84,7 @@ public class Climber {
     public void main() {
         // Control for Winch
         if (oi.climberEnableButton()) {
-            oi.pilot.startRumble(-1);
+            oi.copilot.startRumble(-1);
             if (oi.climberUpButton()) {
                 raiseRobot();
             } else if (oi.climberDownButton()) {
@@ -123,7 +123,7 @@ public class Climber {
     }
 
     public void holdRobot() {
-        oi.pilot.stopRumble();
+        oi.copilot.stopRumble();
         if (resetEncoder) {
             climber.setSelectedSensorPosition(0);
             resetEncoder = false;
