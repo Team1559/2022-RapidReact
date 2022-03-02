@@ -77,6 +77,8 @@ public class Robot extends TimedRobot {
         if (FeatureFlags.doImu && FeatureFlags.imuInitialized) {
             imu.updateValues();
         }
+        oi.pilot.rumblePeriodic();
+        oi.copilot.rumblePeriodic();
     }
 
     /**

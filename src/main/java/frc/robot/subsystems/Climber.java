@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import frc.robot.OperatorInterface;
+import frc.robot.DTXboxController.Side;
+
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
 import frc.robot.*;
@@ -82,8 +84,7 @@ public class Climber {
     public void main() {
         // Control for Winch
         if (oi.climberEnableButton()) {
-            oi.copilot.setRumble(RumbleType.kLeftRumble, 1);
-            oi.copilot.setRumble(RumbleType.kRightRumble, 1);
+            oi.pilot.startRumble(-1, 1, Side.BOTH);
             if (oi.climberUpButton()) {
                 raiseRobot();
             } else if (oi.climberDownButton()) {
@@ -106,7 +107,7 @@ public class Climber {
     }
 
     public void raiseRobot() {
-        if(!resetEncoder){
+        if (!resetEncoder) {
             climber.selectProfileSlot(0, 0);
             resetEncoder = true;
         }
@@ -114,7 +115,7 @@ public class Climber {
     }
 
     public void lowerRobot() {
-        if(!resetEncoder){
+        if (!resetEncoder) {
             climber.selectProfileSlot(0, 0);
             resetEncoder = true;
         }
@@ -122,8 +123,7 @@ public class Climber {
     }
 
     public void holdRobot() {
-        oi.copilot.setRumble(RumbleType.kLeftRumble, 0);
-        oi.copilot.setRumble(RumbleType.kRightRumble, 0);
+        oi.pilot.stopRumble();
         if (resetEncoder) {
             climber.setSelectedSensorPosition(0);
             resetEncoder = false;
@@ -149,4 +149,5 @@ public class Climber {
         climber.setNeutralMode(NeutralMode.Coast);
         retractPistons();
     }
+
 }

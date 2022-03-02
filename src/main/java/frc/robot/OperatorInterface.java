@@ -59,7 +59,7 @@ public class OperatorInterface {
         return pilot.getLeftBumperReleased();
     }
 
-    public boolean raiseIntakeButton(){
+    public boolean raiseIntakeButton() {
         return pilot.getRightBumper();
     }
 
