@@ -96,7 +96,8 @@ public class DTXboxController extends XboxController {
      * Sets the rumble on the controller
      * 
      * @param duration Time in seconds for the rumble to last
-     * @param side     side the rumble is on
+     * @param side     What side the ruble on <code>LEFT<code>,
+     *                 <code>RIGHT<code>, <code>BOTH<code>
      */
     public void startRumble(double duration, Side side) {
         startRumble(duration, 1, side);
@@ -107,7 +108,7 @@ public class DTXboxController extends XboxController {
      * Sets the rumble on the controller
      * 
      * @param duration Time in seconds for the rumble to last
-     * @param power    Strength of rumble
+     * @param power    Strength of rumble. Values range from 0-1
      */
     public void startRumble(double duration, double power) {
         startRumble(duration, power, Side.BOTH);
@@ -118,8 +119,8 @@ public class DTXboxController extends XboxController {
      * Sets the rumble on the controller
      * 
      * @param duration Time in seconds for the rumble to last
-     * @param power    Strength of rumble
-     * @param side     What side to set the ruble on <code>LEFT<code>,
+     * @param power    Strength of rumble. Values range from 0-1
+     * @param side     What side the ruble on <code>LEFT<code>,
      *                 <code>RIGHT<code>, <code>BOTH<code>
      */
     public void startRumble(double duration, double power, Side side) {
@@ -129,7 +130,7 @@ public class DTXboxController extends XboxController {
     }
 
     /**
-     * runs the rumble for a period of time
+     * Runs the rumble periodically
      */
     public void rumblePeriodic() {
         if (duration <= 0 && duration != -1) {
@@ -168,7 +169,8 @@ public class DTXboxController extends XboxController {
     /**
      * Stops the rumbe on a certain side
      * 
-     * @param side What side to stop
+     * @param side What side to stop the ruble on <code>LEFT<code>,
+     *                 <code>RIGHT<code>, <code>BOTH<code>
      */
     public void stopRumble(Side side) {
         if (side == Side.LEFT) {
