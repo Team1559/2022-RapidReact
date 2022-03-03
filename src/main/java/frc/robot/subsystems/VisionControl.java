@@ -47,7 +47,7 @@ public class VisionControl {
     private double backLeftSpeed[] = {};
     private StopWatch clock = new StopWatch();
     private StopWatch sendTmer = new StopWatch();
-    private UdpSender sender = new UdpSender();
+    private UDPSender sender = new UDPSender();
 
     // we need to determine what to set these to
 

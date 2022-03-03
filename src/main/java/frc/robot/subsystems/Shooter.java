@@ -45,8 +45,6 @@ public class Shooter {
     private RelativeEncoder feederEncoder;
     private SparkMaxPIDController feederPid;
 
-    
-
     private boolean RESET_ENCODER = true;
     public boolean disableManual = false;
 

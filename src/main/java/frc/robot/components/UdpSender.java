@@ -4,51 +4,44 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-public class UdpSender {
-    private String address;
+public class UDPSender {
     private int port;
+    private InetAddress to;
+    private DatagramSocket soc;
 
-    public UdpSender(String address, int port) {
-        this.address = address;
+    public UDPSender(String address, int port) {
         this.port = port;
+        try {
+            to = InetAddress.getByName(address);
+            soc = new DatagramSocket();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public UdpSender(String address) {
-        this(address, 5003);
+    public UDPSender(String address) {
+        this(address, 5005);
     }
 
-    public UdpSender(int port) {
+    public UDPSender(int port) {
         this("10.15.59.17", port);
     }
 
-    public UdpSender() {
+    public UDPSender() {
         this("10.15.59.17", 5005);
     }
 
-    private void udpSender(String text, boolean close) throws java.io.IOException {
-        InetAddress to = InetAddress.getByName(address);
-        DatagramSocket soc = new DatagramSocket();
-        if (close) {
-            soc.close();
-        }
-        byte[] data = text.getBytes();
-        DatagramPacket pac = new DatagramPacket(data, data.length, to, port);
-        soc.send(pac);
-    }
-
     public void send(String text) {
+        byte[] data = text.getBytes();
         try {
-            udpSender(text, false);
+            DatagramPacket pac = new DatagramPacket(data, data.length, to, port);
+            soc.send(pac);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void closeSocket() {
-        try {
-            udpSender("", true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        soc.close();
     }
 }
