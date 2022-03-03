@@ -4,10 +4,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import frc.robot.subsystems.Shooter;
 import frc.robot.components.VisionData;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -25,21 +26,35 @@ import frc.robot.components.*;
 
 public class Robot extends TimedRobot {
     private OperatorInterface oi = new OperatorInterface();
+    private Auto auto;
     private IMU imu;
     private VisionData vData;
     public static VisionControl vc;
     public boolean usingVision = false;
+    
     private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
+    private String color;
+    private final SendableChooser<String> colorSelector = new SendableChooser<>();
+
     public Chassis chassis;
     public Climber climber;
     public static PowerDistribution PDM = new PowerDistribution(Wiring.PDP, ModuleType.kRev);
+    public static DriverStation ds;
+    private static Alliance alliance;
 
-    private static final String DEFAULT_PATH = "Default Path";
-    private static final String PATH_1 = "Path 1";
-    private static final String PATH_2 = "Path 2";
-    private static final String PATH_3 = "Path 3";
-    private static final String PATH_4 = "Path 4";
+    private static final String AUTO = "Automatic";
+    private static final String RED = "Red Allience";
+    private static final String BLUE = "Blue Allience";
+
+    private static final String NONE = "No Auto";
+    private static final String BASIC_AUTO_STEPS = "Basic Auto";
+    private static final String BASIC_VISION_AUTO = "Basic Auto Using Vision";
+    private static final String MINI_AUTO = "Leave The Starting Area";
+    private static final String LEFT_BALL_AUTO = "Left Ball Auto";
+    private static final String RIGHT_BAALL_AUTO = "Right Ball Auto";
+    private static final String MID_BALL_AUTO = "Mid Ball Auto";
 
     private Shooter shooter;
 
@@ -53,13 +68,22 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         initialize();
-        m_chooser.setDefaultOption("Default Auto Path", DEFAULT_PATH);
-        m_chooser.addOption("Path 1", PATH_1);
-        m_chooser.addOption("Path 2", PATH_2);
-        m_chooser.addOption("Path 3", PATH_3);
-        m_chooser.addOption("Path 4", PATH_4);
+        PDM.setSwitchableChannel(false);
+
+        colorSelector.setDefaultOption(AUTO, AUTO);
+        colorSelector.addOption(RED, RED);
+        colorSelector.addOption(BLUE, BLUE);
+
+        m_chooser.setDefaultOption(NONE, NONE);
+        m_chooser.addOption(BASIC_AUTO_STEPS, BASIC_AUTO_STEPS);
+        m_chooser.addOption(BASIC_VISION_AUTO, BASIC_VISION_AUTO);
+        m_chooser.addOption(MINI_AUTO, MINI_AUTO);
+        m_chooser.addOption(LEFT_BALL_AUTO, LEFT_BALL_AUTO);
+        m_chooser.addOption(RIGHT_BAALL_AUTO, RIGHT_BAALL_AUTO);
+        m_chooser.addOption(MID_BALL_AUTO, MID_BALL_AUTO);
 
         SmartDashboard.putData("Auto Paths", m_chooser);
+        SmartDashboard.putData("Allience Clor", colorSelector);
     }
 
     /**
@@ -73,9 +97,37 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotPeriodic() {
+        alliance = DriverStation.getAlliance();
         if (FeatureFlags.doImu && FeatureFlags.imuInitialized) {
             imu.updateValues();
         }
+        m_autoSelected = colorSelector.getSelected();
+        switch (color) {
+            case AUTO:
+            default:
+                switch (alliance) {
+                    case Red:
+                        vc.periodic("red");
+                        break;
+                    case Blue:
+                        vc.periodic("blue");
+                        break;
+                    case Invalid:
+                        vc.periodic("invalid");
+                        break;
+                }
+                break;
+            case RED:
+                vc.periodic("red");
+
+                break;
+            case BLUE:
+                vc.periodic("blue");
+
+                break;
+        }
+        oi.pilot.rumblePeriodic();
+        oi.copilot.rumblePeriodic();
     }
 
     /**
@@ -92,35 +144,40 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
+            compressorControl.enable();
+        }
+
         if (FeatureFlags.doImu && FeatureFlags.imuInitialized) {
             imu.zeroYaw();
         }
-        if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
-            m_autoSelected = m_chooser.getSelected();
-            PDM.setSwitchableChannel(true);
 
-            switch (m_autoSelected) {
-                case DEFAULT_PATH:
-                default:
-                    vc.setAutoPath("");
-                    break;
+        m_autoSelected = m_chooser.getSelected();
+        PDM.setSwitchableChannel(true);
 
-                case PATH_1:
-                    vc.setAutoPath("path1");
-                    break;
-
-                case PATH_2:
-                    vc.setAutoPath("path2");
-                    break;
-
-                case PATH_3:
-                    vc.setAutoPath("path3");
-                    break;
-                case PATH_4:
-                    vc.setAutoPath("path4");
-                    break;
-            }
-            vc.autoInit();
+        switch (m_autoSelected) {
+            case NONE:
+            default:
+                auto = new Auto(Auto.noAuto);
+                break;
+            case BASIC_AUTO_STEPS:
+                auto = new Auto(Auto.basicAutoSteps);
+                break;
+            case BASIC_VISION_AUTO:
+                auto = new Auto(Auto.basicVisionAuto);
+                break;
+            case MINI_AUTO:
+                auto = new Auto(Auto.minAuto);
+                break;
+            case LEFT_BALL_AUTO:
+                auto = new Auto(Auto.leftBallAuto);
+                break;
+            case RIGHT_BAALL_AUTO:
+                auto = new Auto(Auto.rightBallAuto);
+                break;
+            case MID_BALL_AUTO:
+                auto = new Auto(Auto.midBallAuto);
+                break;
         }
     }
 
@@ -128,19 +185,17 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-        if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
-            compressorControl.enable();
-        }
-
-        if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
-            vc.autoPeriodic();
-        }
+        auto.main();
     }
 
     /** This function is called once when teleop is enabled. */
 
     @Override
     public void teleopInit() {
+        if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
+            compressorControl.enable();
+        }
+
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
             vc.teleopInit();
             usingVision = vc.usingAuto;
@@ -163,10 +218,6 @@ public class Robot extends TimedRobot {
             chassis.main();
         }
 
-        if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
-            compressorControl.enable();
-        }
-
         if (FeatureFlags.doShooter && FeatureFlags.shooterInitialized) {
             shooter.main();
         }
@@ -180,6 +231,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
+        PDM.setSwitchableChannel(false);
+
         if (FeatureFlags.doChassis && FeatureFlags.chassisInitialized && !usingVision) {
             chassis.disable();
         }
@@ -202,6 +255,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testInit() {
+        PDM.setSwitchableChannel(false);
+
         if (FeatureFlags.doClimber && FeatureFlags.climberInitialized) {
             climber.disable();
         }

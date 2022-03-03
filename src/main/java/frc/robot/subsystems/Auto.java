@@ -14,21 +14,25 @@ public class Auto {
     private double leftTarget;
     private double rightTarget;
 
-    static final int WAIT = 0;
-    static final int DRIVE = 1;
-    static final int TURN = 2;
-    static final int START_GATHERER = 3;
-    static final int STOP_GATHERER = 4;
-    static final int START_FLYWHEEL = 5;
-    static final int STOP_FLYWHEEL = 6;
-    static final int SHOOT = 7;
-    static final int DRIVE_BALL = 8;
-    static final int DRIVE_HOOP = 9;
+    private static final int WAIT = 0;
+    private static final int DRIVE = 1;
+    private static final int TURN = 2;
+    private static final int START_GATHERER = 3;
+    private static final int STOP_GATHERER = 4;
+    private static final int START_FLYWHEEL = 5;
+    private static final int STOP_FLYWHEEL = 6;
+    private static final int SHOOT = 7;
+    private static final int DRIVE_BALL = 8;
+    private static final int DRIVE_HOOP = 9;
+    private static final int ALIGN_HOOP = 10;
 
-    static final int FEEDER_CYCLES = 75;
+    private static final int FEEDER_CYCLES = 75;
 
-    static final int MAX_TURN_SECONDS = 3;
-    static final int MAX_BALL_SECONDS = 5;
+    private static final int MAX_TURN_SECONDS = 3;
+    private static final int MAX_BALL_SECONDS = 5;
+
+    static final int HOOP_ERROR_INCHES = 3;
+    static final int HOOP_ERROR_DEGREES = 1;
 
     private OperatorInterface oi;
     private Shooter shooter;
@@ -37,33 +41,40 @@ public class Auto {
     private VisionData vData;
 
     private int[][] steps;
+
+    // No Auto
+    public static final int[][] noAuto = {
+    };
+
     // Start gatherer, drive X feet, stop gatherer, start flywheel at known RPM,
     // turn 180, shoot, stop flywheel
-    public static int[][] basicAutoSteps = {
+    public static final int[][] basicAutoSteps = {
             { WAIT, 50 },
             { START_GATHERER },
-            { DRIVE, 6 },
+            { DRIVE, 60 },
             { STOP_GATHERER },
             { START_FLYWHEEL, 2000 },
             { TURN, 180 },
             { SHOOT },
             { STOP_FLYWHEEL },
     };
-    public static int[][] basicVisionAuto = {
+
+    public static final int[][] basicVisionAuto = {
             { WAIT, 50 },
-            { DRIVE_BALL, 12 },
+            { DRIVE_BALL, 48 },
             { START_GATHERER },
-            { DRIVE, 14 },
-            { WAIT, 10 },
+            { DRIVE, 48 + 3 },
+            { WAIT, 30 },
             { STOP_GATHERER },
             { TURN, 180 },
-            { DRIVE_HOOP, -1 },
-            { START_FLYWHEEL, 9001 },
+            { START_FLYWHEEL, 0 },
+            { ALIGN_HOOP },
+            { WAIT, 50 },
             { SHOOT },
             { STOP_FLYWHEEL }
     };
 
-    public static int[][] minAuto = {
+    public static final int[][] minAuto = {
             { DRIVE, 96 },
     };
     /*
@@ -82,37 +93,35 @@ public class Auto {
      * Shoot
      */
 
-    public static int[][] leftBallAuto = {
-            { WAIT, 50 },
+    public static final int[][] leftBallAuto = {
             // Get first ball (71" away)
-            { DRIVE, 71 - 48 },
-            { DRIVE_BALL, 12 },
+            { DRIVE_BALL, 48 },
             { START_GATHERER },
-            { DRIVE, 14 },
-            { WAIT, 10 },
+            // make sure we get the ball by going a few extra inches and waiting a few ticks
+            { DRIVE, 48 + 3 },
+            { WAIT, 30 },
             { STOP_GATHERER },
-            // Shoot first ball
+            // Shoot first two balls
             { TURN, 180 },
-            { DRIVE_HOOP, -1 },
-            { WAIT, 10 },
-            { START_FLYWHEEL, 9001 },
+            { START_FLYWHEEL, 0 },
+            { ALIGN_HOOP },
             { WAIT, 50 },
             { SHOOT },
             { STOP_FLYWHEEL },
 
-            // Get second ball (82" away)
+            // Get third ball (82" away)
             { TURN, -100 },
-            { DRIVE, 180 + (82 - 48) },
-            { DRIVE_BALL, 12 },
+            { DRIVE_BALL, 48 },
             { START_GATHERER },
-            { DRIVE, 14 },
-            { WAIT, 10 },
+            // make sure we get the ball by going a few extra inches
+            { DRIVE, 48 + 3 },
+            // wait 2 sec to give the human time to give us the fourth ball
+            { WAIT, 2 * 50 },
             { STOP_GATHERER },
-            // Shoot second ball
+            // Shoot third and fourth balls
             { TURN, 150 },
             { DRIVE_HOOP, 8 },
-            { WAIT, 10 },
-            { START_FLYWHEEL, 9001 },
+            { START_FLYWHEEL, 0 },
             { WAIT, 50 },
             { SHOOT },
             { STOP_FLYWHEEL }
@@ -133,36 +142,34 @@ public class Auto {
      * Drive to hoop (until 8 ft away)
      * Shoot
      */
-    public static int[][] rightBallAuto = {
+    public static final int[][] rightBallAuto = {
             // Get 1st ball
-            { DRIVE_BALL, 12 },
-            { START_GATHERER },
-            { DRIVE, 14 },
-            { WAIT, 10 },
+            { DRIVE_BALL, 48 },
+            // make sure we get the ball by going a few extra inches and waiting a few ticks
+            { DRIVE, 48 + 3 },
+            { WAIT, 30 },
             { STOP_GATHERER },
-            // Shoot 1st ball
+            // Shoot 1st two balls
             { TURN, 180 },
-            { DRIVE_HOOP, -1 },
-            { WAIT, 10 },
-            { START_FLYWHEEL, 9001 },
+            { START_FLYWHEEL, 0 },
+            { ALIGN_HOOP },
             { WAIT, 50 },
-            { SHOOT },
             { SHOOT },
             { STOP_FLYWHEEL },
 
-            // Get 2nd ball
+            // Get third ball
             { TURN, 103 },
             { DRIVE, 172 },
-            { DRIVE_BALL, 12 },
+            { DRIVE_BALL, 48 },
             { START_GATHERER },
-            { DRIVE, 14 },
-            { WAIT, 10 + 50 * 2 },
+            { DRIVE, 48 + 3 },
+            // wait 2 sec to give the human time to give us the fourth ball
+            { WAIT, 2 * 50 },
             { STOP_GATHERER },
-            // Shoot 2nd ball
+            // Shoot third and fourth balls
             { TURN, -150 },
             { DRIVE_HOOP, 8 },
-            { WAIT, 10 },
-            { START_FLYWHEEL, 9001 },
+            { START_FLYWHEEL, 0 },
             { WAIT, 50 },
             { SHOOT },
             { STOP_FLYWHEEL }
@@ -175,36 +182,42 @@ public class Auto {
      * Align to target
      * Shoot
      * 
-     * Turn left 168.5 degrees
+     * Turn left 168 degrees
      * Drive 80”
      * Drive to ball 83”
      * Wait for human player ball
-     * Turn right 168.5 degrees
+     * Turn right 168 degrees
      * Drive to hoop (until 8 ft away)
      * Shoot
      */
-    public static double[][] midBallAuto = {
+    public static final int[][] midBallAuto = {
             // Get 1st ball
-            { DRIVE_BALL, 12 },
+            { DRIVE_BALL, 48 },
             { START_GATHERER },
-            { DRIVE, 14 },
-            { WAIT, 10 },
+            { DRIVE, 48 + 3 },
+            { WAIT, 30 },
             { STOP_GATHERER },
             // Shoot 1st 2 balls
             { TURN, 180 },
-            { DRIVE_HOOP, -1 },
+            { ALIGN_HOOP },
+            { START_FLYWHEEL, 0 },
+            { WAIT, 50 },
             { SHOOT },
-            // GET terminal and human player ball
-            { TURN, -168.5 },
+            { STOP_FLYWHEEL },
+            // Get terminal and human player ball
+            { TURN, -168 },
             { DRIVE, 80 },
-            { DRIVE_BALL, 12 },
+            { DRIVE_BALL, 48 },
             { START_GATHERER },
-            { DRIVE, 14 },
-            { WAIT, 10 + 50 * 2 },
+            { DRIVE, 48 + 3 },
+            { WAIT, 2 * 50 },
             { STOP_GATHERER },
-            { TURN, 168.5 },
+            { TURN, 168 },
             { DRIVE_HOOP, 8 },
-            { SHOOT }
+            { START_FLYWHEEL, 0 },
+            { WAIT, 50 },
+            { SHOOT },
+            { STOP_FLYWHEEL }
     };
 
     public Auto() {
@@ -215,12 +228,12 @@ public class Auto {
         this.steps = steps;
     }
 
-    public void periodic() {
+    public void main() {
         if (stepNumber >= steps.length) {
             return;
         }
         int[] step = steps[stepNumber];
-        int type = step[0];
+        int type = (int) step[0];
         int value = 0;
 
         if (step.length > 1) {
@@ -230,7 +243,7 @@ public class Auto {
 
         switch (type) {
             case WAIT:
-                Wait(value);
+                Wait((int) value);
                 break;
             case DRIVE:
                 Drive(value);
@@ -258,6 +271,9 @@ public class Auto {
                 break;
             case DRIVE_HOOP:
                 DriveHoop(value);
+                break;
+            case ALIGN_HOOP:
+                AlignHoop();
                 break;
         }
     }
@@ -307,18 +323,19 @@ public class Auto {
     }
 
     private void StartGatherer() {
-        shooter.lowerIntake();
-        shooter.startIntake(shooter.intakeSpeed);
+        shooter.gathererState = Shooter.gathererDown;
+        shooter.disableManual = true;
         Done();
     }
 
     private void StopGatherer() {
-        shooter.stopIntake();
+        shooter.gathererState = Shooter.holding;
+        shooter.disableManual = false;
         Done();
     }
 
     private void StartFlywheel(double rpm) {
-        if (rpm == 9001)
+        if (rpm == 0)
             rpm = shooter.calculateShooterRPMS(Robot.vc.hoopx);
         shooter.startShooter(rpm);
         Done();
@@ -338,8 +355,9 @@ public class Auto {
     }
 
     private void DriveBall(int desiredDistanceFromBall) { // in inches
-        double ySpeed = Robot.vc.ballx * 12 /* ft -> in */ * 0.4; // FIXME: I have no idea what this proportion should
-                                                                  // be (pid controller?)
+        double positionError = desiredDistanceFromBall - Robot.vc.ballx * 12;
+        double ySpeed = positionError * 0.01;
+
         if (!Robot.vc.trackBall(ySpeed))
             Fail("No ball found");
         if (Robot.vc.ballx < desiredDistanceFromBall && Robot.vc.ballx != 0)
@@ -348,11 +366,20 @@ public class Auto {
             Fail("Took too long");
     }
 
-    private void DriveHoop(int desiredDistanceFromTarget) { // 8 ft
-        double ySpeed = Robot.vc.hoopx * 0.4;
-        if (!Robot.vc.trackHoop(desiredDistanceFromTarget > 0 ? ySpeed : 0))
+    private void DriveHoop(int desiredDistanceFromTarget) { // in inches
+        double positionError = desiredDistanceFromTarget - Robot.vc.hoopx * 12;
+        double ySpeed = positionError * 0.01;
+
+        if (!Robot.vc.trackHoop(ySpeed))
             Fail("No hoop found");
-        else if (Robot.vc.hoopx < 0.5) // <-- in ft
+        else if (positionError < HOOP_ERROR_INCHES && Math.abs(Robot.vc.hoopr) < HOOP_ERROR_DEGREES)
+            Done();
+    }
+
+    private void AlignHoop() {
+        if (!Robot.vc.trackHoop(0))
+            Fail("No hoop found");
+        else if (Math.abs(Robot.vc.hoopr) < HOOP_ERROR_DEGREES)
             Done();
     }
 }

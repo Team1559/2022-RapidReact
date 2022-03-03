@@ -133,7 +133,7 @@ public class Chassis {
     public void drive(double ySpeed, double zRotation, boolean squareInputs) {
         ySpeed *= oi.slowModeButton() ? SLOWMODE_COEFFICIENT : 1;
         zRotation *= oi.slowModeButton() ? SLOWMODE_COEFFICIENT : 1;
-        front.splitDrive(ySpeed, (differpercent / 100.0) * -zRotation, squareInputs);
+        front.splitDrive(ySpeed, (differpercent) * -zRotation, squareInputs);
         back.splitDrive(ySpeed, -zRotation, squareInputs);
     }
 
