@@ -4,12 +4,12 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-public class UDPSender {
+public class UDPTransmitter {
     private int port;
     private InetAddress to;
     private DatagramSocket soc;
 
-    public UDPSender(String address, int port) {
+    public UDPTransmitter(String address, int port) {
         this.port = port;
         try {
             to = InetAddress.getByName(address);
@@ -19,15 +19,15 @@ public class UDPSender {
         }
     }
 
-    public UDPSender(String address) {
+    public UDPTransmitter(String address) {
         this(address, 5005);
     }
 
-    public UDPSender(int port) {
+    public UDPTransmitter(int port) {
         this("10.15.59.17", port);
     }
 
-    public UDPSender() {
+    public UDPTransmitter() {
         this("10.15.59.17", 5005);
     }
 
