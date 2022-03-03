@@ -14,22 +14,25 @@ public class Auto {
     private double leftTarget;
     private double rightTarget;
 
-    static final int WAIT = 0;
-    static final int DRIVE = 1;
-    static final int TURN = 2;
-    static final int START_GATHERER = 3;
-    static final int STOP_GATHERER = 4;
-    static final int START_FLYWHEEL = 5;
-    static final int STOP_FLYWHEEL = 6;
-    static final int SHOOT = 7;
-    static final int DRIVE_BALL = 8;
-    static final int DRIVE_HOOP = 9;
-    static final int ALIGN_HOOP = 10;
+    private static final int WAIT = 0;
+    private static final int DRIVE = 1;
+    private static final int TURN = 2;
+    private static final int START_GATHERER = 3;
+    private static final int STOP_GATHERER = 4;
+    private static final int START_FLYWHEEL = 5;
+    private static final int STOP_FLYWHEEL = 6;
+    private static final int SHOOT = 7;
+    private static final int DRIVE_BALL = 8;
+    private static final int DRIVE_HOOP = 9;
+    private static final int ALIGN_HOOP = 10;
 
-    static final int FEEDER_CYCLES = 75;
+    private static final int FEEDER_CYCLES = 75;
 
-    static final int MAX_TURN_SECONDS = 3;
-    static final int MAX_BALL_SECONDS = 5;
+    private static final int MAX_TURN_SECONDS = 3;
+    private static final int MAX_BALL_SECONDS = 5;
+
+    static final int HOOP_ERROR_INCHES = 3;
+    static final int HOOP_ERROR_DEGREES = 1;
 
     static final int HOOP_ERROR_INCHES = 3;
     static final int HOOP_ERROR_DEGREES = 1;
@@ -41,9 +44,14 @@ public class Auto {
     private VisionData vData;
 
     private int[][] steps;
+
+    // No Auto
+    public static final int[][] noAuto = {
+    };
+
     // Start gatherer, drive X feet, stop gatherer, start flywheel at known RPM,
     // turn 180, shoot, stop flywheel
-    public static int[][] basicAutoSteps = {
+    public static final int[][] basicAutoSteps = {
             { WAIT, 50 },
             { START_GATHERER },
             { DRIVE, 60 },
@@ -53,7 +61,8 @@ public class Auto {
             { SHOOT },
             { STOP_FLYWHEEL },
     };
-    public static int[][] basicVisionAuto = {
+
+    public static final int[][] basicVisionAuto = {
             { WAIT, 50 },
             { DRIVE_BALL, 48 },
             { START_GATHERER },
@@ -68,7 +77,7 @@ public class Auto {
             { STOP_FLYWHEEL }
     };
 
-    public static int[][] minAuto = {
+    public static final int[][] minAuto = {
             { DRIVE, 96 },
     };
     /*
@@ -87,7 +96,7 @@ public class Auto {
      * Shoot
      */
 
-    public static int[][] leftBallAuto = {
+    public static final int[][] leftBallAuto = {
             // Get first ball (71" away)
             { DRIVE_BALL, 48 },
             { START_GATHERER },
@@ -136,7 +145,7 @@ public class Auto {
      * Drive to hoop (until 8 ft away)
      * Shoot
      */
-    public static int[][] rightBallAuto = {
+    public static final int[][] rightBallAuto = {
             // Get 1st ball
             { DRIVE_BALL, 48 },
             // make sure we get the ball by going a few extra inches and waiting a few ticks
@@ -176,15 +185,15 @@ public class Auto {
      * Align to target
      * Shoot
      * 
-     * Turn left 168.5 degrees
+     * Turn left 168 degrees
      * Drive 80”
      * Drive to ball 83”
      * Wait for human player ball
-     * Turn right 168.5 degrees
+     * Turn right 168 degrees
      * Drive to hoop (until 8 ft away)
      * Shoot
      */
-    public static double[][] midBallAuto = {
+    public static final int[][] midBallAuto = {
             // Get 1st ball
             { DRIVE_BALL, 48 },
             { START_GATHERER },
@@ -198,15 +207,15 @@ public class Auto {
             { WAIT, 50 },
             { SHOOT },
             { STOP_FLYWHEEL },
-            // GET terminal and human player ball
-            { TURN, -168.5 },
+            // Get terminal and human player ball
+            { TURN, -168 },
             { DRIVE, 80 },
             { DRIVE_BALL, 48 },
             { START_GATHERER },
             { DRIVE, 48 + 3 },
             { WAIT, 2 * 50 },
             { STOP_GATHERER },
-            { TURN, 168.5 },
+            { TURN, 168 },
             { DRIVE_HOOP, 8 },
             { START_FLYWHEEL, 0 },
             { WAIT, 50 },
@@ -222,12 +231,12 @@ public class Auto {
         this.steps = steps;
     }
 
-    public void periodic() {
+    public void main() {
         if (stepNumber >= steps.length) {
             return;
         }
         int[] step = steps[stepNumber];
-        int type = step[0];
+        int type = (int) step[0];
         int value = 0;
 
         if (step.length > 1) {
@@ -237,7 +246,7 @@ public class Auto {
 
         switch (type) {
             case WAIT:
-                Wait(value);
+                Wait((int) value);
                 break;
             case DRIVE:
                 Drive(value);
@@ -317,13 +326,14 @@ public class Auto {
     }
 
     private void StartGatherer() {
-        shooter.lowerIntake();
-        shooter.startIntake(shooter.intakeSpeed);
+        shooter.gathererState = Shooter.gathererDown;
+        shooter.disableManual = true;
         Done();
     }
 
     private void StopGatherer() {
-        shooter.stopIntake();
+        shooter.gathererState = Shooter.holding;
+        shooter.disableManual = false;
         Done();
     }
 

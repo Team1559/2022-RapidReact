@@ -23,5 +23,5 @@ public class Wiring {
 
     // Climber
     public static final int CLIMBER_SOLENOID = 8;
-    public static final int climberMotor = 18; // NEED TO SET FALCON ID FOR CLIMBER
+    public static final int climberMotor = 18;
 }

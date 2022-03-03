@@ -4,14 +4,10 @@ import frc.robot.OperatorInterface;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
 import frc.robot.*;
-import com.revrobotics.*;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.PneumaticsControlModule;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 
-@SuppressWarnings("unused")
 
 public class Climber {
 
@@ -33,15 +29,14 @@ public class Climber {
     private final double kiz = 0;
 
     private final double pkF = 0.0;
-    private final double pkP = 0.1;
+    private final double pkP = 0.05;
     private final double pkD = 0.06;
-    private final double pkI = 0.001;
+    private final double pkI = 0.00;
     private final double pkiz = 0;
 
     private TalonFX climber;
     private Solenoid climberSolenoid;
 
-    private double climberSpeed = 1; // FIXME CHANGE THIS FOR MOTOR SPEED
 
     public Climber(OperatorInterface oi) {
         this.oi = oi;
@@ -72,6 +67,7 @@ public class Climber {
         climber.config_kP(1, pkP, TIMEOUT);
         climber.config_kD(1, pkD, TIMEOUT);
         climber.config_kI(1, pkI, TIMEOUT);
+        climber.config_kF(1, pkF, TIMEOUT);
         climber.config_IntegralZone(1, pkiz, TIMEOUT);
         climber.setInverted(true);
         climber.selectProfileSlot(0, 0);
@@ -81,6 +77,7 @@ public class Climber {
     public void main() {
         // Control for Winch
         if (oi.climberEnableButton()) {
+            oi.copilot.startRumble(-1);
             if (oi.climberUpButton()) {
                 raiseRobot();
             } else if (oi.climberDownButton()) {
@@ -103,7 +100,7 @@ public class Climber {
     }
 
     public void raiseRobot() {
-        if(!resetEncoder){
+        if (!resetEncoder) {
             climber.selectProfileSlot(0, 0);
             resetEncoder = true;
         }
@@ -111,7 +108,7 @@ public class Climber {
     }
 
     public void lowerRobot() {
-        if(!resetEncoder){
+        if (!resetEncoder) {
             climber.selectProfileSlot(0, 0);
             resetEncoder = true;
         }
@@ -119,6 +116,7 @@ public class Climber {
     }
 
     public void holdRobot() {
+        oi.copilot.stopRumble();
         if (resetEncoder) {
             climber.setSelectedSensorPosition(0);
             resetEncoder = false;
@@ -144,4 +142,5 @@ public class Climber {
         climber.setNeutralMode(NeutralMode.Coast);
         retractPistons();
     }
+
 }
