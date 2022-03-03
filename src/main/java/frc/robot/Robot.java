@@ -31,9 +31,11 @@ public class Robot extends TimedRobot {
     private VisionData vData;
     public static VisionControl vc;
     public boolean usingVision = false;
+    
     private String m_autoSelected;
-    private String color;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
+    private String color;
     private final SendableChooser<String> colorSelector = new SendableChooser<>();
 
     public Chassis chassis;
