@@ -34,9 +34,6 @@ public class Auto {
     static final int HOOP_ERROR_INCHES = 3;
     static final int HOOP_ERROR_DEGREES = 1;
 
-    static final int HOOP_ERROR_INCHES = 3;
-    static final int HOOP_ERROR_DEGREES = 1;
-
     private OperatorInterface oi;
     private Shooter shooter;
     private Chassis chassis;
