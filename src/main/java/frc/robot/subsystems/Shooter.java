@@ -45,6 +45,8 @@ public class Shooter {
     private RelativeEncoder feederEncoder;
     private SparkMaxPIDController feederPid;
 
+    
+
     private boolean RESET_ENCODER = true;
     public boolean disableManual = false;
 
@@ -54,6 +56,8 @@ public class Shooter {
     public static final int holding = 2;
 
     public int gathererState = gathererUp;
+
+    private int lastState = gathererState;
 
     public Shooter(OperatorInterface operatorinterface, Chassis chassis) {
         oi = operatorinterface;
@@ -181,19 +185,30 @@ public class Shooter {
     // FEEDER STUFF
     public void feederMain() {
         if (oi.shootButton()) {
+            disableManual = true;
+            lastState = gathererState;
             startFeeder(feederSpeed);
         } else if (oi.autoShootButton() && checkDependencies()) { // Shoot when ready
             if (Math.abs(vc.hoopr) <= vc.hoopChassisThreshold) { // Angle check
-                if (vc.hoopx <= vc.maxHoopDistance) // distance check
-                    if (oi.pilot.getLeftY() < 0.05 && Math.abs(chassis.rpmToFps(chassis.getFrontAverageWheelRPM())) < 2)
+                if (vc.hoopx <= vc.maxHoopDistance) { // distance check
+                    if (oi.pilot.getLeftY() < 0.05
+                            && Math.abs(chassis.rpmToFps(chassis.getFrontAverageWheelRPM())) < 2) {
                         // Speed check ^^
-                        if (Math.abs(getShooterRpms() - calculateShooterRPMS(vc.hoopx)) < vc.shooterThreshold)
+                        if (Math.abs(getShooterRpms() - calculateShooterRPMS(vc.hoopx)) < vc.shooterThreshold) {
+                            disableManual = true;
+                            lastState = gathererState;
                             startFeeder(feederSpeed); // flywheel rpm check ^
+                        }
+                    }
+                }
             }
         } else if (oi.reverseIntake()) {
             startFeeder(-feederSpeed);
         } else {
-            gathererState = gathererUp;
+            if (disableManual) {
+                gathererState = lastState;
+                disableManual = false;
+            }
             holdFeeder();
         }
     }
@@ -201,7 +216,11 @@ public class Shooter {
     public void startFeeder(double speed) {
         RESET_ENCODER = true;
         feederPid.setReference(speed, ControlType.kDutyCycle);
-        gathererState = gathererDown;
+        if (disableManual) {
+            gathererState = lastState;
+            disableManual = false;
+
+        }
 
     }
 
@@ -210,7 +229,10 @@ public class Shooter {
             feederEncoder.setPosition(0);
             RESET_ENCODER = false;
         }
-        gathererState = gathererUp;
+        if (disableManual) {
+            gathererState = lastState;
+            disableManual = false;
+        }
         feederPid.setReference(0, ControlType.kPosition);
     }
 
