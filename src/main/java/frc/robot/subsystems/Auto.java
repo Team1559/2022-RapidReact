@@ -329,7 +329,7 @@ public class Auto {
     }
 
     private void StopGatherer() {
-        shooter.gathererState = Shooter.gathererUp;
+        shooter.gathererState = Shooter.holding;
         shooter.disableManual = false;
         Done();
     }
