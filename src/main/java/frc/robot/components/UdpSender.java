@@ -22,7 +22,7 @@ public class UdpSender {
     }
 
     public UdpSender() {
-        this("10.15.59.17", 5003);
+        this("10.15.59.17", 5005);
     }
 
     private void udpSender(String text, boolean close) throws java.io.IOException {
