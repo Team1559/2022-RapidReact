@@ -120,8 +120,6 @@ public class Shooter {
     public void gathererMain() { // TODO make sure the fix works
         if (!disableManual) {
             if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
-                System.out.println(gathererState == gathererUp ? "gatherUp"
-                        : (gathererState == gathererDown ? "gatherDown" : "holding"));
                 switch (gathererState) {
                     case gathererUp:
                         if (oi.manualIntakeButtonPress()) { // Lower intake if button pressed else stop the intakes
@@ -184,7 +182,6 @@ public class Shooter {
     public void feederMain() {
         if (oi.shootButton()) {
             startFeeder(feederSpeed);
-            // startIntake(intakeSpeed);
         } else if (oi.autoShootButton() && checkDependencies()) { // Shoot when ready
             if (Math.abs(vc.hoopr) <= vc.hoopChassisThreshold) { // Angle check
                 if (vc.hoopx <= vc.maxHoopDistance) // distance check

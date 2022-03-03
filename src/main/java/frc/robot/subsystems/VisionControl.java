@@ -46,6 +46,8 @@ public class VisionControl {
     private double backRightSpeed[] = {};
     private double backLeftSpeed[] = {};
     private StopWatch clock = new StopWatch();
+    private StopWatch sendTmer = new StopWatch();
+    private UdpSender sender = new UdpSender();
 
     // we need to determine what to set these to
 
@@ -72,11 +74,15 @@ public class VisionControl {
         this.imu = imu;
         this.shooter = shooter;
         fl = new FileLogging();
+        sendTmer.start();
         if (RECORD_PATH) {
             fl.createfile(FILE_NAME);
         }
     }
 
+    /**
+     * @deprecated
+     */
     public void autoInit() {
         path4 p1 = new path4();
         double skip[] = { 0 };
@@ -114,6 +120,9 @@ public class VisionControl {
         chassis.setPid(kP, kI, kD, kF);
     }
 
+    /**
+     * @deprecated
+     */
     public void autoPeriodic() {
         switch (autostate) {
             case PATH:
@@ -215,11 +224,18 @@ public class VisionControl {
         chassis.drive(fs, r, false);
     }
 
+    /**
+     * @deprecated
+     * @param selector Auto path to select
+     */
     public void setAutoPath(String selector) {
         this.selector = selector;
         System.out.println("Current Path is " + this.selector);
     }
 
+    /**
+     * @deprecated
+     */
     public void record(double _forwardSpeed, double _sideSpeed) {
         fl.periodic(_forwardSpeed + " " + _sideSpeed + " " + chassis.flep + " " + chassis.frep + " " + chassis.blep
                 + " " + chassis.brep + " \n");
@@ -251,6 +267,13 @@ public class VisionControl {
         }
 
         return -ball_rotation;
+    }
+
+    public void periodic(String color) {
+        if (sendTmer.getDuration() >= 1) {
+            sender.send(color);
+            sendTmer.start();
+        }
     }
 
     public void autoShoot() {

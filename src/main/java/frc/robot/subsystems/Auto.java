@@ -14,21 +14,21 @@ public class Auto {
     private double leftTarget;
     private double rightTarget;
 
-    static final int WAIT = 0;
-    static final int DRIVE = 1;
-    static final int TURN = 2;
-    static final int START_GATHERER = 3;
-    static final int STOP_GATHERER = 4;
-    static final int START_FLYWHEEL = 5;
-    static final int STOP_FLYWHEEL = 6;
-    static final int SHOOT = 7;
-    static final int DRIVE_BALL = 8;
-    static final int DRIVE_HOOP = 9;
+    private static final int WAIT = 0;
+    private static final int DRIVE = 1;
+    private static final int TURN = 2;
+    private static final int START_GATHERER = 3;
+    private static final int STOP_GATHERER = 4;
+    private static final int START_FLYWHEEL = 5;
+    private static final int STOP_FLYWHEEL = 6;
+    private static final int SHOOT = 7;
+    private static final int DRIVE_BALL = 8;
+    private static final int DRIVE_HOOP = 9;
 
-    static final int FEEDER_CYCLES = 75;
+    private static final int FEEDER_CYCLES = 75;
 
-    static final int MAX_TURN_SECONDS = 3;
-    static final int MAX_BALL_SECONDS = 5;
+    private static final int MAX_TURN_SECONDS = 3;
+    private static final int MAX_BALL_SECONDS = 5;
 
     private OperatorInterface oi;
     private Shooter shooter;
@@ -36,10 +36,15 @@ public class Auto {
 
     private VisionData vData;
 
-    private int[][] steps;
+    private double[][] steps;
+
+    // No Auto
+    public static final double[][] noAuto = {
+    };
+
     // Start gatherer, drive X feet, stop gatherer, start flywheel at known RPM,
     // turn 180, shoot, stop flywheel
-    public static int[][] basicAutoSteps = {
+    public static final double[][] basicAutoSteps = {
             { WAIT, 50 },
             { START_GATHERER },
             { DRIVE, 6 },
@@ -49,7 +54,8 @@ public class Auto {
             { SHOOT },
             { STOP_FLYWHEEL },
     };
-    public static int[][] basicVisionAuto = {
+
+    public static final double[][] basicVisionAuto = {
             { WAIT, 50 },
             { DRIVE_BALL, 12 },
             { START_GATHERER },
@@ -63,7 +69,7 @@ public class Auto {
             { STOP_FLYWHEEL }
     };
 
-    public static int[][] minAuto = {
+    public static final double[][] minAuto = {
             { DRIVE, 96 },
     };
     /*
@@ -82,7 +88,7 @@ public class Auto {
      * Shoot
      */
 
-    public static int[][] leftBallAuto = {
+    public static final double[][] leftBallAuto = {
             { WAIT, 50 },
             // Get first ball (71" away)
             { DRIVE, 71 - 48 },
@@ -133,7 +139,7 @@ public class Auto {
      * Drive to hoop (until 8 ft away)
      * Shoot
      */
-    public static int[][] rightBallAuto = {
+    public static final double[][] rightBallAuto = {
             // Get 1st ball
             { DRIVE_BALL, 12 },
             { START_GATHERER },
@@ -183,7 +189,7 @@ public class Auto {
      * Drive to hoop (until 8 ft away)
      * Shoot
      */
-    public static double[][] midBallAuto = {
+    public static final double[][] midBallAuto = {
             // Get 1st ball
             { DRIVE_BALL, 12 },
             { START_GATHERER },
@@ -194,7 +200,7 @@ public class Auto {
             { TURN, 180 },
             { DRIVE_HOOP, -1 },
             { SHOOT },
-            // GET terminal and human player ball
+            // Get terminal and human player ball
             { TURN, -168.5 },
             { DRIVE, 80 },
             { DRIVE_BALL, 12 },
@@ -211,17 +217,17 @@ public class Auto {
         this(basicAutoSteps);
     }
 
-    public Auto(int[][] steps) {
+    public Auto(double[][] steps) {
         this.steps = steps;
     }
 
-    public void periodic() {
+    public void main() {
         if (stepNumber >= steps.length) {
             return;
         }
-        int[] step = steps[stepNumber];
-        int type = step[0];
-        int value = 0;
+        double[] step = steps[stepNumber];
+        int type = (int) step[0];
+        double value = 0;
 
         if (step.length > 1) {
             value = step[1];
@@ -230,7 +236,7 @@ public class Auto {
 
         switch (type) {
             case WAIT:
-                Wait(value);
+                Wait((int) value);
                 break;
             case DRIVE:
                 Drive(value);
@@ -278,7 +284,7 @@ public class Auto {
             Done();
     }
 
-    private void Drive(int inches) {
+    private void Drive(double inches) {
         chassis.updateEncoders();
         double revs = chassis.inchesToRotations(inches);
         if (stepCounter == 1) {
@@ -297,7 +303,7 @@ public class Auto {
             Done();
     }
 
-    private void Turn(int degrees) {
+    private void Turn(double degrees) {
         chassis.drive(0, chassis.degreesToZRotation(degrees));
         if (Math.abs(degrees - chassis.imu.yaw) % 360 < 1.5) {
             chassis.imu.zeroYaw();
@@ -338,7 +344,7 @@ public class Auto {
         }
     }
 
-    private void DriveBall(int desiredDistanceFromBall) { // in inches
+    private void DriveBall(double desiredDistanceFromBall) { // in inches
         double ySpeed = Robot.vc.ballx * 12 /* ft -> in */ * 0.4; // FIXME: I have no idea what this proportion should
                                                                   // be (pid controller?)
         if (!Robot.vc.trackBall(ySpeed))
@@ -349,7 +355,7 @@ public class Auto {
             Fail("Took too long");
     }
 
-    private void DriveHoop(int desiredDistanceFromTarget) { // 8 ft
+    private void DriveHoop(double desiredDistanceFromTarget) { // 8 ft
         double ySpeed = Robot.vc.hoopx * 0.4;
         if (!Robot.vc.trackHoop(desiredDistanceFromTarget > 0 ? ySpeed : 0))
             Fail("No hoop found");
