@@ -30,10 +30,9 @@ public class Shooter {
     private final double feeder_kI = 0.000;
     private final double feeder_kiz = 0.0;
 
-    public double shooterRpms = 7500;
     public double feederSpeed = 0.2;
     public double intakeSpeed = 1; // 0.4;
-    private final double DEFAULT_DISTANCE = 2500;
+    private final double DEFAULT_DISTANCE = 3200;
     private final boolean TESTING = true;
 
     private TalonFX shooter;
@@ -171,12 +170,10 @@ public class Shooter {
 
     public void ShooterMain() {
         if (oi.runFlyWheelButtonManual()) {
-            oi.copilot.startRumble(-1);
+            // oi.copilot.startRumble(0);
             startShooter(calculateShooterRPMS(DEFAULT_DISTANCE)); // Assume distance is 8 ft in manual mode
-            shooterRpms = calculateShooterRPMS(DEFAULT_DISTANCE);
         } else if (oi.autoSteerToHoopButton()) {
             if (checkDependencies()) {
-                shooterRpms = calculateShooterRPMS(vc.hoopx);
                 startShooter(calculateShooterRPMS(vc.hoopx));
             } else if (TESTING) {
                 startShooter(calculateShooterRPMS(DEFAULT_DISTANCE));
@@ -191,7 +188,7 @@ public class Shooter {
     public void feederMain() {
         if (oi.shootButton()) {
             disableManual = true;
-            lastState = gathererState;
+            System.out.println("");
             startFeeder(feederSpeed);
         } else if (oi.autoShootButton() && checkDependencies()) { // Shoot when ready
             if (Math.abs(vc.hoopr) <= vc.hoopChassisThreshold) { // Angle check
@@ -201,13 +198,13 @@ public class Shooter {
                         // Speed check ^^
                         if (Math.abs(getShooterRpms() - calculateShooterRPMS(vc.hoopx)) < vc.shooterThreshold) {
                             disableManual = true;
-                            lastState = gathererState;
                             startFeeder(feederSpeed); // flywheel rpm check ^
                         }
                     }
                 }
             }
         } else if (oi.reverseIntake()) {
+            disableManual = false;
             startFeeder(-feederSpeed);
         } else {
             if (disableManual) {
@@ -222,7 +219,8 @@ public class Shooter {
         RESET_ENCODER = true;
         feederPid.setReference(speed, ControlType.kDutyCycle);
         if (disableManual) {
-            gathererState = lastState;
+            System.out.println();
+            gathererState = gathererDown;
             disableManual = false;
 
         }

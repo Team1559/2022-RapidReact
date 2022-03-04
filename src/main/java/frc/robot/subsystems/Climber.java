@@ -77,7 +77,7 @@ public class Climber {
     public void main() {
         // Control for Winch
         if (oi.climberEnableButton()) {
-            oi.copilot.startRumble(-1);
+            // oi.copilot.startRumble(-1);
             if (oi.climberUpButton()) {
                 raiseRobot();
             } else if (oi.climberDownButton()) {

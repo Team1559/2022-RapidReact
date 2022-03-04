@@ -99,6 +99,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotPeriodic() {
+        oi.copilot.stopRumble();
         updateColor();
         oi.pilot.rumblePeriodic();
         oi.copilot.rumblePeriodic();
@@ -241,6 +242,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
+        oi.copilot.stopRumble();
         PDM.setSwitchableChannel(false);
 
         if (FeatureFlags.doChassis && FeatureFlags.chassisInitialized && !usingVision) {
