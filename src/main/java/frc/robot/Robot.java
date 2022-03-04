@@ -85,7 +85,7 @@ public class Robot extends TimedRobot {
         m_chooser.addOption(MID_BALL_AUTO, MID_BALL_AUTO);
 
         SmartDashboard.putData("Auto Paths", m_chooser);
-        SmartDashboard.putData("Allience Clor", colorSelector);
+        SmartDashboard.putData("Allience Color", colorSelector);
     }
 
     /**
