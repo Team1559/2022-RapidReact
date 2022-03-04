@@ -19,7 +19,8 @@ public class Chassis {
     public static final double MAX_SPEED_FPS_TRACTION = 9.67 * 1.01;
     public static final double MAX_TICKS_PER_100MS = MAX_SPEED_FPS_TRACTION * 4096.0
             / (Math.PI * WHEEL_RADIUS_INCHES_MECANUM * 2.0 / 12.0) / 10.0;
-    public static final double CHASSIS_GEAR_RATIO = 5; // gear ratio with reference to 1, for exaple 4 is really 4:1
+    public static final double TICKS_PER_REVOLUTION = 42;
+    public static final double CHASSIS_GEAR_RATIO = 9; // gear ratio with reference to 1, for exaple 4 is really 4:1
     private SplitDrive front;
     private SplitDrive back;
     public CANSparkMax CANSparkMax1;
@@ -82,6 +83,7 @@ public class Chassis {
         frEncoder = CANSparkMax2.getEncoder();
         blEncoder = CANSparkMax3.getEncoder();
         brEncoder = CANSparkMax4.getEncoder();
+
     }
 
     public Chassis(OperatorInterface oi, IMU imu) {
@@ -120,10 +122,10 @@ public class Chassis {
     }
 
     public void updateEncoders() {
-        flep = flEncoder.getPosition();
-        frep = frEncoder.getPosition();
-        blep = blEncoder.getPosition();
-        brep = brEncoder.getPosition();
+        flep = -flEncoder.getPosition();
+        frep = -frEncoder.getPosition();
+        blep = -blEncoder.getPosition();
+        brep = -brEncoder.getPosition();
     }
 
     public void drive(double ySpeed, double zRotation) {
@@ -137,11 +139,17 @@ public class Chassis {
         back.splitDrive(ySpeed, -zRotation, squareInputs);
     }
 
+    /**
+     * @deprecated
+     */
     public void pathDrive(double l, double r) {
         front.pathDrive(l, r);
         back.coast();
     }
 
+    /**
+     * @deprecated
+     */
     public void pathDrive(double fl, double fr, double bl, double br) {
         front.pathDrive(fl, fr);
         back.pathDrive(bl, br);
@@ -227,8 +235,22 @@ public class Chassis {
         return (desiredAngle - this.imu.yaw) * 0.03; // TODO: modify proportion (and calibrate IMU yaw)
     }
 
-    public double inchesToRotations(double inches) {
+    public double inchesToRevolutions(double inches) {
         return inches / (2 * Math.PI * WHEEL_RADIUS_INCHES_MECANUM);
+    }
+
+    public double inchesToEncoderTicks(double inches) {
+        return TICKS_PER_REVOLUTION * inchesToRevolutions(inches);
+        // return inches * 2.1;
+    }
+
+    public double encoderTicksToInches(double ticks) {
+        return revolutionsToInches(ticks / TICKS_PER_REVOLUTION);
+        // return ticks / 2.1;
+    }
+
+    public double revolutionsToInches(double revs) {
+        return revs * 2 * Math.PI * WHEEL_RADIUS_INCHES_MECANUM;
     }
 
     /**
@@ -239,10 +261,6 @@ public class Chassis {
      */
     public double rpmToFps(double rpm) {
         return (rpm * 2 * Math.PI * (WHEEL_RADIUS_INCHES_MECANUM / 12)) / 60;
-    }
-
-    public double rotationsToInches(double revs) {
-        return revs * 2 * Math.PI * WHEEL_RADIUS_INCHES_MECANUM;
     }
 
     public void initOdometry() {

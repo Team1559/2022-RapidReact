@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import frc.robot.OperatorInterface;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
+
 import frc.robot.*;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkMax.ControlType;
@@ -116,6 +117,7 @@ public class Shooter {
 
         // Control for lowering intake
         gathererMain();
+        gathererState();
     }
 
     public void gathererMain() { // TODO make sure the fix works
@@ -147,7 +149,6 @@ public class Shooter {
                         break;
                 }
             }
-            gathererState();
         }
     }
 
@@ -162,7 +163,7 @@ public class Shooter {
                 startIntake(intakeSpeed);
                 break;
             case holding:
-                stopIntake();  
+                stopIntake();
                 lowerIntake();
                 break;
         }
@@ -188,7 +189,6 @@ public class Shooter {
     public void feederMain() {
         if (oi.shootButton()) {
             disableManual = true;
-            System.out.println("");
             startFeeder(feederSpeed);
         } else if (oi.autoShootButton() && checkDependencies()) { // Shoot when ready
             if (Math.abs(vc.hoopr) <= vc.hoopChassisThreshold) { // Angle check
@@ -218,11 +218,8 @@ public class Shooter {
     public void startFeeder(double speed) {
         RESET_ENCODER = true;
         feederPid.setReference(speed, ControlType.kDutyCycle);
-        if (disableManual) {
-            System.out.println();
+        if (disableManual && gathererState == holding) {
             gathererState = gathererDown;
-            disableManual = false;
-
         }
 
     }

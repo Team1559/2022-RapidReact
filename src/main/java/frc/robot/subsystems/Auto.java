@@ -34,9 +34,7 @@ public class Auto {
     static final int HOOP_ERROR_INCHES = 3;
     static final int HOOP_ERROR_DEGREES = 1;
 
-    private OperatorInterface oi;
-    private Shooter shooter;
-    private Chassis chassis;
+    private Robot robot;
 
     private VisionData vData;
 
@@ -75,7 +73,7 @@ public class Auto {
     };
 
     public static final int[][] minAuto = {
-            { DRIVE, 96 },
+            { DRIVE, 24 },
     };
     /*
      * Drive to ball 71”
@@ -220,11 +218,12 @@ public class Auto {
             { STOP_FLYWHEEL }
     };
 
-    public Auto() {
-        this(basicAutoSteps);
+    public Auto(Robot robot) {
+        this(robot, basicAutoSteps);
     }
 
-    public Auto(int[][] steps) {
+    public Auto(Robot robot, int[][] steps) {
+        this.robot = robot;
         this.steps = steps;
     }
 
@@ -295,61 +294,72 @@ public class Auto {
     }
 
     private void Drive(int inches) {
-        chassis.updateEncoders();
-        double revs = chassis.inchesToRotations(inches);
+        robot.chassis.updateEncoders();
+        double ticks = robot.chassis.inchesToEncoderTicks(inches);
         if (stepCounter == 1) {
             // establish setpoints for end of travel
-            leftTarget = chassis.flep + revs;
-            rightTarget = chassis.frep + revs;
+            // leftTarget = robot.chassis.flep + ticks;
+            // rightTarget = robot.chassis.frep + ticks;
+            leftTarget = 100;
+            rightTarget = 100;
 
-            chassis.pathDrive(leftTarget, rightTarget);
         }
-        double remaining = leftTarget - chassis.flep;
-        double done = revs - remaining;
-        int inchesDone = (int) chassis.rotationsToInches(done);
+        double remaining = (rightTarget - robot.chassis.frep);
+        System.out.println("remaining: " + remaining);
+        double driveValue = remaining * 1.0 / 200;
+        System.out.println("Drive value: " + driveValue);
+        System.out.println("Encoder position: " + robot.chassis.frep);
+        if (stepCounter <= 100) {
+            robot.chassis.drive(-driveValue, 0, false);
+        } else {
+            robot.chassis.drive(0, 0, false);
+        }
+        double done = ticks - remaining;
+        System.out.println("Done:" + done);
+        int inchesDone = (int) robot.chassis.encoderTicksToInches(done);
         System.out.println("Drive: " + inchesDone + "/" + inches);
 
-        if (remaining < 0.5)
+        if (Math.abs(inchesDone - inches) < 0.5)
             Done();
     }
 
     private void Turn(int degrees) {
-        chassis.drive(0, chassis.degreesToZRotation(degrees));
-        if (Math.abs(degrees - chassis.imu.yaw) % 360 < 1.5) {
-            chassis.imu.zeroYaw();
+        robot.chassis.drive(0, robot.chassis.degreesToZRotation(degrees));
+        if (Math.abs(degrees - robot.chassis.imu.yaw) % 360 < 1.5) {
+            robot.chassis.imu.zeroYaw();
             Done();
         } else if (stepCounter > 50 * MAX_TURN_SECONDS)
             Fail("Turned for too long");
     }
 
     private void StartGatherer() {
-        shooter.gathererState = Shooter.gathererDown;
-        shooter.disableManual = true;
+        robot.shooter.gathererState = Shooter.gathererDown;
+        robot.shooter.disableManual = true;
         Done();
     }
 
     private void StopGatherer() {
-        shooter.gathererState = Shooter.holding;
-        shooter.disableManual = false;
+        robot.shooter.gathererState = Shooter.holding;
+        robot.shooter.disableManual = false;
         Done();
     }
 
     private void StartFlywheel(double rpm) {
         if (rpm == 0)
-            rpm = shooter.calculateShooterRPMS(Robot.vc.hoopx);
-        shooter.startShooter(rpm);
+            rpm = robot.shooter.calculateShooterRPMS(Robot.vc.hoopx);
+        robot.shooter.startShooter(rpm);
         Done();
     }
 
     private void StopFlywheel() {
-        shooter.stopShooter();
+        robot.shooter.stopShooter();
         Done();
     }
 
     private void Shoot() {
-        shooter.startFeeder(shooter.feederSpeed);
+        robot.shooter.startFeeder(robot.shooter.feederSpeed);
         if (stepCounter >= FEEDER_CYCLES) {
-            shooter.holdFeeder();
+            robot.shooter.holdFeeder();
             Done();
         }
     }
