@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
     private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-    private String color;
+    private String color = "invalid";
     private final SendableChooser<String> colorSelector = new SendableChooser<>();
 
     public Chassis chassis;
@@ -47,6 +47,7 @@ public class Robot extends TimedRobot {
     private static final String AUTO = "Automatic";
     private static final String RED = "Red Allience";
     private static final String BLUE = "Blue Allience";
+    private static final String INVALID = "Invalid";
 
     private static final String NONE = "No Auto";
     private static final String BASIC_AUTO_STEPS = "Basic Auto";
@@ -73,6 +74,7 @@ public class Robot extends TimedRobot {
         colorSelector.setDefaultOption(AUTO, AUTO);
         colorSelector.addOption(RED, RED);
         colorSelector.addOption(BLUE, BLUE);
+        colorSelector.addOption(INVALID, INVALID);
 
         m_chooser.setDefaultOption(NONE, NONE);
         m_chooser.addOption(BASIC_AUTO_STEPS, BASIC_AUTO_STEPS);
@@ -83,7 +85,7 @@ public class Robot extends TimedRobot {
         m_chooser.addOption(MID_BALL_AUTO, MID_BALL_AUTO);
 
         SmartDashboard.putData("Auto Paths", m_chooser);
-        SmartDashboard.putData("Allience Clor", colorSelector);
+        SmartDashboard.putData("Allience Color", colorSelector);
     }
 
     /**
@@ -97,11 +99,17 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotPeriodic() {
+        updateColor();
+        oi.pilot.rumblePeriodic();
+        oi.copilot.rumblePeriodic();
+    }
+
+    private void updateColor(){
         alliance = DriverStation.getAlliance();
         if (FeatureFlags.doImu && FeatureFlags.imuInitialized) {
             imu.updateValues();
         }
-        m_autoSelected = colorSelector.getSelected();
+        color = colorSelector.getSelected();
         switch (color) {
             case AUTO:
             default:
@@ -125,9 +133,11 @@ public class Robot extends TimedRobot {
                 vc.periodic("blue");
 
                 break;
+            case INVALID:
+                vc.periodic("invalid");
+
+                break;
         }
-        oi.pilot.rumblePeriodic();
-        oi.copilot.rumblePeriodic();
     }
 
     /**
