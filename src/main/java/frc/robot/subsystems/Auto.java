@@ -295,18 +295,17 @@ public class Auto {
 
     private void Drive(int inches) {
         robot.chassis.updateEncoders();
-        double ticks = robot.chassis.inchesToEncoderTicks(inches);
+        double revs = robot.chassis.inchesToRevolutions(inches);
         if (stepCounter == 1) {
             // establish setpoints for end of travel
-            // leftTarget = robot.chassis.flep + ticks;
-            // rightTarget = robot.chassis.frep + ticks;
-            leftTarget = 100;
-            rightTarget = 100;
+            leftTarget = robot.chassis.flep + revs;
+            rightTarget = robot.chassis.frep + revs;
+
 
         }
         double remaining = (rightTarget - robot.chassis.frep);
         System.out.println("remaining: " + remaining);
-        double driveValue = remaining * 1.0 / 200;
+        double driveValue = remaining * Chassis.CHASSIS_GEAR_RATIO * 1.0 / 20;
         System.out.println("Drive value: " + driveValue);
         System.out.println("Encoder position: " + robot.chassis.frep);
         if (stepCounter <= 100) {
@@ -314,9 +313,9 @@ public class Auto {
         } else {
             robot.chassis.drive(0, 0, false);
         }
-        double done = ticks - remaining;
+        double done = revs - remaining;
         System.out.println("Done:" + done);
-        int inchesDone = (int) robot.chassis.encoderTicksToInches(done);
+        int inchesDone = (int) robot.chassis.revolutionsToInches(done);
         System.out.println("Drive: " + inchesDone + "/" + inches);
 
         if (Math.abs(inchesDone - inches) < 0.5)
