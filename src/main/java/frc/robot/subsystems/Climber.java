@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 public class Climber {
 
     private OperatorInterface oi;
+    private Shooter shooter;
 
     private SupplyCurrentLimitConfiguration climberLimit = new SupplyCurrentLimitConfiguration(true, 40, 90, 2);
     private final int TIMEOUT = 0;
@@ -38,8 +39,9 @@ public class Climber {
     private Solenoid climberSolenoid;
 
 
-    public Climber(OperatorInterface oi) {
+    public Climber(OperatorInterface oi, Shooter shooter) {
         this.oi = oi;
+        this.shooter = shooter;
         climberSolenoid = new Solenoid(Wiring.PNEUMATICS_HUB, PneumaticsModuleType.REVPH, Wiring.CLIMBER_SOLENOID);
 
         // MotorController Config
@@ -130,10 +132,13 @@ public class Climber {
     }
 
     public void extendPistons() {
+        shooter.disableManual = true;
+        shooter.lowerIntake();
         climberSolenoid.set(true);
     }
 
     public void retractPistons() {
+        shooter.disableManual = false;
         climberSolenoid.set(false);
     }
 

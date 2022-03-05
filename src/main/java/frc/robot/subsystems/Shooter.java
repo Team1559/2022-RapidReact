@@ -52,6 +52,7 @@ public class Shooter {
     public static final int gathererUp = 0;
     public static final int gathererDown = 1;
     public static final int holding = 2;
+    public static final int upRun = 3;
 
     public int gathererState = gathererUp;
 
@@ -153,6 +154,9 @@ public class Shooter {
     }
 
     public void gathererState() {
+        if(!disableManual){
+            lastState = gathererState;
+        }
         switch (gathererState) {
             case gathererUp:
                 stopIntake();
@@ -165,6 +169,11 @@ public class Shooter {
             case holding:
                 stopIntake();
                 lowerIntake();
+                break;
+
+            case upRun:
+                startIntake(intakeSpeed);
+                raiseIntake();
                 break;
         }
     }
@@ -220,6 +229,8 @@ public class Shooter {
         feederPid.setReference(speed, ControlType.kDutyCycle);
         if (disableManual && gathererState == holding) {
             gathererState = gathererDown;
+        } else if (disableManual) {
+            gathererState = upRun;
         }
 
     }

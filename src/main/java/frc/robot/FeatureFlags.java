@@ -50,6 +50,11 @@ public final class FeatureFlags {
             }
         }
 
+        if (doClimber && CLIMBER_INSTALLED) {
+            doCompressor = true;
+            doShooter = true;
+        }
+
         if (doChassis && CHASSIS_INSTALLED) {
             if (IMU_INSTALLED) {
                 doImu = true;

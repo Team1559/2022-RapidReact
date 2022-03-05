@@ -349,7 +349,7 @@ public class Robot extends TimedRobot {
         }
 
         if (FeatureFlags.doClimber && !FeatureFlags.climberInitialized) {
-            climber = new Climber(oi);
+            climber = new Climber(oi, shooter);
             FeatureFlags.climberInitialized = true;
         }
 
