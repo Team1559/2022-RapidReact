@@ -19,8 +19,8 @@ public class Climber {
 
     private Relay left_spike = new Relay(Wiring.lSpikeChannel);
     private Relay right_spike = new Relay(Wiring.rSpikeChannel);
-    DigitalInput upperLimitSwitch = new DigitalInput(Wiring.upperLimitSwitchChannel);
-    DigitalInput lowerLimitSwitch = new DigitalInput(Wiring.lowerLimitSwitchChannel);
+    DigitalInput upperLimitSwitch = new DigitalInput(Wiring.upperLimitSwitchInput);
+    DigitalInput lowerLimitSwitch = new DigitalInput(Wiring.lowerLimitSwitchInput);
 
     private SupplyCurrentLimitConfiguration climberLimit = new SupplyCurrentLimitConfiguration(true, 40, 90, 2);
     private final int TIMEOUT = 0;
