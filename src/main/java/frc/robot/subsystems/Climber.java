@@ -4,15 +4,23 @@ import frc.robot.OperatorInterface;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
 import frc.robot.*;
-
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Relay.Value;
 
 
 public class Climber {
 
     private OperatorInterface oi;
     private Shooter shooter;
+
+    private Relay left_spike = new Relay(Wiring.lSpikeChannel);
+    private Relay right_spike = new Relay(Wiring.rSpikeChannel);
+    DigitalInput upperLimitSwitch = new DigitalInput(Wiring.upperLimitSwitchChannel);
+    DigitalInput lowerLimitSwitch = new DigitalInput(Wiring.lowerLimitSwitchChannel);
 
     private SupplyCurrentLimitConfiguration climberLimit = new SupplyCurrentLimitConfiguration(true, 40, 90, 2);
     private final int TIMEOUT = 0;
@@ -58,8 +66,8 @@ public class Climber {
         climber.configPeakOutputReverse(-1, TIMEOUT);
         climber.setNeutralMode(NeutralMode.Brake);
         climber.configSupplyCurrentLimit(climberLimit, TIMEOUT);
-        climber.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
-        climber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
+        // climber.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
+        // climber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
         climber.config_kF(0, kF, TIMEOUT);
         climber.config_kP(0, kP, TIMEOUT);
         climber.config_kD(0, kD, TIMEOUT);
@@ -73,16 +81,27 @@ public class Climber {
         climber.config_IntegralZone(1, pkiz, TIMEOUT);
         climber.setInverted(true);
         climber.selectProfileSlot(0, 0);
+    }
 
+    public void turnOnSpikes(){
+        left_spike.set(Relay.Value.kOn);
+        right_spike.set(Relay.Value.kOn);
+    }
+    public void turnOffSpikes(){
+        left_spike.set(Relay.Value.kOff);
+        right_spike.set(Relay.Value.kOff);
     }
 
     public void main() {
         // Control for Winch
         if (oi.climberEnableButton()) {
+            turnOnSpikes();
             // oi.copilot.startRumble(-1);
-            if (oi.climberUpButton()) {
+
+            // Lower limit switch is hit when the robot is up high
+            if (oi.climberUpButton() && !LowerLimitHit()) {
                 raiseRobot();
-            } else if (oi.climberDownButton()) {
+            } else if (oi.climberDownButton() && !UpperLimitHit()) {
                 lowerRobot();
             } else {
                 holdRobot();
@@ -99,6 +118,20 @@ public class Climber {
         } else if (oi.retractClimberPistonsButton()) {
             retractPistons();
         }
+        if (DriverStation.getMatchTime() < 1.0 ) {
+            // end of match
+            turnOffSpikes();
+        }
+    }
+
+    private boolean UpperLimitHit() {
+        // The magnetic limit switches are active low inputs
+        return ! upperLimitSwitch.get();
+    }
+
+    private boolean LowerLimitHit() {
+        // The magnetic limit switches are active low inputs
+        return ! lowerLimitSwitch.get();
     }
 
     public void raiseRobot() {

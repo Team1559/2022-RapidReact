@@ -24,4 +24,9 @@ public class Wiring {
     // Climber
     public static final int CLIMBER_SOLENOID = 8;
     public static final int climberMotor = 18;
+
+    public static final int lSpikeChannel = 0;
+    public static final int rSpikeChannel = 1;
+    public static final int upperLimitSwitchChannel = 2;
+    public static final int lowerLimitSwitchChannel = 3;
 }
