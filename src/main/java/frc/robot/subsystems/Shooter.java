@@ -33,7 +33,7 @@ public class Shooter {
 
     public double feederSpeed = 0.2;
     public double intakeSpeed = 1; // 0.4;
-    private final double DEFAULT_DISTANCE = 3200;
+    private final double DEFAULT_DISTANCE = 8; // 4 ft from front of robot to face of target
     private final boolean TESTING = true;
 
     private TalonFX shooter;
@@ -154,7 +154,7 @@ public class Shooter {
     }
 
     public void gathererState() {
-        if(!disableManual){
+        if (!disableManual) {
             lastState = gathererState;
         }
         switch (gathererState) {
@@ -304,13 +304,9 @@ public class Shooter {
     }
 
     public double calculateShooterRPMS(double distance) {
-        return distance;
-        // double shooterRPM = 0;
-        // // math
-        // shooterRPM = 2000 + 1000 * (distance * 12 - 100) / 120 * 2/3; // TODO: fix
-        // this
-
-        // return shooterRPM;
+        // RPM vs. distance fit from
+        // https://docs.google.com/spreadsheets/d/1l1Nxlk29b2KL5FwVklSFhfuychKHfztRSNRqPUuQUIs/edit#gid=695645693
+        return 4865 + -181 * distance + 30.3 * distance * distance;
     }
 
     public void disable() {
