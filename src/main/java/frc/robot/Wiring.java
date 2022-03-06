@@ -30,6 +30,6 @@ public class Wiring {
     public static final int rSpikeChannel = 1;
 
     // Digital IO ports
-    public static final int upperLimitSwitchInput = 0;
-    public static final int lowerLimitSwitchInput = 1;
+    public static final int upperLimitSwitchInput = 8;
+    public static final int lowerLimitSwitchInput = 9;
 }
