@@ -7,7 +7,7 @@ import com.ctre.phoenix.time.StopWatch;
 
 import frc.robot.*;
 
-@SuppressWarnings("unused")
+// @SuppressWarnings("unused")
 
 public class VisionControl {
     public enum autoState {

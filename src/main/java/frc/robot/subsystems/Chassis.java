@@ -20,7 +20,7 @@ public class Chassis {
     public static final double MAX_TICKS_PER_100MS = MAX_SPEED_FPS_TRACTION * 4096.0
             / (Math.PI * WHEEL_RADIUS_INCHES_MECANUM * 2.0 / 12.0) / 10.0;
     public static final double TICKS_PER_REVOLUTION = 42;
-    public static final double CHASSIS_GEAR_RATIO = 9; // gear ratio with reference to 1, for exaple 4 is really 4:1
+    public static final double CHASSIS_GEAR_RATIO = (60.0/12.0)*(26.0/22.0)*1.2; // CHASSIS_GEAR_RATIO:1, ~6:1
     private SplitDrive front;
     private SplitDrive back;
     public CANSparkMax CANSparkMax1;
@@ -39,12 +39,15 @@ public class Chassis {
     public IMU imu;
     private FileLogging fl;
 
+    public static final double AUTO_RAMP_RATE = 0.2;
+    public static final double TELEOP_RAMP_RATE = 1;
+
     // these need to be set once
     private final double differpercent = 12 / 25.5; // percent the front needs to move compared to the back
     private final double SLOWMODE_COEFFICIENT = 0.5;
 
     // these can be changed when needed
-    private final boolean LOGDATA = true;
+    private final boolean LOGDATA = false;
 
     /**
      * private static final double kF = 0.14614285; //F-gain = (100% X 1023) /
@@ -78,6 +81,24 @@ public class Chassis {
         return sparky;
     }
 
+    public void autoInit(){
+        this.initOdometry();
+        this.setRampRate(AUTO_RAMP_RATE);
+    }
+
+    public void teleopInit(){
+        this.imu.zeroYaw();
+        this.setPid(6e-5, 0, 0, 0.000015);
+        this.setRampRate(TELEOP_RAMP_RATE);
+    }
+
+    public void setRampRate(double rate){
+        CANSparkMax1.setClosedLoopRampRate(rate);
+        CANSparkMax2.setClosedLoopRampRate(rate);
+        CANSparkMax3.setClosedLoopRampRate(rate);
+        CANSparkMax4.setClosedLoopRampRate(rate);
+    }
+
     public void initEncoders() {
         flEncoder = CANSparkMax1.getEncoder();
         frEncoder = CANSparkMax2.getEncoder();
@@ -93,7 +114,6 @@ public class Chassis {
         CANSparkMax2 = initMotor(Wiring.FRMOTOR);
         CANSparkMax3 = initMotor(Wiring.BLMOTOR);
         CANSparkMax4 = initMotor(Wiring.BRMOTOR);
-
         // encoders
         CANSparkMax2.setInverted(true);
         CANSparkMax4.setInverted(true);
@@ -101,7 +121,6 @@ public class Chassis {
 
         front = new SplitDrive(CANSparkMax1, CANSparkMax2);
         back = new SplitDrive(CANSparkMax3, CANSparkMax4);
-
         fl = new FileLogging();
         if (LOGDATA) {
             fl.createfile("encoders");
@@ -109,6 +128,8 @@ public class Chassis {
     }
 
     public void main() {
+        imu.updateValues();
+        SmartDashboard.putNumber("IMU", this.imu.yaw);
         drive(oi.pilot.getLeftY(), oi.pilot.getRightX());
         updateEncoders();
         if (LOGDATA) {
@@ -232,11 +253,12 @@ public class Chassis {
     }
 
     public double degreesToZRotation(double desiredAngle) {
-        return (desiredAngle - this.imu.yaw) * 0.03; // TODO: modify proportion (and calibrate IMU yaw)
+        return (desiredAngle - this.imu.yaw) * 0.035; // TODO: modify proportion (and calibrate IMU yaw)
     }
 
     public double inchesToRevolutions(double inches) {
-        return inches / (2 * Math.PI * WHEEL_RADIUS_INCHES_MECANUM);
+        //inches to Revolutions
+        return CHASSIS_GEAR_RATIO * inches / (2 * Math.PI * WHEEL_RADIUS_INCHES_MECANUM);
     }
 
     public double inchesToEncoderTicks(double inches) {
@@ -250,7 +272,7 @@ public class Chassis {
     }
 
     public double revolutionsToInches(double revs) {
-        return revs * 2 * Math.PI * WHEEL_RADIUS_INCHES_MECANUM;
+        return revs * 2 * Math.PI * WHEEL_RADIUS_INCHES_MECANUM / CHASSIS_GEAR_RATIO;
     }
 
     /**

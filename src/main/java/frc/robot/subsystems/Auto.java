@@ -2,10 +2,11 @@ package frc.robot.subsystems;
 
 import java.rmi.registry.LocateRegistry;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.*;
 import frc.robot.components.*;
 
-@SuppressWarnings("unused")
+// @SuppressWarnings("unused")
 public class Auto {
 
     private int stepNumber = 0;
@@ -34,6 +35,9 @@ public class Auto {
     static final int HOOP_ERROR_INCHES = 3;
     static final int HOOP_ERROR_DEGREES = 1;
 
+    static final double MAX_DRIVE = 0.2;
+    static final double MAX_TURN = 0.5;
+
     private Robot robot;
 
     private VisionData vData;
@@ -41,18 +45,19 @@ public class Auto {
     private int[][] steps;
 
     // No Auto
-    public static final int[][] noAuto = {
-    };
+    public static final int[][] noAuto = {};
 
     // Start gatherer, drive X feet, stop gatherer, start flywheel at known RPM,
     // turn 180, shoot, stop flywheel
     public static final int[][] basicAutoSteps = {
-            { WAIT, 50 },
+            { WAIT, 100 },
             { START_GATHERER },
-            { DRIVE, 60 },
+            { DRIVE, 69 },
+            { WAIT, 25 },
             { STOP_GATHERER },
-            { START_FLYWHEEL, 2000 },
-            { TURN, 180 },
+            { START_FLYWHEEL, 7500 },
+            { TURN, 179 },
+            { DRIVE, 48 },
             { SHOOT },
             { STOP_FLYWHEEL },
     };
@@ -73,7 +78,7 @@ public class Auto {
     };
 
     public static final int[][] minAuto = {
-            { DRIVE, 24 },
+            { DRIVE, 96 },
     };
     /*
      * Drive to ball 71”
@@ -239,7 +244,6 @@ public class Auto {
             value = step[1];
         }
         stepCounter++;
-
         switch (type) {
             case WAIT:
                 Wait((int) value);
@@ -275,6 +279,7 @@ public class Auto {
                 AlignHoop();
                 break;
         }
+        robot.shooter.gathererState();
     }
 
     private void Done() {
@@ -296,50 +301,69 @@ public class Auto {
     private void Drive(int inches) {
         robot.chassis.updateEncoders();
         double revs = robot.chassis.inchesToRevolutions(inches);
+        SmartDashboard.putNumber("Revs", revs);
+        double kP = 1.0 / 25.0;
         if (stepCounter == 1) {
             // establish setpoints for end of travel
             leftTarget = robot.chassis.flep + revs;
             rightTarget = robot.chassis.frep + revs;
-
-
         }
-        double remaining = (rightTarget - robot.chassis.frep);
-        System.out.println("remaining: " + remaining);
-        double driveValue = remaining * Chassis.CHASSIS_GEAR_RATIO * 1.0 / 20;
-        System.out.println("Drive value: " + driveValue);
-        System.out.println("Encoder position: " + robot.chassis.frep);
-        if (stepCounter <= 100) {
-            robot.chassis.drive(-driveValue, 0, false);
+        double remaining = (rightTarget - robot.chassis.flep);
+        double driveValue = -(remaining * kP);
+        // SmartDashboard.clearPersistent("FLEP");
+        // SmartDashboard.clearPersistent("FREP");
+        // SmartDashboard.clearPersistent("Remaining");
+        // SmartDashboard.clearPersistent("Drive value: ");
+        // SmartDashboard.clearPersistent("FLEV");
+        // SmartDashboard.clearPersistent("FREV");
+        // SmartDashboard.clearPersistent("Revs");
+        // SmartDashboard.putNumber("FLEP", robot.chassis.flep);
+        // SmartDashboard.putNumber("FREP", robot.chassis.frep);
+        // SmartDashboard.putNumber("Remaining", remaining);
+        // SmartDashboard.putNumber("Drive value: ", driveValue);
+        // SmartDashboard.putNumber("FLEV", robot.chassis.flEncoder.getVelocity());
+        // SmartDashboard.putNumber("FREV", robot.chassis.frEncoder.getVelocity());
+        if (stepCounter <= 1000) {
+            robot.chassis.drive(Math.abs(driveValue) > MAX_DRIVE ? Math.copySign(MAX_DRIVE, driveValue) : driveValue, 0, false);
         } else {
             robot.chassis.drive(0, 0, false);
+            Fail("Driving failed :(");
         }
         double done = revs - remaining;
         System.out.println("Done:" + done);
         int inchesDone = (int) robot.chassis.revolutionsToInches(done);
         System.out.println("Drive: " + inchesDone + "/" + inches);
 
-        if (Math.abs(inchesDone - inches) < 0.5)
+        if (Math.abs(inchesDone - inches) <= 2)
             Done();
     }
 
     private void Turn(int degrees) {
-        robot.chassis.drive(0, robot.chassis.degreesToZRotation(degrees));
-        if (Math.abs(degrees - robot.chassis.imu.yaw) % 360 < 1.5) {
+        if(stepCounter == 1){
             robot.chassis.imu.zeroYaw();
+        }
+        double rotation = robot.chassis.degreesToZRotation(degrees);
+        robot.chassis.imu.updateValues();
+        SmartDashboard.putNumber("IMU", robot.chassis.imu.yaw);
+        double turnValue = Math.abs(rotation) > MAX_TURN ? Math.copySign(MAX_TURN, rotation) : rotation;
+        SmartDashboard.putNumber("turnValue", turnValue);
+        robot.chassis.drive(0, turnValue);
+        System.out.println(robot.chassis.imu.yaw + " <-- YAW, TARGET --> " + degrees);
+        if (Math.abs(degrees - robot.chassis.imu.yaw) % 360 < 2) {
             Done();
         } else if (stepCounter > 50 * MAX_TURN_SECONDS)
-            Fail("Turned for too long");
+            System.out.println("Turned for too long");
     }
 
     private void StartGatherer() {
-        robot.shooter.gathererState = Shooter.gathererDown;
         robot.shooter.disableManual = true;
+        robot.shooter.gathererState = Shooter.gathererDown;
         Done();
     }
 
     private void StopGatherer() {
-        robot.shooter.gathererState = Shooter.holding;
         robot.shooter.disableManual = false;
+        robot.shooter.gathererState = Shooter.holding;
         Done();
     }
 

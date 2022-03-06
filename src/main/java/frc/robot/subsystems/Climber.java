@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Relay.Value;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Climber {
 
@@ -93,6 +94,8 @@ public class Climber {
     }
 
     public void main() {
+        SmartDashboard.putBoolean("Upper Limit Switch", upperLimitSwitch.get());
+        SmartDashboard.putBoolean("Lower Limit Switch", lowerLimitSwitch.get());
         // Control for Winch
         if (oi.climberEnableButton()) {
             turnOnSpikes();
