@@ -33,7 +33,7 @@ public class Shooter {
 
     public double feederSpeed = 0.2;
     public double intakeSpeed = 1; // 0.4;
-    private final double DEFAULT_DISTANCE = 3200;
+    private final double DEFAULT_DISTANCE = 8.0;
     private final boolean TESTING = true;
 
     private TalonFX shooter;
@@ -154,7 +154,7 @@ public class Shooter {
     }
 
     public void gathererState() {
-        if(!disableManual){
+        if (!disableManual) {
             lastState = gathererState;
         }
         switch (gathererState) {
@@ -304,7 +304,8 @@ public class Shooter {
     }
 
     public double calculateShooterRPMS(double distance) {
-        return distance;
+        return SmartDashboard.getNumber("Shooter RPM", 5500);
+        // return distance;
         // double shooterRPM = 0;
         // // math
         // shooterRPM = 2000 + 1000 * (distance * 12 - 100) / 120 * 2/3; // TODO: fix
