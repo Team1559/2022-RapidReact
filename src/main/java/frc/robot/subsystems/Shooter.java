@@ -192,6 +192,7 @@ public class Shooter {
             oi.copilot.stopRumble();
             stopShooter();
         }
+        SmartDashboard.putNumber("Actual Shooter RPM", getShooterRpms());
     }
 
     // FEEDER STUFF
