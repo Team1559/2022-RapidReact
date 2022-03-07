@@ -7,7 +7,7 @@ import com.ctre.phoenix.time.StopWatch;
 
 import frc.robot.*;
 
-// @SuppressWarnings("unused")
+@SuppressWarnings("unused")
 
 public class VisionControl {
     public enum autoState {
@@ -24,7 +24,6 @@ public class VisionControl {
     private OperatorInterface oi;
     private Vision vision = new Vision();
     private VisionData visionData;
-    private IMU imu;
     private Shooter shooter;
     public double hoopr = 0;
     public double ballr = 0;
@@ -65,13 +64,12 @@ public class VisionControl {
     private final String FILE_NAME = "path4";
     private String selector;
 
-    public VisionControl(VisionData visionData, OperatorInterface oi, Chassis chassis, IMU imu,
+    public VisionControl(VisionData visionData, OperatorInterface oi, Chassis chassis,
             Shooter shooter) {
         this.selector = "";
         this.oi = oi;
         this.visionData = visionData;
         this.chassis = chassis;
-        this.imu = imu;
         this.shooter = shooter;
         fl = new FileLogging();
         sendTmer.start();

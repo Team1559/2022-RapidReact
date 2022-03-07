@@ -338,7 +338,7 @@ public class Robot extends TimedRobot {
         }
 
         if (FeatureFlags.doVision && !FeatureFlags.visionInitialized) {
-            vc = new VisionControl(vData, oi, chassis, imu, shooter);
+            vc = new VisionControl(vData, oi, chassis, shooter);
             FeatureFlags.visionInitialized = true;
         }
     }

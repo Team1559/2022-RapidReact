@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Relay.Value;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 

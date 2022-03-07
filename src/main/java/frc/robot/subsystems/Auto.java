@@ -1,10 +1,7 @@
 package frc.robot.subsystems;
 
-import java.rmi.registry.LocateRegistry;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.*;
-import frc.robot.components.*;
 
 // @SuppressWarnings("unused")
 public class Auto {
@@ -12,7 +9,6 @@ public class Auto {
     private int stepNumber = 0;
     private int stepCounter = 0;
 
-    private double leftTarget;
     private double rightTarget;
 
     private static final int WAIT = 0;
@@ -40,7 +36,6 @@ public class Auto {
 
     private Robot robot;
 
-    private VisionData vData;
 
     private int[][] steps;
 
@@ -305,7 +300,6 @@ public class Auto {
         double kP = 1.0 / 25.0;
         if (stepCounter == 1) {
             // establish setpoints for end of travel
-            leftTarget = robot.chassis.flep + revs;
             rightTarget = robot.chassis.frep + revs;
         }
         double remaining = (rightTarget - robot.chassis.flep);
