@@ -3,11 +3,12 @@ package frc.robot.subsystems;
 import frc.robot.OperatorInterface;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
+import com.ctre.phoenix.time.StopWatch;
+
 import frc.robot.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Solenoid;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -16,19 +17,21 @@ public class Climber {
 
     private OperatorInterface oi;
     private Shooter shooter;
-
-    private Relay left_spike = new Relay(Wiring.lSpikeChannel);
-    private Relay right_spike = new Relay(Wiring.rSpikeChannel);
+    private TalonSRX relay = new TalonSRX(Wiring.RELAY_SRX);
     DigitalInput upperLimitSwitch = new DigitalInput(Wiring.upperLimitSwitchInput);
     DigitalInput lowerLimitSwitch = new DigitalInput(Wiring.lowerLimitSwitchInput);
+    private boolean wait = true;
 
-    private SupplyCurrentLimitConfiguration climberLimit = new SupplyCurrentLimitConfiguration(true, 40, 90, 2);
+    private SupplyCurrentLimitConfiguration climberLimit = new SupplyCurrentLimitConfiguration(true, 40, 40, 0);
     private final int TIMEOUT = 0;
     private final double cLR = 0.1;
+    private boolean disable = false;
+    private boolean press = false;
 
     private double climberRpms = 7500;
 
     private boolean resetEncoder = true;
+    private boolean lowerShooter = false;
 
     // TODO Tune this PID controller, It will need an I value
     private final double kF = 0.015;
@@ -38,10 +41,12 @@ public class Climber {
     private final double kiz = 0;
 
     private final double pkF = 0.0;
-    private final double pkP = 0.05;
+    private final double pkP = 0.07;
     private final double pkD = 0.06;
-    private final double pkI = 0.00;
+    private final double pkI = 0.000;
     private final double pkiz = 0;
+    private StopWatch watch = new StopWatch();
+    private final double MAX_WAIT = 0.125;
 
     private TalonFX climber;
     private Solenoid climberSolenoid;
@@ -85,44 +90,58 @@ public class Climber {
     }
 
     public void turnOnSpikes() {
-        left_spike.set(Relay.Value.kOn);
-        right_spike.set(Relay.Value.kOn);
+        relay.set(TalonSRXControlMode.PercentOutput, 1);
+        if (wait) {
+            watch.start();
+        }
+        wait = false;
     }
 
     public void turnOffSpikes() {
-        left_spike.set(Relay.Value.kOff);
-        right_spike.set(Relay.Value.kOff);
+        wait = true;
+        relay.set(TalonSRXControlMode.PercentOutput, 0);
     }
 
     public void main() {
+        climber.setNeutralMode(NeutralMode.Brake);
+
         SmartDashboard.putBoolean("Upper Limit Switch", upperLimitSwitch.get());
         SmartDashboard.putBoolean("Lower Limit Switch", lowerLimitSwitch.get());
         // Control for Winch
+        if (lowerShooter) {
+            shooter.lowerIntake();
+        }
         if (oi.climberEnableButton()) {
-            turnOnSpikes();
             // oi.copilot.startRumble(-1);
 
+            if (oi.extendClimberPistonsButton()) {
+                extendPistons();
+            } else if (oi.retractClimberPistonsButton()) {
+                retractPistons();
+            }
             // Lower limit switch is hit when the robot is up high
             if (oi.climberUpButton() && !LowerLimitHit()) {
-                raiseRobot();
+                turnOnSpikes();
+                if (watch.getDuration() >= MAX_WAIT)
+                    raiseRobot();
             } else if (oi.climberDownButton() && !UpperLimitHit()) {
-                lowerRobot();
+                turnOnSpikes();
+                if (watch.getDuration() >= MAX_WAIT)
+                    lowerRobot();
             } else {
                 holdRobot();
+                turnOffSpikes();
             }
         } else {
             holdRobot();
+            turnOffSpikes();
         }
 
         // Control for moving pistons
-        if (oi.extendClimberPistonsButton()) {
-            extendPistons();
-        } else if (oi.retractClimberPistonsButton()) {
-            retractPistons();
-        }
+
         if (DriverStation.getMatchTime() < 1.0) {
             // end of match
-            turnOffSpikes();
+            // turnOffSpikes();
         }
     }
 
@@ -168,16 +187,38 @@ public class Climber {
 
     public void extendPistons() {
         shooter.disableManual = true;
-        shooter.lowerIntake();
+        lowerShooter = true;
+        shooter.gathererState = Shooter.holding;
         climberSolenoid.set(true);
     }
 
     public void retractPistons() {
-        shooter.disableManual = false;
         climberSolenoid.set(false);
     }
 
     public void disable() {
+        shooter.gathererState = Shooter.gathererUp;
+        lowerShooter = false;
+    }
+
+    public void testPeriodic() {
+
+
+        if (oi.climberEnableButton()) {
+            if (!press)
+                disable = !disable;
+            press = true;
+        } else
+            press = false;
+
+        if (disable) {
+            turnOnSpikes();
+        } else {
+            turnOffSpikes();
+        }
+    }
+
+    public void testInit() {
         stopClimber();
         climber.setNeutralMode(NeutralMode.Coast);
         retractPistons();

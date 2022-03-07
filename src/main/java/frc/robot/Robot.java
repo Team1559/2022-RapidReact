@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.fasterxml.jackson.annotation.JsonFormat.Feature;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -29,7 +31,7 @@ public class Robot extends TimedRobot {
     private Auto auto;
     private IMU imu;
     private VisionData vData;
-    public static VisionControl vc;
+    public VisionControl vc;
     public boolean usingVision = false;
 
     private String m_autoSelected = "";
@@ -137,22 +139,22 @@ public class Robot extends TimedRobot {
                 break;
         }
         // switch (color) {
-        //     case AUTO:
-        //     default:
-                
-        //     case RED:
-        //         vc.periodic("red");
-        //         SmartDashboard.putString(colorText, "Red");
-        //         break;
-        //     case BLUE:
-        //         vc.periodic("blue");
-        //         SmartDashboard.putString(colorText, "Blue");
+        // case AUTO:
+        // default:
 
-        //         break;
-        //     case INVALID:
-        //         vc.periodic("invalid");
-        //         SmartDashboard.putString(colorText, "Invalid");
-        //         break;
+        // case RED:
+        // vc.periodic("red");
+        // SmartDashboard.putString(colorText, "Red");
+        // break;
+        // case BLUE:
+        // vc.periodic("blue");
+        // SmartDashboard.putString(colorText, "Blue");
+
+        // break;
+        // case INVALID:
+        // vc.periodic("invalid");
+        // SmartDashboard.putString(colorText, "Invalid");
+        // break;
         // }
     }
 
@@ -177,8 +179,8 @@ public class Robot extends TimedRobot {
         if (FeatureFlags.doImu && FeatureFlags.imuInitialized) {
             imu.zeroYaw();
         }
-        
-        if(FeatureFlags.doVision && FeatureFlags.visionInitialized) {
+
+        if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
             PDM.setSwitchableChannel(true);
         }
 
@@ -235,6 +237,10 @@ public class Robot extends TimedRobot {
         if (FeatureFlags.doChassis && FeatureFlags.chassisInitialized) {
             chassis.teleopInit();
         }
+
+        if(FeatureFlags.doShooter && FeatureFlags.shooterInitialized) {
+            shooter.gathererState = shooter.gathererUp;
+        }
     }
 
     /** This function is called periodically during operator control. */
@@ -265,6 +271,10 @@ public class Robot extends TimedRobot {
         oi.copilot.stopRumble();
         PDM.setSwitchableChannel(false);
 
+        if (FeatureFlags.doClimber && FeatureFlags.climberInitialized) {
+            climber.disable();
+        }
+
         if (FeatureFlags.doChassis && FeatureFlags.chassisInitialized && !usingVision) {
             chassis.disable();
         }
@@ -290,7 +300,7 @@ public class Robot extends TimedRobot {
         PDM.setSwitchableChannel(false);
 
         if (FeatureFlags.doClimber && FeatureFlags.climberInitialized) {
-            climber.disable();
+            climber.testInit();
         }
 
         if (FeatureFlags.doShooter && FeatureFlags.shooterInitialized) {
@@ -305,6 +315,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testPeriodic() {
+        if (FeatureFlags.doClimber && FeatureFlags.climberInitialized) {
+            climber.testPeriodic();
+        }
 
     }
 
@@ -328,7 +341,7 @@ public class Robot extends TimedRobot {
         }
 
         if (FeatureFlags.doShooter && !FeatureFlags.shooterInitialized) {
-            shooter = new Shooter(oi, chassis);
+            shooter = new Shooter(oi, chassis, this);
             FeatureFlags.shooterInitialized = true;
         }
 
@@ -339,6 +352,7 @@ public class Robot extends TimedRobot {
 
         if (FeatureFlags.doVision && !FeatureFlags.visionInitialized) {
             vc = new VisionControl(vData, oi, chassis, shooter);
+            shooter.initVision();
             FeatureFlags.visionInitialized = true;
         }
     }

@@ -26,10 +26,9 @@ public class Wiring {
     public static final int climberMotor = 18;
 
     // Relay ports
-    public static final int lSpikeChannel = 0;
-    public static final int rSpikeChannel = 1;
+    public static final int RELAY_SRX = 2;
 
     // Digital IO ports
-    public static final int upperLimitSwitchInput = 8;
-    public static final int lowerLimitSwitchInput = 9;
+    public static final int upperLimitSwitchInput = 9;
+    public static final int lowerLimitSwitchInput = 8;
 }

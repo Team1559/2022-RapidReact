@@ -23,7 +23,7 @@ public class Auto {
     private static final int DRIVE_HOOP = 9;
     private static final int ALIGN_HOOP = 10;
 
-    private static final int FEEDER_CYCLES = 75;
+    private static final int FEEDER_CYCLES = 200;
 
     private static final int MAX_TURN_SECONDS = 3;
     private static final int MAX_BALL_SECONDS = 5;
@@ -36,7 +36,6 @@ public class Auto {
 
     private Robot robot;
 
-
     private int[][] steps;
 
     // No Auto
@@ -46,15 +45,15 @@ public class Auto {
     // turn 180, shoot, stop flywheel
     public static final int[][] basicAutoSteps = {
             { WAIT, 100 },
-            { START_GATHERER },
+            // { START_GATHERER },
             { DRIVE, 69 },
-            { WAIT, 25 },
-            { STOP_GATHERER },
-            { START_FLYWHEEL, 7500 },
+            // { WAIT, 25 },
+            // { STOP_GATHERER },
+            // { START_FLYWHEEL, 7500 },
             { TURN, 179 },
-            { DRIVE, 48 },
-            { SHOOT },
-            { STOP_FLYWHEEL },
+            { DRIVE, 24 },
+            // { SHOOT },
+            // { STOP_FLYWHEEL },
     };
 
     public static final int[][] basicVisionAuto = {
@@ -318,7 +317,8 @@ public class Auto {
         // SmartDashboard.putNumber("FLEV", robot.chassis.flEncoder.getVelocity());
         // SmartDashboard.putNumber("FREV", robot.chassis.frEncoder.getVelocity());
         if (stepCounter <= 1000) {
-            robot.chassis.drive(Math.abs(driveValue) > MAX_DRIVE ? Math.copySign(MAX_DRIVE, driveValue) : driveValue, 0, false);
+            robot.chassis.drive(Math.abs(driveValue) > MAX_DRIVE ? Math.copySign(MAX_DRIVE, driveValue) : driveValue, 0,
+                    false);
         } else {
             robot.chassis.drive(0, 0, false);
             Fail("Driving failed :(");
@@ -333,7 +333,7 @@ public class Auto {
     }
 
     private void Turn(int degrees) {
-        if(stepCounter == 1){
+        if (stepCounter == 1) {
             robot.chassis.imu.zeroYaw();
         }
         double rotation = robot.chassis.degreesToZRotation(degrees);
@@ -363,7 +363,7 @@ public class Auto {
 
     private void StartFlywheel(double rpm) {
         if (rpm == 0)
-            rpm = robot.shooter.calculateShooterRPMS(Robot.vc.hoopx);
+            rpm = robot.shooter.calculateShooterRPMS(robot.vc.hoopx);
         robot.shooter.startShooter(rpm);
         Done();
     }
@@ -382,31 +382,35 @@ public class Auto {
     }
 
     private void DriveBall(int desiredDistanceFromBall) { // in inches
-        double positionError = desiredDistanceFromBall - Robot.vc.ballx * 12;
+        double positionError = desiredDistanceFromBall - robot.vc.ballx * 12;
         double ySpeed = positionError * 0.01;
 
-        if (!Robot.vc.trackBall(ySpeed))
+        if (!robot.vc.trackBall(ySpeed))
             Fail("No ball found");
-        if (Robot.vc.ballx < desiredDistanceFromBall && Robot.vc.ballx != 0)
+        if (robot.vc.ballx < desiredDistanceFromBall && robot.vc.ballx != 0)
             Done();
         if (stepCounter > MAX_BALL_SECONDS * 50)
             Fail("Took too long");
     }
 
     private void DriveHoop(int desiredDistanceFromTarget) { // in inches
-        double positionError = desiredDistanceFromTarget - Robot.vc.hoopx * 12;
+        double positionError = desiredDistanceFromTarget - robot.vc.hoopx * 12;
         double ySpeed = positionError * 0.01;
 
-        if (!Robot.vc.trackHoop(ySpeed))
+        if (!robot.vc.trackHoop(ySpeed))
             Fail("No hoop found");
-        else if (positionError < HOOP_ERROR_INCHES && Math.abs(Robot.vc.hoopr) < HOOP_ERROR_DEGREES)
+        else if (positionError < HOOP_ERROR_INCHES && Math.abs(robot.vc.hoopr) < HOOP_ERROR_DEGREES)
             Done();
     }
 
     private void AlignHoop() {
-        if (!Robot.vc.trackHoop(0))
+        if (!robot.vc.trackHoop(0))
             Fail("No hoop found");
-        else if (Math.abs(Robot.vc.hoopr) < HOOP_ERROR_DEGREES)
+        else if (Math.abs(robot.vc.hoopr) < HOOP_ERROR_DEGREES)
             Done();
+    }
+
+    private void AlignClimber() {
+        // A nice reach goal
     }
 }

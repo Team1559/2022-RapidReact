@@ -40,7 +40,7 @@ public class Chassis {
     private FileLogging fl;
 
     public static final double AUTO_RAMP_RATE = 0.2;
-    public static final double TELEOP_RAMP_RATE = 1;
+    public static final double TELEOP_RAMP_RATE = 0.0;
 
     // these need to be set once
     private final double differpercent = 12 / 25.5; // percent the front needs to move compared to the back
@@ -253,7 +253,7 @@ public class Chassis {
     }
 
     public double degreesToZRotation(double desiredAngle) {
-        return (desiredAngle - this.imu.yaw) * 0.035; // TODO: modify proportion (and calibrate IMU yaw)
+        return (desiredAngle - this.imu.yaw) * 0.04; // TODO: modify proportion (and calibrate IMU yaw)
     }
 
     public double inchesToRevolutions(double inches) {

@@ -26,7 +26,7 @@ public class Shooter {
 
     // TODO: Tune these
     private final double feeder_kF = 0.045;
-    private final double feeder_kP = 0.4;
+    private final double feeder_kP = 1.54;
     private final double feeder_kD = 0;
     private final double feeder_kI = 0.000;
     private final double feeder_kiz = 0.0;
@@ -44,6 +44,7 @@ public class Shooter {
     private Chassis chassis;
     private RelativeEncoder feederEncoder;
     private SparkMaxPIDController feederPid;
+    private Robot robot;
 
     private boolean RESET_ENCODER = true;
     public boolean disableManual = false;
@@ -54,16 +55,16 @@ public class Shooter {
     public static final int holding = 2;
     public static final int upRun = 3;
 
+    private boolean gatherLock = false;
+
     public int gathererState = gathererUp;
 
     private int lastState = gathererState;
 
-    public Shooter(OperatorInterface operatorinterface, Chassis chassis) {
+    public Shooter(OperatorInterface operatorinterface, Chassis chassis, Robot robot) {
         oi = operatorinterface;
-        if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
-            this.vc = Robot.vc;
-            this.chassis = chassis;
-        }
+        this.chassis = chassis;
+        this.robot = robot;
 
         // MotorController Config
         shooter = new TalonFX(Wiring.SHOOTER_MOTOR);
@@ -111,6 +112,12 @@ public class Shooter {
 
     }
 
+    public void initVision() {
+        if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
+            this.vc = robot.vc;
+        }
+    }
+
     public void main() {
         // Control for FlyWheel
         ShooterMain();
@@ -128,9 +135,6 @@ public class Shooter {
                     case gathererUp:
                         if (oi.manualIntakeButtonPress()) { // Lower intake if button pressed else stop the intakes
                             gathererState = gathererDown;
-                        }
-                        if (oi.climberEnableButton()) {
-                            gathererState = holding;
                         }
                         break;
                     case gathererDown:
@@ -227,10 +231,13 @@ public class Shooter {
     public void startFeeder(double speed) {
         RESET_ENCODER = true;
         feederPid.setReference(speed, ControlType.kDutyCycle);
-        if (disableManual && gathererState == holding) {
-            gathererState = gathererDown;
-        } else if (disableManual) {
-            gathererState = upRun;
+        if (!gatherLock) {
+            if (disableManual && gathererState == holding) {
+                gathererState = gathererDown;
+            } else if (disableManual) {
+                gathererState = upRun;
+            }
+            gatherLock = true;
         }
 
     }
@@ -244,6 +251,7 @@ public class Shooter {
             gathererState = lastState;
             disableManual = false;
         }
+        gatherLock = false;
         feederPid.setReference(0, ControlType.kPosition);
     }
 
