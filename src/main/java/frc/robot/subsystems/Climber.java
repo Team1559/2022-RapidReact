@@ -46,7 +46,6 @@ public class Climber {
     private TalonFX climber;
     private Solenoid climberSolenoid;
 
-
     public Climber(OperatorInterface oi, Shooter shooter) {
         this.oi = oi;
         this.shooter = shooter;
@@ -66,8 +65,10 @@ public class Climber {
         climber.configPeakOutputReverse(-1, TIMEOUT);
         climber.setNeutralMode(NeutralMode.Brake);
         climber.configSupplyCurrentLimit(climberLimit, TIMEOUT);
-        // climber.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
-        // climber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
+        // climber.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
+        // LimitSwitchNormal.NormallyOpen, 0);
+        // climber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
+        // LimitSwitchNormal.NormallyOpen, 0);
         climber.config_kF(0, kF, TIMEOUT);
         climber.config_kP(0, kP, TIMEOUT);
         climber.config_kD(0, kD, TIMEOUT);
@@ -83,11 +84,12 @@ public class Climber {
         climber.selectProfileSlot(0, 0);
     }
 
-    public void turnOnSpikes(){
+    public void turnOnSpikes() {
         left_spike.set(Relay.Value.kOn);
         right_spike.set(Relay.Value.kOn);
     }
-    public void turnOffSpikes(){
+
+    public void turnOffSpikes() {
         left_spike.set(Relay.Value.kOff);
         right_spike.set(Relay.Value.kOff);
     }
@@ -108,9 +110,7 @@ public class Climber {
             } else {
                 holdRobot();
             }
-        }
-
-        else {
+        } else {
             holdRobot();
         }
 
@@ -120,7 +120,7 @@ public class Climber {
         } else if (oi.retractClimberPistonsButton()) {
             retractPistons();
         }
-        if (DriverStation.getMatchTime() < 1.0 ) {
+        if (DriverStation.getMatchTime() < 1.0) {
             // end of match
             turnOffSpikes();
         }
@@ -128,12 +128,12 @@ public class Climber {
 
     private boolean UpperLimitHit() {
         // The magnetic limit switches are active low inputs
-        return ! upperLimitSwitch.get();
+        return !upperLimitSwitch.get();
     }
 
     private boolean LowerLimitHit() {
         // The magnetic limit switches are active low inputs
-        return ! lowerLimitSwitch.get();
+        return !lowerLimitSwitch.get();
     }
 
     public void raiseRobot() {
