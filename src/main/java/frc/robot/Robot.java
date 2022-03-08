@@ -261,6 +261,7 @@ public class Robot extends TimedRobot {
 
         if (FeatureFlags.doClimber && FeatureFlags.climberInitialized) {
             climber.disable();
+            climber.engageSolenoid();
         }
 
         if (FeatureFlags.doChassis && FeatureFlags.chassisInitialized && !usingVision) {

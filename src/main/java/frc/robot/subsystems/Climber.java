@@ -81,6 +81,7 @@ public class Climber {
         climber.config_kI(0, kI, TIMEOUT);
         climber.config_kF(0, kF, TIMEOUT);
         climber.config_IntegralZone(0, kiz, TIMEOUT);
+        
         climber.config_kP(1, pkP, TIMEOUT);
         climber.config_kD(1, pkD, TIMEOUT);
         climber.config_kI(1, pkI, TIMEOUT);
@@ -93,7 +94,7 @@ public class Climber {
         relay.setNeutralMode(NeutralMode.Coast);
     }
 
-    public void turnOnSpikes() {
+    public void disengageSolenoid() {
         relay.set(TalonSRXControlMode.PercentOutput, 1);
         if (wait) {
             watch.start();
@@ -101,7 +102,7 @@ public class Climber {
         wait = false;
     }
 
-    public void turnOffSpikes() {
+    public void engageSolenoid() {
         wait = true;
         relay.set(TalonSRXControlMode.PercentOutput, 0);
     }
@@ -117,6 +118,7 @@ public class Climber {
         }
         if (oi.climberEnableButton()) {
             // oi.copilot.startRumble(-1);
+            disengageSolenoid(); //disengage the solenoid once enabled
 
             if (oi.extendClimberPistonsButton()) {
                 extendPistons();
@@ -125,27 +127,27 @@ public class Climber {
             }
             // Lower limit switch is hit when the robot is up high
             if (oi.climberUpButton() && !LowerLimitHit()) {
-                turnOnSpikes();
+                //disengageSolenoid();
                 if (watch.getDuration() >= MAX_WAIT)
                     raiseRobot();
             } else if (oi.climberDownButton() && !UpperLimitHit()) {
-                turnOnSpikes();
+                //disengageSolenoid();
                 if (watch.getDuration() >= MAX_WAIT)
                     lowerRobot();
             } else {
                 holdRobot();
-                turnOffSpikes();
+                //engageSolenoid();
             }
         } else {
             holdRobot();
-            turnOffSpikes();
+            //engageSolenoid();
         }
 
         // Control for moving pistons
 
         if (DriverStation.getMatchTime() < 1.0) {
             // end of match
-            // turnOffSpikes();
+            engageSolenoid();
         }
     }
 
@@ -216,9 +218,9 @@ public class Climber {
             press = false;
 
         if (disable) {
-            turnOnSpikes();
+            disengageSolenoid();
         } else {
-            turnOffSpikes();
+            engageSolenoid();
         }
     }
 
