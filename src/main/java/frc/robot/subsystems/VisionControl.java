@@ -30,6 +30,8 @@ public class VisionControl {
     public double hoopx = 0;
     public double ballx = 0;
 
+    private int gathererOldState = 0;
+
     private Chassis chassis;
 
     // other variables
@@ -145,6 +147,7 @@ public class VisionControl {
 
     public void teleopPeriodic() {
         update();
+        System.out.println(gathererOldState);
         // visionData.Print();
         if (RECORD_PATH && recordCounter <= MAX_SIZE) {
             record(oi.pilot.getLeftY(), oi.pilot.getRightX());
@@ -162,6 +165,10 @@ public class VisionControl {
             if (!trackHoop(ySpeed))
                 chassis.main();
         } else if (oi.autoCollectButton()) { // <-- PDM not turned off in this case
+            if (!usingAuto) {
+                System.out.println("set old State");
+                gathererOldState = shooter.gathererState;
+            }
             usingAuto = true;
             double ySpeed = -oi.pilot.getLeftY();
             if (SQUARE_DRIVER_INPUTS)
@@ -169,6 +176,11 @@ public class VisionControl {
             if (!trackBall(ySpeed))
                 chassis.main();
         } else {
+            if (usingAuto && !oi.autoCollectButton()) {
+                System.out.println("restored old state");
+                shooter.disableManual = false;
+                shooter.gathererState = gathererOldState;
+            }
             usingAuto = false;
             Robot.PDM.setSwitchableChannel(true);
         }
@@ -207,12 +219,16 @@ public class VisionControl {
     }
 
     public boolean trackBall(double ySpeed) {
+        shooter.disableManual = true;
+        shooter.gathererMain();
+        if (shooter.gathererState != Shooter.holding && shooter.gathererState != Shooter.gathererDown) {
+            shooter.gathererState = Shooter.holding;
+        }
 
         if (visionData.isBallValid())
             invalid_ball_counter = 0;
         else
             invalid_ball_counter++;
-        System.out.println(invalid_ball_counter);
         if (invalid_ball_counter < invalid_ball_counter_threshold) {
 
             drive(ySpeed, calculateBallRotation());
@@ -262,7 +278,6 @@ public class VisionControl {
 
     private double calculateBallRotation() {
         double ball_rotation = 0.38 * (ballr / 34.0);
-        System.out.println(ball_rotation);
         if (Math.abs(ballr) <= ballChassisThreshold) {
             ball_rotation = 0D;
         }

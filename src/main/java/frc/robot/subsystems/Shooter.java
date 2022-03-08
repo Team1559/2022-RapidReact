@@ -122,35 +122,36 @@ public class Shooter {
         feederMain();
 
         // Control for lowering intake
-        gathererMain();
+        if (!disableManual) {
+            gathererMain();
+        }
         gathererState();
     }
 
     public void gathererMain() { // TODO make sure the fix works
-        if (!disableManual) {
-            if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
-                switch (gathererState) {
-                    case gathererUp:
-                        if (oi.manualIntakeButtonPress()) { // Lower intake if button pressed else stop the intakes
-                            gathererState = gathererDown;
-                        }
-                        break;
-                    case gathererDown:
-                        if (!oi.manualIntakeButton()) { // Stop the intake and hold ball when button is released
-                            gathererState = holding;
-                        }
-                        break;
-                    case holding:
-                        if (oi.raiseIntakeButton()) { // intake when the button is pressed again
-                            gathererState = gathererUp;
-                        } else if (oi.manualIntakeButton()) {
-                            gathererState = gathererDown;
-                        }
-                        if (oi.climberEnableButton()) {
-                            gathererState = holding;
-                        }
-                        break;
-                }
+
+        if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
+            switch (gathererState) {
+                case gathererUp:
+                    if (oi.manualIntakeButtonPress()) { // Lower intake if button pressed else stop the intakes
+                        gathererState = gathererDown;
+                    }
+                    break;
+                case gathererDown:
+                    if (!oi.manualIntakeButton()) { // Stop the intake and hold ball when button is released
+                        gathererState = holding;
+                    }
+                    break;
+                case holding:
+                    if (oi.raiseIntakeButton()) { // intake when the button is pressed again
+                        gathererState = gathererUp;
+                    } else if (oi.manualIntakeButton()) {
+                        gathererState = gathererDown;
+                    }
+                    if (oi.climberEnableButton()) {
+                        gathererState = holding;
+                    }
+                    break;
             }
         }
     }
@@ -219,7 +220,7 @@ public class Shooter {
         } else if (oi.reverseIntake()) {
             disableManual = false;
             startFeeder(-feederSpeed);
-        } else {
+        } else if (!oi.autoCollectButton()) {
             if (disableManual) {
                 gathererState = lastState;
                 disableManual = false;
@@ -247,7 +248,7 @@ public class Shooter {
             feederEncoder.setPosition(0);
             RESET_ENCODER = false;
         }
-        if (disableManual) {
+        if (disableManual && !oi.autoCollectButton()) {
             gathererState = lastState;
             disableManual = false;
         }

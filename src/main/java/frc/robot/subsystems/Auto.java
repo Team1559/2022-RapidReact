@@ -443,8 +443,4 @@ public class Auto {
         else if (Math.abs(robot.vc.hoopr) < HOOP_ERROR_DEGREES)
             Done();
     }
-
-    private void AlignClimber() {
-        // A nice reach goal
-    }
 }
