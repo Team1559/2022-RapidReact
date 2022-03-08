@@ -47,6 +47,7 @@ public class Climber {
     private final double pkiz = 0;
     private StopWatch watch = new StopWatch();
     private final double MAX_WAIT = 0.125;
+    private boolean disengageSolenoid = false;
 
     private TalonFX climber;
     private Solenoid climberSolenoid;
@@ -59,7 +60,6 @@ public class Climber {
         // MotorController Config
 
         climber = new TalonFX(Wiring.climberMotor);
-        
 
         // climber Velocity mode configs
         climber.set(TalonFXControlMode.Velocity, 0.0);
@@ -81,7 +81,7 @@ public class Climber {
         climber.config_kI(0, kI, TIMEOUT);
         climber.config_kF(0, kF, TIMEOUT);
         climber.config_IntegralZone(0, kiz, TIMEOUT);
-        
+
         climber.config_kP(1, pkP, TIMEOUT);
         climber.config_kD(1, pkD, TIMEOUT);
         climber.config_kI(1, pkI, TIMEOUT);
@@ -94,8 +94,16 @@ public class Climber {
         relay.setNeutralMode(NeutralMode.Coast);
     }
 
+    private void solenoidMain() {
+        if (disengageSolenoid) {
+            relay.set(TalonSRXControlMode.PercentOutput, 1);
+        } else {
+            relay.set(TalonSRXControlMode.PercentOutput, 0);
+        }
+    }
+
     public void disengageSolenoid() {
-        relay.set(TalonSRXControlMode.PercentOutput, 1);
+        disengageSolenoid = true;
         if (wait) {
             watch.start();
         }
@@ -104,10 +112,11 @@ public class Climber {
 
     public void engageSolenoid() {
         wait = true;
-        relay.set(TalonSRXControlMode.PercentOutput, 0);
+        disengageSolenoid = false;
     }
 
     public void main() {
+        solenoidMain();
         climber.setNeutralMode(NeutralMode.Brake);
 
         SmartDashboard.putBoolean("Upper Limit Switch", upperLimitSwitch.get());
@@ -118,7 +127,7 @@ public class Climber {
         }
         if (oi.climberEnableButton()) {
             // oi.copilot.startRumble(-1);
-            disengageSolenoid(); //disengage the solenoid once enabled
+            disengageSolenoid(); // disengage the solenoid once enabled
 
             if (oi.extendClimberPistonsButton()) {
                 extendPistons();
@@ -127,20 +136,20 @@ public class Climber {
             }
             // Lower limit switch is hit when the robot is up high
             if (oi.climberUpButton() && !LowerLimitHit()) {
-                //disengageSolenoid();
+                // disengageSolenoid();
                 if (watch.getDuration() >= MAX_WAIT)
                     raiseRobot();
             } else if (oi.climberDownButton() && !UpperLimitHit()) {
-                //disengageSolenoid();
+                // disengageSolenoid();
                 if (watch.getDuration() >= MAX_WAIT)
                     lowerRobot();
             } else {
                 holdRobot();
-                //engageSolenoid();
+                // engageSolenoid();
             }
         } else {
             holdRobot();
-            //engageSolenoid();
+            // engageSolenoid();
         }
 
         // Control for moving pistons
@@ -208,7 +217,6 @@ public class Climber {
     }
 
     public void testPeriodic() {
-
 
         if (oi.climberEnableButton()) {
             if (!press)
