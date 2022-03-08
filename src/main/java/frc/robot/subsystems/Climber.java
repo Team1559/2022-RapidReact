@@ -22,7 +22,7 @@ public class Climber {
     DigitalInput lowerLimitSwitch = new DigitalInput(Wiring.lowerLimitSwitchInput);
     private boolean wait = true;
 
-    private SupplyCurrentLimitConfiguration climberLimit = new SupplyCurrentLimitConfiguration(true, 40, 40, 0);
+    private SupplyCurrentLimitConfiguration climberLimit = new SupplyCurrentLimitConfiguration(true, 80, 90, 0);
     private final int TIMEOUT = 0;
     private final double cLR = 0.1;
     private boolean disable = false;
