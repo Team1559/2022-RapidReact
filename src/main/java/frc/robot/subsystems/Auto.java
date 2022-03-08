@@ -45,15 +45,18 @@ public class Auto {
     // turn 180, shoot, stop flywheel
     public static final int[][] basicAutoSteps = {
             { WAIT, 100 },
-            // { START_GATHERER },
+            { START_GATHERER },
             { DRIVE, 69 },
             // { WAIT, 25 },
-            // { STOP_GATHERER },
-            // { START_FLYWHEEL, 7500 },
-            { TURN, 179 },
-            { DRIVE, 24 },
-            // { SHOOT },
-            // { STOP_FLYWHEEL },
+            { STOP_GATHERER },
+            { START_FLYWHEEL, 7500 },
+            { TURN, 88 },
+            { TURN, 88 },
+            { DRIVE, 78 },
+            { START_GATHERER },
+            { SHOOT },
+            { STOP_FLYWHEEL },
+            { STOP_GATHERER },
     };
 
     public static final int[][] basicVisionAuto = {
@@ -217,6 +220,21 @@ public class Auto {
             { STOP_FLYWHEEL }
     };
 
+    public static final int[][] testAuto = {
+            // Get 1st ball
+            { START_GATHERER },
+            { WAIT, 20 },
+            { DRIVE_BALL, 36 },
+            { DRIVE, 20 },
+            { TURN, 90 },
+            { TURN, 60 },
+            { START_FLYWHEEL, 0 },
+            { DRIVE_HOOP, 60 },
+            { WAIT, 50 },
+            { SHOOT }
+
+    };
+
     public Auto(Robot robot) {
         this(robot, basicAutoSteps);
     }
@@ -227,6 +245,7 @@ public class Auto {
     }
 
     public void main() {
+        robot.vc.update();
         if (stepNumber >= steps.length) {
             return;
         }
@@ -284,6 +303,10 @@ public class Auto {
     private void Fail(String errorMessage) {
         stepNumber = steps.length;
         System.err.println("AUTO FAILED: " + errorMessage);
+        StopGatherer();
+        StopFlywheel();
+        robot.shooter.stopFeeder();
+
     }
 
     private void Wait(int cycles) {
@@ -301,32 +324,36 @@ public class Auto {
             // establish setpoints for end of travel
             rightTarget = robot.chassis.frep + revs;
         }
-        double remaining = (rightTarget - robot.chassis.flep);
+        double remaining = (rightTarget - robot.chassis.frep);
         double driveValue = -(remaining * kP);
         // SmartDashboard.clearPersistent("FLEP");
         // SmartDashboard.clearPersistent("FREP");
         // SmartDashboard.clearPersistent("Remaining");
-        // SmartDashboard.clearPersistent("Drive value: ");
+        SmartDashboard.clearPersistent("Drive value: ");
         // SmartDashboard.clearPersistent("FLEV");
         // SmartDashboard.clearPersistent("FREV");
         // SmartDashboard.clearPersistent("Revs");
         // SmartDashboard.putNumber("FLEP", robot.chassis.flep);
         // SmartDashboard.putNumber("FREP", robot.chassis.frep);
         // SmartDashboard.putNumber("Remaining", remaining);
-        // SmartDashboard.putNumber("Drive value: ", driveValue);
+        SmartDashboard.putNumber("Drive value: ", driveValue);
         // SmartDashboard.putNumber("FLEV", robot.chassis.flEncoder.getVelocity());
         // SmartDashboard.putNumber("FREV", robot.chassis.frEncoder.getVelocity());
-        if (stepCounter <= 1000) {
-            robot.chassis.drive(Math.abs(driveValue) > MAX_DRIVE ? Math.copySign(MAX_DRIVE, driveValue) : driveValue, 0,
-                    false);
-        } else {
-            robot.chassis.drive(0, 0, false);
-            Fail("Driving failed :(");
-        }
         double done = revs - remaining;
         System.out.println("Done:" + done);
         int inchesDone = (int) robot.chassis.revolutionsToInches(done);
         System.out.println("Drive: " + inchesDone + "/" + inches);
+        System.out.println("stepCounter: " + stepCounter);
+        if (stepCounter <= 50.0 * 4.5) {
+            robot.chassis.drive(-Math.abs(Math.abs(driveValue) > MAX_DRIVE ? MAX_DRIVE : driveValue), 0,
+                    false);
+        } else {
+            robot.chassis.drive(0, 0, false);
+            if (Math.abs(inchesDone - inches) <= 6)
+                Done();
+            else
+                Fail("Driving failed :(");
+        }
 
         if (Math.abs(inchesDone - inches) <= 2)
             Done();
@@ -383,9 +410,12 @@ public class Auto {
 
     private void DriveBall(int desiredDistanceFromBall) { // in inches
         double positionError = desiredDistanceFromBall - robot.vc.ballx * 12;
-        double ySpeed = positionError * 0.01;
+        double ySpeed = positionError * 0.04;
+        if(ySpeed > MAX_DRIVE){
+            ySpeed = MAX_DRIVE;
+        }
 
-        if (!robot.vc.trackBall(ySpeed))
+        if (!robot.vc.trackBall(-ySpeed))
             Fail("No ball found");
         if (robot.vc.ballx < desiredDistanceFromBall && robot.vc.ballx != 0)
             Done();
@@ -395,9 +425,13 @@ public class Auto {
 
     private void DriveHoop(int desiredDistanceFromTarget) { // in inches
         double positionError = desiredDistanceFromTarget - robot.vc.hoopx * 12;
-        double ySpeed = positionError * 0.01;
+        double ySpeed = positionError * 0.04;
 
-        if (!robot.vc.trackHoop(ySpeed))
+        if(ySpeed > MAX_DRIVE){
+            ySpeed = MAX_DRIVE;
+        }
+
+        if (!robot.vc.trackHoop(-ySpeed))
             Fail("No hoop found");
         else if (positionError < HOOP_ERROR_INCHES && Math.abs(robot.vc.hoopr) < HOOP_ERROR_DEGREES)
             Done();

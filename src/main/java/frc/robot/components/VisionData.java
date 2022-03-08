@@ -8,8 +8,8 @@ public class VisionData {
     public double bx;
     public double by;
     public double br;
-    public Integer hoopStatus;
-    public Integer ballStatus;
+    public int hoopStatus;
+    public int ballStatus;
     public boolean waitForOtherRobot;
 
     public boolean isHoopValid() {

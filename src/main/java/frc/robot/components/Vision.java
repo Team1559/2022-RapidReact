@@ -29,8 +29,8 @@ public class Vision {
                 String[] parameters = in.split(" ");
 
                 if (parameters.length >= 9) {
-                    NewData.ballStatus = Integer.parseInt(parameters[6]);
-                    NewData.hoopStatus = Integer.parseInt(parameters[7]);
+                    NewData.ballStatus = Integer.parseInt(parameters[7]);
+                    NewData.hoopStatus = Integer.parseInt(parameters[6]);
 
                     if (NewData.ballStatus == 1) {
                         NewData.br = -(Double.parseDouble(parameters[3]) - ballCameraXOffset);

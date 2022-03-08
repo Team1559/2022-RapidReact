@@ -26,7 +26,7 @@ public class Shooter {
 
     // TODO: Tune these
     private final double feeder_kF = 0.045;
-    private final double feeder_kP = 1.54;
+    private final double feeder_kP = 8.0;
     private final double feeder_kD = 0;
     private final double feeder_kI = 0.000;
     private final double feeder_kiz = 0.0;
@@ -59,7 +59,7 @@ public class Shooter {
 
     public int gathererState = gathererUp;
 
-    private int lastState = gathererState;
+    public int lastState = holding;
 
     public Shooter(OperatorInterface operatorinterface, Chassis chassis, Robot robot) {
         oi = operatorinterface;
@@ -113,9 +113,7 @@ public class Shooter {
     }
 
     public void initVision() {
-        if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
-            this.vc = robot.vc;
-        }
+        this.vc = robot.vc;
     }
 
     public void main() {

@@ -35,7 +35,7 @@ public class VisionControl {
     // other variables
     public boolean usingAuto = false;
     private int invalid_ball_counter = 0;
-    private final int invalid_ball_counter_threshold = 20;
+    private final int invalid_ball_counter_threshold = 40;
     private FileLogging fl;
     private double counter = 0;
     private int recordCounter = 0;
@@ -145,6 +145,7 @@ public class VisionControl {
 
     public void teleopPeriodic() {
         update();
+        visionData.Print();
         if (RECORD_PATH && recordCounter <= MAX_SIZE) {
             record(oi.pilot.getLeftY(), oi.pilot.getRightX());
             recordCounter++;
@@ -206,12 +207,14 @@ public class VisionControl {
     }
 
     public boolean trackBall(double ySpeed) {
+
         if (visionData.isBallValid())
             invalid_ball_counter = 0;
         else
             invalid_ball_counter++;
-
+        System.out.println(invalid_ball_counter);
         if (invalid_ball_counter < invalid_ball_counter_threshold) {
+
             drive(ySpeed, calculateBallRotation());
             return true;
         } else
@@ -239,7 +242,7 @@ public class VisionControl {
                 + " " + chassis.brep + " \n");
     }
 
-    private void update() {
+    public void update() {
         visionData = vision.getData();
         hoopr = visionData.hr;
         hoopx = visionData.bx;
@@ -258,13 +261,13 @@ public class VisionControl {
     }
 
     private double calculateBallRotation() {
-        double ball_rotation = 1.5 * (ballr / 34.0);
-
+        double ball_rotation = 0.38 * (ballr / 34.0);
+        System.out.println(ball_rotation);
         if (Math.abs(ballr) <= ballChassisThreshold) {
             ball_rotation = 0D;
         }
 
-        return -ball_rotation;
+        return ball_rotation;
     }
 
     public void periodic(String color) {

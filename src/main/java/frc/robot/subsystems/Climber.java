@@ -59,6 +59,7 @@ public class Climber {
         // MotorController Config
 
         climber = new TalonFX(Wiring.climberMotor);
+        
 
         // climber Velocity mode configs
         climber.set(TalonFXControlMode.Velocity, 0.0);
@@ -87,6 +88,9 @@ public class Climber {
         climber.config_IntegralZone(1, pkiz, TIMEOUT);
         climber.setInverted(true);
         climber.selectProfileSlot(0, 0);
+
+        relay.configFactoryDefault();
+        relay.setNeutralMode(NeutralMode.Coast);
     }
 
     public void turnOnSpikes() {
