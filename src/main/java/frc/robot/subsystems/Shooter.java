@@ -199,8 +199,10 @@ public class Shooter {
     // FEEDER STUFF
     public void feederMain() {
         if (oi.shootButton()) {
-            disableManual = true;
-            startFeeder(feederSpeed);
+            if (Math.abs(getShooterRpms() - calculateShooterRPMS(DEFAULT_DISTANCE)) < vc.shooterThreshold) {
+                disableManual = true;
+                startFeeder(feederSpeed); // flywheel rpm check ^
+            }
         } else if (oi.autoShootButton() && checkDependencies()) { // Shoot when ready
             if (Math.abs(vc.hoopr) <= vc.hoopChassisThreshold) { // Angle check
                 if (vc.hoopx <= vc.maxHoopDistance) { // distance check

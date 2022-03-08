@@ -7,7 +7,6 @@ import com.ctre.phoenix.time.StopWatch;
 
 import frc.robot.*;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 
@@ -71,10 +70,6 @@ public class Climber {
         climber.configPeakOutputReverse(-1, TIMEOUT);
         climber.setNeutralMode(NeutralMode.Brake);
         climber.configSupplyCurrentLimit(climberLimit, TIMEOUT);
-        // climber.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
-        // LimitSwitchNormal.NormallyOpen, 0);
-        // climber.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
-        // LimitSwitchNormal.NormallyOpen, 0);
         climber.config_kF(0, kF, TIMEOUT);
         climber.config_kP(0, kP, TIMEOUT);
         climber.config_kD(0, kD, TIMEOUT);
@@ -126,7 +121,6 @@ public class Climber {
             shooter.lowerIntake();
         }
         if (oi.climberEnableButton()) {
-            // oi.copilot.startRumble(-1);
             disengageSolenoid(); // disengage the solenoid once enabled
 
             if (oi.extendClimberPistonsButton()) {
@@ -136,28 +130,18 @@ public class Climber {
             }
             // Lower limit switch is hit when the robot is up high
             if (oi.climberUpButton() && !LowerLimitHit()) {
-                // disengageSolenoid();
                 if (watch.getDuration() >= MAX_WAIT)
                     raiseRobot();
             } else if (oi.climberDownButton() && !UpperLimitHit()) {
-                // disengageSolenoid();
                 if (watch.getDuration() >= MAX_WAIT)
                     lowerRobot();
             } else {
                 holdRobot();
-                // engageSolenoid();
             }
         } else {
             holdRobot();
-            // engageSolenoid();
         }
 
-        // Control for moving pistons
-
-        if (DriverStation.getMatchTime() < 1.0) {
-            // end of match
-            engageSolenoid();
-        }
     }
 
     private boolean UpperLimitHit() {

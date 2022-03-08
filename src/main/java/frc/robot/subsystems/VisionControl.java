@@ -145,7 +145,7 @@ public class VisionControl {
 
     public void teleopPeriodic() {
         update();
-        visionData.Print();
+        // visionData.Print();
         if (RECORD_PATH && recordCounter <= MAX_SIZE) {
             record(oi.pilot.getLeftY(), oi.pilot.getRightX());
             recordCounter++;
