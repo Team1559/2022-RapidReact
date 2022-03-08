@@ -28,7 +28,7 @@ public class Robot extends TimedRobot {
     private OperatorInterface oi = new OperatorInterface();
     private Auto auto;
     private IMU imu;
-    private VisionData vData= new VisionData();
+    private VisionData vData = new VisionData();
     public VisionControl vc;
     public boolean usingVision = false;
 
@@ -141,24 +141,6 @@ public class Robot extends TimedRobot {
                 SmartDashboard.putString(colorText, "Invalid");
                 break;
         }
-        // switch (color) {
-        // case AUTO:
-        // default:
-
-        // case RED:
-        // vc.periodic("red");
-        // SmartDashboard.putString(colorText, "Red");
-        // break;
-        // case BLUE:
-        // vc.periodic("blue");
-        // SmartDashboard.putString(colorText, "Blue");
-
-        // break;
-        // case INVALID:
-        // vc.periodic("invalid");
-        // SmartDashboard.putString(colorText, "Invalid");
-        // break;
-        // }
     }
 
     /**
@@ -191,13 +173,13 @@ public class Robot extends TimedRobot {
             chassis.autoInit();
         }
         shooter.holdFeeder();
-        switch (BASIC_AUTO_STEPS) {
+        switch (m_autoSelected) {
             case NONE:
             default:
                 auto = new Auto(this, Auto.noAuto);
                 break;
             case BASIC_AUTO_STEPS:
-                auto = new Auto(this, Auto.testAuto);
+                auto = new Auto(this, Auto.basicAutoSteps);
                 break;
             case BASIC_VISION_AUTO:
                 auto = new Auto(this, Auto.basicVisionAuto);
@@ -215,7 +197,6 @@ public class Robot extends TimedRobot {
                 auto = new Auto(this, Auto.midBallAuto);
                 break;
             case TEST_AUTO:
-                System.out.println("doin tesst auto");
                 auto = new Auto(this, Auto.testAuto);
                 break;
         }
