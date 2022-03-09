@@ -24,13 +24,13 @@ public class Climber {
     private SupplyCurrentLimitConfiguration climberLimit = new SupplyCurrentLimitConfiguration(true, 80, 90, 0);
     private final int TIMEOUT = 0;
     private final double cLR = 0.1;
+
     private boolean disable = false;
     private boolean press = false;
 
     private double climberRpms = 7500;
 
     private boolean resetEncoder = true;
-    private boolean lowerShooter = false;
 
     // TODO Tune this PID controller, It will need an I value
     private final double kF = 0.015;
@@ -117,9 +117,6 @@ public class Climber {
         SmartDashboard.putBoolean("Upper Limit Switch", upperLimitSwitch.get());
         SmartDashboard.putBoolean("Lower Limit Switch", lowerLimitSwitch.get());
         // Control for Winch
-        if (lowerShooter) {
-            shooter.lowerIntake();
-        }
         if (oi.climberEnableButton()) {
             disengageSolenoid(); // disengage the solenoid once enabled
 
@@ -186,7 +183,7 @@ public class Climber {
 
     public void extendPistons() {
         shooter.disableManual = true;
-        lowerShooter = true;
+        System.out.println("Climber.extendPistons()");
         shooter.gathererState = Shooter.holding;
         climberSolenoid.set(true);
     }
@@ -194,18 +191,15 @@ public class Climber {
     public void retractPistons() {
         climberSolenoid.set(false);
         shooter.disableManual = true;
-        lowerShooter = false;
         shooter.gathererState = Shooter.gathererUp;
     }
 
     public void disable() {
         shooter.gathererState = Shooter.gathererUp;
-        lowerShooter = false;
     }
 
     public void testPeriodic() {
-
-        if (oi.climberEnableButton()) {
+        if (oi.testClimber()) {
             if (!press)
                 disable = !disable;
             press = true;
@@ -213,9 +207,9 @@ public class Climber {
             press = false;
 
         if (disable) {
-            disengageSolenoid();
+            relay.set(TalonSRXControlMode.PercentOutput, 1);
         } else {
-            engageSolenoid();
+            relay.set(TalonSRXControlMode.PercentOutput, 0);
         }
     }
 

@@ -208,7 +208,7 @@ public class VisionControl {
     }
 
     public boolean trackHoop(double ySpeed) {
-        visionData.Print();
+        // visionData.Print();
         if (visionData.isHoopValid()) {
             invalid_ball_counter = 0;
         } else {
@@ -226,6 +226,7 @@ public class VisionControl {
         shooter.disableManual = true;
         if (shooter.gathererState != Shooter.holding && shooter.gathererState != Shooter.gathererDown) {
             shooter.gathererState = Shooter.holding;
+            System.out.println("VisionControl.trackBall()");
         }
 
         if (visionData.isBallValid())

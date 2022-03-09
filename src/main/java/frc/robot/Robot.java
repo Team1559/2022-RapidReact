@@ -304,12 +304,15 @@ public class Robot extends TimedRobot {
         }
     }
 
-    /** This function is called periodically during test mode. */
+    /** This function is called periodically during test modeholding. */
 
     @Override
     public void testPeriodic() {
         if (FeatureFlags.doClimber && FeatureFlags.climberInitialized) {
             climber.testPeriodic();
+        }
+        if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
+            compressorControl.testPeriodic();
         }
 
     }
@@ -318,7 +321,7 @@ public class Robot extends TimedRobot {
         FeatureFlags.updateDependencies();
 
         if (FeatureFlags.doCompressor && !FeatureFlags.compressorInitialized) {
-            compressorControl = new CompressorControl();
+            compressorControl = new CompressorControl(oi);
             FeatureFlags.compressorInitialized = true;
         }
 

@@ -390,6 +390,7 @@ public class Auto {
 
     private void StopGatherer() {
         robot.shooter.disableManual = false;
+        System.out.println("Auto.StopGatherer()");
         robot.shooter.gathererState = Shooter.holding;
         Done();
     }

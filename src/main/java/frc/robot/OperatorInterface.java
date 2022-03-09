@@ -29,6 +29,10 @@ public class OperatorInterface {
         return pilot.getAButtonReleased();
     }
 
+    public boolean compressorToggle(){
+        return pilot.getLeftTriggerAxis() > 0.5;
+    }
+
     // DriveTrain
     public boolean slowModeButton() {
         return pilot.getLeftTriggerAxis() > 0.5;
@@ -64,7 +68,7 @@ public class OperatorInterface {
     }
 
     public boolean reverseIntake() {
-        return copilot.getLeftTriggerAxis() > 0.5;
+        return copilot.getLeftTriggerAxis() > 0.25;
     }
 
     // Climber
@@ -78,6 +82,10 @@ public class OperatorInterface {
 
     public boolean climberEnableButton() {
         return copilot.getRightTriggerAxis() > .25;
+    }
+
+    public boolean testClimber() {
+        return pilot.getRightTriggerAxis() > .25;
     }
 
     public boolean extendClimberPistonsButton() {
