@@ -157,6 +157,10 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        shooter.RESET_ENCODER = true;
+        shooter.holdFeeder();
+        m_autoSelected = m_chooser.getSelected();
+        PDM.setSwitchableChannel(true);
         if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
             compressorControl.enable();
         }

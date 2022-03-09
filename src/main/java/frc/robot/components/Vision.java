@@ -29,18 +29,18 @@ public class Vision {
                 String[] parameters = in.split(" ");
 
                 if (parameters.length >= 9) {
-                    NewData.ballStatus = Integer.parseInt(parameters[7]);
-                    NewData.hoopStatus = Integer.parseInt(parameters[6]);
+                    NewData.ballStatus = Integer.parseInt(parameters[6]);
+                    NewData.hoopStatus = Integer.parseInt(parameters[7]);
 
                     if (NewData.ballStatus == 1) {
                         NewData.br = -(Double.parseDouble(parameters[3]) - ballCameraXOffset);
-                        NewData.by = Double.parseDouble(parameters[4]) - ballCameraYOffset;
-                        NewData.bx = Double.parseDouble(parameters[5]) - ballCameraYOffset;
+                        NewData.bx = Double.parseDouble(parameters[4]) - ballCameraYOffset;
+                        NewData.by = Double.parseDouble(parameters[5]) - ballCameraYOffset;
                     }
 
                     if (NewData.hoopStatus == 1) {
-                        NewData.hx = -(Double.parseDouble(parameters[0]) - hoopCameraXOffset);
-                        NewData.hy = Double.parseDouble(parameters[2]) - hoopCameraYOffset;
+                        NewData.hx = Double.parseDouble(parameters[0]) - hoopCameraXOffset;
+                        NewData.hy = Double.parseDouble(parameters[2]) - hoopCameraYOffset; // Always 0
                         NewData.hr = Double.parseDouble(parameters[1]) - hoopCameraROffset;
                     }
 
@@ -54,6 +54,7 @@ public class Vision {
                 }
             }
             VData = NewData;
+            VData.Print();
         } catch (NumberFormatException | NullPointerException e) {
             System.err.println(e.toString());
         }

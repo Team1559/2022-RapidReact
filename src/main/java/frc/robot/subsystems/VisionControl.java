@@ -208,14 +208,18 @@ public class VisionControl {
     }
 
     public boolean trackHoop(double ySpeed) {
-        if (visionData.isHoopValid())
-            if (Math.abs(hoopr) > hoopChassisThreshold) {
-                drive(ySpeed, calculateHoopRotation());
-                return true;
-            } else
-                return false;
-        else
+        visionData.Print();
+        if (visionData.isHoopValid()) {
+            invalid_ball_counter = 0;
+        } else {
+            invalid_ball_counter++;
+        }
+        if (invalid_ball_counter < invalid_ball_counter_threshold) {
+            drive(ySpeed, calculateHoopRotation());
+            return true;
+        } else {
             return false;
+        }
     }
 
     public boolean trackBall(double ySpeed) {
@@ -261,8 +265,9 @@ public class VisionControl {
     public void update() {
         visionData = vision.getData();
         hoopr = visionData.hr;
-        hoopx = visionData.bx;
+        hoopx = visionData.hx;
         ballr = visionData.br;
+        ballx = visionData.bx;
         chassis.updateEncoders();
     }
 

@@ -253,7 +253,7 @@ public class Chassis {
     }
 
     public double degreesToZRotation(double desiredAngle) {
-        return (desiredAngle - this.imu.yaw) * 0.06; // TODO: modify proportion (and calibrate IMU yaw)
+        return (desiredAngle - this.imu.yaw) * 0.12; // TODO: modify proportion (and calibrate IMU yaw)
     }
 
     public double inchesToRevolutions(double inches) {

@@ -8,6 +8,8 @@ import frc.robot.*;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,7 +37,7 @@ public class Shooter {
     public double intakeSpeed = 1; // 0.4;
 
     private static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
-    private static final double DEFAULT_DISTANCE = 3000; // 4 ft from front of robot to face of target
+    private static final double DEFAULT_DISTANCE = 8; // 4 ft from front of robot to face of target
     private final boolean TESTING = true;
 
     private TalonFX shooter;
@@ -48,7 +50,7 @@ public class Shooter {
     private SparkMaxPIDController feederPid;
     private Robot robot;
 
-    private boolean RESET_ENCODER = true;
+    public boolean RESET_ENCODER = true;
     public boolean disableManual = false;
 
     // States for gatherer
@@ -124,38 +126,41 @@ public class Shooter {
         feederMain();
 
         // Control for lowering intake
-        if (!disableManual) {
-            gathererMain();
-        }
+        gathererMain();
         gathererState();
     }
 
     public void gathererMain() { // TODO make sure the fix works
-
-        if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
-            switch (gathererState) {
-                case gathererUp:
-                    if (oi.manualIntakeButtonPress()) { // Lower intake if button pressed else stop the intakes
-                        gathererState = gathererDown;
-                    }
-                    break;
-                case gathererDown:
-                    if (!oi.manualIntakeButton()) { // Stop the intake and hold ball when button is released
-                        gathererState = holding;
-                    }
-                    break;
-                case holding:
-                    if (oi.raiseIntakeButton()) { // intake when the button is pressed again
-                        gathererState = gathererUp;
-                    } else if (oi.manualIntakeButton()) {
-                        gathererState = gathererDown;
-                    }
-                    if (oi.climberEnableButton()) {
-                        gathererState = holding;
-                    }
-                    break;
+        if (!disableManual) {
+            if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
+                switch (gathererState) {
+                    case gathererUp:
+                        if (oi.manualIntakeButtonPress()) { // Lower intake if button pressed else stop the intakes
+                            gathererState = gathererDown;
+                        }
+                        if (oi.climberEnableButton()) {
+                            gathererState = holding;
+                        }
+                        break;
+                    case gathererDown:
+                        if (!oi.manualIntakeButton()) { // Stop the intake and hold ball when button is released
+                            gathererState = holding;
+                        }
+                        break;
+                    case holding:
+                        if (oi.raiseIntakeButton()) { // intake when the button is pressed again
+                            gathererState = gathererUp;
+                        } else if (oi.manualIntakeButton()) {
+                            gathererState = gathererDown;
+                        }
+                        if (oi.climberEnableButton()) {
+                            gathererState = holding;
+                        }
+                        break;
+                }
             }
         }
+        gathererState();
     }
 
     public void gathererState() {
@@ -205,9 +210,10 @@ public class Shooter {
         if (oi.shootButton()) {
             disableManual = true;
             startFeeder(feederSpeed);
-            // if (Math.abs(    () - calculateShooterRPMS(DEFAULT_DISTANCE)) < vc.shooterThreshold) {
-                // disableManual = true;
-                // startFeeder(feederSpeed); // flywheel rpm check ^
+            // if (Math.abs( () - calculateShooterRPMS(DEFAULT_DISTANCE)) <
+            // vc.shooterThreshold) {
+            // disableManual = true;
+            // startFeeder(feederSpeed); // flywheel rpm check ^
             // }
         } else if (oi.autoShootButton() && checkDependencies()) { // Shoot when ready
             if (Math.abs(vc.hoopr) <= vc.hoopChassisThreshold) { // Angle check
@@ -215,7 +221,8 @@ public class Shooter {
                     if (oi.pilot.getLeftY() < 0.05
                             && Math.abs(chassis.rpmToFps(chassis.getFrontAverageWheelRPM())) < 2) {
                         // Speed check ^^
-                        if (Math.abs(getShooterRpms() - calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2)) < vc.shooterThreshold) {
+                        if (Math.abs(getShooterRpms() - calculateShooterRPMS(
+                                vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2)) < vc.shooterThreshold) {
                             disableManual = true;
                             startFeeder(feederSpeed); // flywheel rpm check ^
                         }
@@ -253,7 +260,7 @@ public class Shooter {
             feederEncoder.setPosition(0);
             RESET_ENCODER = false;
         }
-        if (disableManual && !oi.autoCollectButton()) {
+        if (disableManual && !oi.autoCollectButton() && DriverStation.isTeleop()) {
             gathererState = lastState;
             disableManual = false;
         }
@@ -306,19 +313,18 @@ public class Shooter {
 
     // Validate hoop vision
     public boolean checkHoopVision() {
-
         return FeatureFlags.doVision && FeatureFlags.visionInitialized && vc.isHoopValid();
     }
 
     public boolean checkChassis() {
-        return 
-        FeatureFlags.doChassis && FeatureFlags.chassisInitialized;
+        return FeatureFlags.doChassis && FeatureFlags.chassisInitialized;
     }
 
     public void autoShoot() {
         vc.autoShoot();
     }
-    public double getRpmError(){
+
+    public double getRpmError() {
         return shooter.getClosedLoopError() * 10 / 2048 * 60;
     }
 
@@ -326,7 +332,7 @@ public class Shooter {
         // RPM vs. distance fit from
         // https://docs.google.com/spreadsheets/d/1l1Nxlk29b2KL5FwVklSFhfuychKHfztRSNRqPUuQUIs/edit#gid=695645693
         return 4476 + 158 * distance;
-        //return distance;
+        // return distance;
     }
 
     public void disable() {

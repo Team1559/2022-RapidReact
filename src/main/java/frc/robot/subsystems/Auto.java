@@ -24,6 +24,7 @@ public class Auto {
     private static final int ALIGN_HOOP = 10;
 
     private static final int FEEDER_CYCLES = 200;
+    boolean holdFeeder = true;
 
     private static final int MAX_TURN_SECONDS = 3;
     private static final int MAX_BALL_SECONDS = 5;
@@ -33,6 +34,8 @@ public class Auto {
 
     static final double MAX_DRIVE = 0.2;
     static final double MAX_TURN = 0.5;
+
+    double ySpeed = 0;
 
     private Robot robot;
 
@@ -257,6 +260,9 @@ public class Auto {
             value = step[1];
         }
         stepCounter++;
+        if(holdFeeder){
+            robot.shooter.holdFeeder();
+        }
         switch (type) {
             case WAIT:
                 Wait((int) value);
@@ -305,7 +311,7 @@ public class Auto {
         System.err.println("AUTO FAILED: " + errorMessage);
         StopGatherer();
         StopFlywheel();
-        robot.shooter.stopFeeder();
+        robot.shooter.holdFeeder();
 
     }
 
@@ -373,7 +379,7 @@ public class Auto {
         if (Math.abs(degrees - robot.chassis.imu.yaw) % 360 < 2) {
             Done();
         } else if (stepCounter > 50 * MAX_TURN_SECONDS)
-            System.out.println("Turned for too long");
+            Fail("Turned for too long");
     }
 
     private void StartGatherer() {
@@ -401,31 +407,48 @@ public class Auto {
     }
 
     private void Shoot() {
+        holdFeeder = false;
+        robot.shooter.disableManual = true;
         robot.shooter.startFeeder(robot.shooter.feederSpeed);
         if (stepCounter >= FEEDER_CYCLES) {
-            robot.shooter.holdFeeder();
+            robot.shooter.disableManual = false;
+            holdFeeder = true;
             Done();
         }
     }
 
     private void DriveBall(int desiredDistanceFromBall) { // in inches
-        double positionError = desiredDistanceFromBall - robot.vc.ballx * 12;
-        double ySpeed = positionError * 0.04;
-        if(ySpeed > MAX_DRIVE){
-            ySpeed = MAX_DRIVE;
+        double positionError = 0;
+        if(robot.vc.ballx != 0){
+            positionError = robot.vc.ballx * 12 - desiredDistanceFromBall;
+            ySpeed = positionError * 0.04;
+            if(ySpeed > MAX_DRIVE)
+                ySpeed = MAX_DRIVE;
+            System.out.println("Drive value: " + ySpeed);
         }
-
-        if (!robot.vc.trackBall(-ySpeed))
+        if (!robot.vc.trackBall(-Math.abs(ySpeed)))
             Fail("No ball found");
-        if (robot.vc.ballx < desiredDistanceFromBall && robot.vc.ballx != 0)
+        if (positionError < 0 && robot.vc.ballx != 0){
+            robot.chassis.drive(0,0,false);
             Done();
-        if (stepCounter > MAX_BALL_SECONDS * 50)
+        }
+        if (stepCounter > MAX_BALL_SECONDS * 500){
             Fail("Took too long");
+        }
     }
 
     private void DriveHoop(int desiredDistanceFromTarget) { // in inches
-        double positionError = desiredDistanceFromTarget - robot.vc.hoopx * 12;
-        double ySpeed = positionError * 0.04;
+        // double positionError = desiredDistanceFromTarget - robot.vc.hoopx * 12;
+        // double ySpeed = positionError * 0.04;
+        double positionError = 1000;
+        System.out.println(robot.vc.hoopx);
+        if(robot.vc.hoopx != 0){
+            positionError = robot.vc.hoopx * 12 - desiredDistanceFromTarget;
+            ySpeed = positionError * 0.04;
+            if(ySpeed > MAX_DRIVE)
+                ySpeed = MAX_DRIVE;
+            System.out.println("Drive value: " + ySpeed);
+        }
 
         if(ySpeed > MAX_DRIVE){
             ySpeed = MAX_DRIVE;
@@ -433,8 +456,9 @@ public class Auto {
 
         if (!robot.vc.trackHoop(-ySpeed))
             Fail("No hoop found");
-        else if (positionError < HOOP_ERROR_INCHES && Math.abs(robot.vc.hoopr) < HOOP_ERROR_DEGREES)
-            Done();
+        if (Math.abs(positionError) < HOOP_ERROR_INCHES && Math.abs(robot.vc.hoopr) < HOOP_ERROR_DEGREES){
+            robot.chassis.drive(0,0,false);
+        }
     }
 
     private void AlignHoop() {
