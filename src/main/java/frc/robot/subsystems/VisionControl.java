@@ -38,6 +38,7 @@ public class VisionControl {
     public boolean usingAuto = false;
     private int invalid_ball_counter = 0;
     private final int invalid_ball_counter_threshold = 40;
+    private final double align_kP = 0.5;
     private FileLogging fl;
     private double counter = 0;
     private int recordCounter = 0;
@@ -266,7 +267,7 @@ public class VisionControl {
     }
 
     private double calculateHoopRotation() {
-        double hoop_rotation = -.38 * (hoopr / 34.0);
+        double hoop_rotation = -align_kP * (hoopr / 34.0);
 
         if (Math.abs(hoopr) <= hoopChassisThreshold) {
             hoop_rotation = 0D;
@@ -276,7 +277,7 @@ public class VisionControl {
     }
 
     private double calculateBallRotation() {
-        double ball_rotation = 0.38 * (ballr / 34.0);
+        double ball_rotation = align_kP * (ballr / 34.0);
         if (Math.abs(ballr) <= ballChassisThreshold) {
             ball_rotation = 0D;
         }
