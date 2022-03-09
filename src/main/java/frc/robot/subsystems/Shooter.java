@@ -27,13 +27,13 @@ public class Shooter {
     // TODO: Tune these
     private final double feeder_kF = 0.045;
     private final double feeder_kP = 8.0;
-    private final double feeder_kD = 0;
+    private final double feeder_kD = 0.2;
     private final double feeder_kI = 0.000;
     private final double feeder_kiz = 0.0;
 
     public double feederSpeed = 0.2;
     public double intakeSpeed = 1; // 0.4;
-    private final double DEFAULT_DISTANCE = 8; // 4 ft from front of robot to face of target
+    private final double DEFAULT_DISTANCE = 6000; // 4 ft from front of robot to face of target
     private final boolean TESTING = true;
 
     private TalonFX shooter;
@@ -186,6 +186,7 @@ public class Shooter {
             // oi.copilot.startRumble(0);
             startShooter(calculateShooterRPMS(DEFAULT_DISTANCE)); // Assume distance is 8 ft in manual mode
         } else if (oi.autoSteerToHoopButton()) {
+            System.out.println("running shooter");
             if (checkDependencies()) {
                 startShooter(calculateShooterRPMS(vc.hoopx));
             } else if (TESTING) {
@@ -200,10 +201,11 @@ public class Shooter {
     // FEEDER STUFF
     public void feederMain() {
         if (oi.shootButton()) {
-            if (Math.abs(getShooterRpms() - calculateShooterRPMS(DEFAULT_DISTANCE)) < vc.shooterThreshold) {
-                disableManual = true;
-                startFeeder(feederSpeed); // flywheel rpm check ^
-            }
+            startFeeder(feederSpeed);
+            // if (Math.abs(getShooterRpms() - calculateShooterRPMS(DEFAULT_DISTANCE)) < vc.shooterThreshold) {
+                // disableManual = true;
+                // startFeeder(feederSpeed); // flywheel rpm check ^
+            // }
         } else if (oi.autoShootButton() && checkDependencies()) { // Shoot when ready
             if (Math.abs(vc.hoopr) <= vc.hoopChassisThreshold) { // Angle check
                 if (vc.hoopx <= vc.maxHoopDistance) { // distance check
@@ -305,7 +307,8 @@ public class Shooter {
     }
 
     public boolean checkChassis() {
-        return FeatureFlags.doChassis && FeatureFlags.chassisInitialized;
+        return 
+        FeatureFlags.doChassis && FeatureFlags.chassisInitialized;
     }
 
     public void autoShoot() {
@@ -315,7 +318,8 @@ public class Shooter {
     public double calculateShooterRPMS(double distance) {
         // RPM vs. distance fit from
         // https://docs.google.com/spreadsheets/d/1l1Nxlk29b2KL5FwVklSFhfuychKHfztRSNRqPUuQUIs/edit#gid=695645693
-        return 4865 + -181 * distance + 30.3 * distance * distance;
+        return 4476 + 158 * distance;
+        //return distance;
     }
 
     public void disable() {

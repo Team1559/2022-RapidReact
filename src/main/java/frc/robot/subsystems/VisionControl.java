@@ -147,7 +147,6 @@ public class VisionControl {
 
     public void teleopPeriodic() {
         update();
-        System.out.println(gathererOldState);
         // visionData.Print();
         if (RECORD_PATH && recordCounter <= MAX_SIZE) {
             record(oi.pilot.getLeftY(), oi.pilot.getRightX());
@@ -267,7 +266,7 @@ public class VisionControl {
     }
 
     private double calculateHoopRotation() {
-        double hoop_rotation = 1.0 * (hoopr / 34.0);
+        double hoop_rotation = -.38 * (hoopr / 34.0);
 
         if (Math.abs(hoopr) <= hoopChassisThreshold) {
             hoop_rotation = 0D;
