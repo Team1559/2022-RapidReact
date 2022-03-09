@@ -138,10 +138,6 @@ public class Shooter {
                         if (oi.manualIntakeButtonPress()) { // Lower intake if button pressed else stop the intakes
                             gathererState = gathererDown;
                         }
-                        if (oi.climberEnableButton()) {
-                            gathererState = holding;
-                        }
-                        break;
                     case gathererDown:
                         if (!oi.manualIntakeButton()) { // Stop the intake and hold ball when button is released
                             gathererState = holding;
@@ -153,14 +149,10 @@ public class Shooter {
                         } else if (oi.manualIntakeButton()) {
                             gathererState = gathererDown;
                         }
-                        if (oi.climberEnableButton()) {
-                            gathererState = holding;
-                        }
                         break;
                 }
             }
         }
-        gathererState();
     }
 
     public void gathererState() {

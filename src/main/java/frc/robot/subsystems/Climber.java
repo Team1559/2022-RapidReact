@@ -193,6 +193,9 @@ public class Climber {
 
     public void retractPistons() {
         climberSolenoid.set(false);
+        shooter.disableManual = true;
+        lowerShooter = false;
+        shooter.gathererState = Shooter.gathererUp;
     }
 
     public void disable() {
