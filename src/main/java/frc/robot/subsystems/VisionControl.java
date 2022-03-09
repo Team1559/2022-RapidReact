@@ -224,7 +224,6 @@ public class VisionControl {
 
     public boolean trackBall(double ySpeed) {
         shooter.disableManual = true;
-        shooter.gathererMain();
         if (shooter.gathererState != Shooter.holding && shooter.gathererState != Shooter.gathererDown) {
             shooter.gathererState = Shooter.holding;
         }

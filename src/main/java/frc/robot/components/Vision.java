@@ -26,16 +26,17 @@ public class Vision {
             String in = client.get();
 
             if (in != null) {
+                System.out.println(in);
                 String[] parameters = in.split(" ");
 
                 if (parameters.length >= 9) {
-                    NewData.ballStatus = Integer.parseInt(parameters[6]);
-                    NewData.hoopStatus = Integer.parseInt(parameters[7]);
+                    NewData.ballStatus = Integer.parseInt(parameters[7]);
+                    NewData.hoopStatus = Integer.parseInt(parameters[6]);
 
                     if (NewData.ballStatus == 1) {
                         NewData.br = -(Double.parseDouble(parameters[3]) - ballCameraXOffset);
-                        NewData.bx = Double.parseDouble(parameters[4]) - ballCameraYOffset;
-                        NewData.by = Double.parseDouble(parameters[5]) - ballCameraYOffset;
+                        NewData.bx = Double.parseDouble(parameters[5]) - ballCameraYOffset;
+                        NewData.by = Double.parseDouble(parameters[4]) - ballCameraYOffset;
                     }
 
                     if (NewData.hoopStatus == 1) {
@@ -54,7 +55,6 @@ public class Vision {
                 }
             }
             VData = NewData;
-            VData.Print();
         } catch (NumberFormatException | NullPointerException e) {
             System.err.println(e.toString());
         }
