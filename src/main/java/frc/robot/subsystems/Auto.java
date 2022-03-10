@@ -384,12 +384,14 @@ public class Auto {
 
     private void StartGatherer() {
         robot.shooter.disableManual = true;
+        System.out.println("StartGatherer set gathererDown");
         robot.shooter.gathererState = Shooter.gathererDown;
         Done();
     }
 
     private void StopGatherer() {
         robot.shooter.disableManual = false;
+        System.out.println("StopGatherer set holding");
         robot.shooter.gathererState = Shooter.holding;
         Done();
     }
