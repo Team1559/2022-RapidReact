@@ -189,15 +189,11 @@ public class Climber {
     }
 
     public void extendPistons() {
-        shooter.disableManual = true;
-        shooter.gathererState = Shooter.holding;
         climberSolenoid.set(true);
     }
 
     public void retractPistons() {
         climberSolenoid.set(false);
-        shooter.disableManual = true;
-        shooter.gathererState = Shooter.gathererUp;
     }
 
     public void disable() {

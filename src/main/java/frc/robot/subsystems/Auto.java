@@ -22,6 +22,7 @@ public class Auto {
     private static final int DRIVE_BALL = 8;
     private static final int DRIVE_HOOP = 9;
     private static final int ALIGN_HOOP = 10;
+    private static final int TURN_HOOP = 11;
 
     private static final int FEEDER_CYCLES = 200;
     boolean holdFeeder = true;
@@ -238,6 +239,22 @@ public class Auto {
 
     };
 
+    public static final int[][] testVisionAutoWithNewTurningThatStopsWhenItSeesTheHoopBecauseRylanIsNotSuperBadAtLifeBabaWuestAlsoIsntWuestBad = {
+        // Get 1st ball
+        { START_GATHERER },
+        { WAIT, 20 },
+        { DRIVE_BALL, 36 },
+        { DRIVE, 20 },
+        { TURN_HOOP, 90},
+        { TURN_HOOP, 60 },
+        { START_FLYWHEEL, 0 },
+        { DRIVE_HOOP, 60 }, 
+        { WAIT, 50 },
+        { SHOOT }
+
+};
+
+
     public Auto(Robot robot) {
         this(robot, basicAutoSteps);
     }
@@ -296,6 +313,9 @@ public class Auto {
                 break;
             case ALIGN_HOOP:
                 AlignHoop();
+                break;
+            case TURN_HOOP:
+                TurnHoop(value);
                 break;
         }
         robot.shooter.gathererState();
@@ -380,6 +400,26 @@ public class Auto {
             Done();
         } else if (stepCounter > 50 * MAX_TURN_SECONDS)
             Fail("Turned for too long");
+    }
+
+    private void TurnHoop(int degrees) {
+        if (stepCounter == 1) {
+            robot.chassis.imu.zeroYaw();
+        }
+        double rotation = robot.chassis.degreesToZRotation(degrees);
+        robot.chassis.imu.updateValues();
+        SmartDashboard.putNumber("IMU", robot.chassis.imu.yaw);
+        double turnValue = Math.abs(rotation) > MAX_TURN ? Math.copySign(MAX_TURN, rotation) : rotation;
+        SmartDashboard.putNumber("turnValue", turnValue);
+        robot.chassis.drive(0, turnValue);
+        System.out.println(robot.chassis.imu.yaw + " <-- YAW, TARGET --> " + degrees);
+        if (Math.abs(degrees - robot.chassis.imu.yaw) % 360 < 2) {
+            Done();
+        } else if (stepCounter > 50 * MAX_TURN_SECONDS)
+            Fail("Turned for too long");
+        else if(robot.vc.isHoopValid()){
+            Done();
+        }
     }
 
     private void StartGatherer() {

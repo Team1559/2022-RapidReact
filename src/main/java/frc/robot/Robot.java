@@ -49,6 +49,7 @@ public class Robot extends TimedRobot {
     private static final String RIGHT_BALL_AUTO = "Right Ball Auto";
     private static final String MID_BALL_AUTO = "Mid Ball Auto";
     private static final String TEST_AUTO = "Test Auto";
+    private static final String TEST_AUTO2 = "Better Basic Vision Auto";
 
     private static final String autoText = "Selected Auto";
     private static final String colorText = "Current Allience Color";
@@ -67,7 +68,7 @@ public class Robot extends TimedRobot {
         initialize();
         PDM.setSwitchableChannel(false);
 
-        m_chooser.setDefaultOption(TEST_AUTO, TEST_AUTO);
+        m_chooser.setDefaultOption(MINI_AUTO, MINI_AUTO);
         m_chooser.addOption(BASIC_AUTO_STEPS, BASIC_AUTO_STEPS);
         m_chooser.addOption(BASIC_VISION_AUTO, BASIC_VISION_AUTO);
         m_chooser.addOption(MINI_AUTO, MINI_AUTO);
@@ -75,6 +76,7 @@ public class Robot extends TimedRobot {
         m_chooser.addOption(RIGHT_BALL_AUTO, RIGHT_BALL_AUTO);
         m_chooser.addOption(MID_BALL_AUTO, MID_BALL_AUTO);
         m_chooser.addOption(TEST_AUTO, TEST_AUTO);
+        m_chooser.addOption(TEST_AUTO2, TEST_AUTO2);
 
         SmartDashboard.putData("Auto Paths", m_chooser);
     }
@@ -124,6 +126,9 @@ public class Robot extends TimedRobot {
                 break;
             case TEST_AUTO:
                 SmartDashboard.putString(autoText, TEST_AUTO);
+                break;
+            case TEST_AUTO2:
+                SmartDashboard.putString(autoText, TEST_AUTO2);
                 break;
         }
     }
@@ -205,6 +210,10 @@ public class Robot extends TimedRobot {
                 break;
             case TEST_AUTO:
                 auto = new Auto(this, Auto.testAuto);
+                break;
+            case TEST_AUTO2:
+                auto = new Auto(this,
+                        Auto.testVisionAutoWithNewTurningThatStopsWhenItSeesTheHoopBecauseRylanIsNotSuperBadAtLifeBabaWuestAlsoIsntWuestBad);
                 break;
         }
     }
