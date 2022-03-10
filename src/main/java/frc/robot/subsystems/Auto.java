@@ -56,7 +56,7 @@ public class Auto {
             { START_FLYWHEEL, 7500 },
             { TURN, 88 },
             { TURN, 88 },
-            { DRIVE, 78 },
+            { DRIVE, 126 },
             { START_GATHERER },
             { SHOOT },
             { STOP_FLYWHEEL },
