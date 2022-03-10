@@ -142,7 +142,6 @@ public class Shooter {
                     case gathererDown:
                         if (!oi.manualIntakeButton()) { // Stop the intake and hold ball when button is released
                             gathererState = holding;
-                            System.out.println("gathererMain case down()");
                         }
                         break;
                     case holding:
@@ -229,7 +228,6 @@ public class Shooter {
         } else if (!oi.autoCollectButton()) {
             if (disableManual) {
                 gathererState = lastState;
-                System.out.println("Shooter.feederMain()");
                 disableManual = false;
             }
             holdFeeder();
@@ -241,7 +239,6 @@ public class Shooter {
         feederPid.setReference(speed, ControlType.kDutyCycle);
         if (!gatherLock) {
             if (disableManual && gathererState == holding) {
-                System.out.println("its here.()");
                 gathererState = gathererDown;
             } else if (disableManual) {
                 gathererState = upRun;
@@ -258,7 +255,6 @@ public class Shooter {
         }
         if (disableManual && !oi.autoCollectButton() && DriverStation.isTeleop()) {
             gathererState = lastState;
-            System.out.println("Shooter.holdFeeder()");
             disableManual = false;
         }
         gatherLock = false;

@@ -183,7 +183,6 @@ public class Climber {
 
     public void extendPistons() {
         shooter.disableManual = true;
-        System.out.println("Climber.extendPistons()");
         shooter.gathererState = Shooter.holding;
         climberSolenoid.set(true);
     }
