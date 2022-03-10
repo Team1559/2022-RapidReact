@@ -189,7 +189,7 @@ public class Shooter {
         } else if (oi.autoSteerToHoopButton()) {
             System.out.println("running shooter");
             if (checkDependencies()) {
-                startShooter(calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA));
+                startShooter(calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA+2));
             } else if (TESTING) {
                 startShooter(calculateShooterRPMS(DEFAULT_DISTANCE));
             }
