@@ -130,34 +130,43 @@ public class Shooter {
         gathererState();
     }
 
-    public void gathererMain() { // TODO make sure the fix works
+    public void gathererMain() {
         if (!disableManual) {
             if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
                 switch (gathererState) {
                     case gathererUp:
-                        if (oi.manualIntakeButtonPress()) { // Lower intake if button pressed else stop the intakes
-                            gathererState = gathererDown;
+                    System.out.println("gathererMain state is gathererUp");
+                    if (oi.manualIntakeButtonPress()) { // Lower intake if button pressed else stop the intakes
+                        System.out.println("gathererMain gathererUp manualIntakeButtonPress set gathererDown");
+                        gathererState = gathererDown;
                         }
                     case gathererDown:
-                        if (!oi.manualIntakeButton()) { // Stop the intake and hold ball when button is released
+                    System.out.println("gathererMain state is down");
+                    if (!oi.manualIntakeButton()) { // Stop the intake and hold ball when button is released
                             gathererState = holding;
-                            System.out.println("gathererMain case down()");
+                            System.out.println("gathererMaingathererDown  manualIntakeButton set holding");
                         }
                         break;
                     case holding:
-                        if (oi.raiseIntakeButton()) { // intake when the button is pressed again
-                            gathererState = gathererUp;
+                    System.out.println("gathererMain state is holding");
+                    if (oi.raiseIntakeButton()) { // intake when the button is pressed again
+                        System.out.println("gathererMain holding raiseIntakeButton set gathererUp");
+                        gathererState = gathererUp;
                         } else if (oi.manualIntakeButton()) {
+                            System.out.println("gathererMain holding manualIntakeButton set gathererDown");
                             gathererState = gathererDown;
                         }
                         break;
                 }
             }
+        } else {
+            System.out.println("gathererMain disableManual is true");
         }
     }
 
     public void gathererState() {
         if (!disableManual) {
+            System.out.println("gathererState(): disableManual is false, saving state " +gathererState);
             lastState = gathererState;
         }
         switch (gathererState) {
@@ -188,7 +197,7 @@ public class Shooter {
         } else if (oi.autoSteerToHoopButton()) {
             System.out.println("running shooter");
             if (checkDependencies()) {
-                startShooter(calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA));
+                startShooter(calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
             } else if (TESTING) {
                 startShooter(calculateShooterRPMS(DEFAULT_DISTANCE));
             }
@@ -228,7 +237,7 @@ public class Shooter {
         } else if (!oi.autoCollectButton()) {
             if (disableManual) {
                 gathererState = lastState;
-                System.out.println("Shooter.feederMain()");
+                System.out.println("Shooter.feederMain() restore state " + lastState);
                 disableManual = false;
             }
             holdFeeder();
@@ -240,14 +249,15 @@ public class Shooter {
         feederPid.setReference(speed, ControlType.kDutyCycle);
         if (!gatherLock) {
             if (disableManual && gathererState == holding) {
-                System.out.println("its here.()");
+                System.out.println("startFeeder set gathererDown");
                 gathererState = gathererDown;
             } else if (disableManual) {
+                System.out.println("startFeeder set upRun");
                 gathererState = upRun;
             }
+            System.out.println("startFeeder set gatherLock");
             gatherLock = true;
         }
-
     }
 
     public void holdFeeder() {
@@ -257,7 +267,7 @@ public class Shooter {
         }
         if (disableManual && !oi.autoCollectButton() && DriverStation.isTeleop()) {
             gathererState = lastState;
-            System.out.println("Shooter.holdFeeder()");
+            System.out.println("Shooter.holdFeeder() restore state " + gathererState);
             disableManual = false;
         }
         gatherLock = false;
@@ -265,6 +275,7 @@ public class Shooter {
     }
 
     public void stopFeeder() {
+        System.out.println("stopFeeder set gathererUp");
         gathererState = gathererUp;
         feederPid.setReference(0, ControlType.kDutyCycle);
     }
