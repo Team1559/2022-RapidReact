@@ -310,6 +310,7 @@ public class Robot extends TimedRobot {
 
         if (FeatureFlags.doClimber && FeatureFlags.climberInitialized) {
             climber.testInit();
+            climber.zeroClimber();
         }
 
         if (FeatureFlags.doShooter && FeatureFlags.shooterInitialized) {
