@@ -39,7 +39,7 @@ public class Shooter {
     public double intakeSpeed = 1; // 0.4;
 
     private static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
-    private static final double DEFAULT_DISTANCE = 8; // 4 ft from front of robot to face of target
+    private static final double DEFAULT_RPMS = 5000; // 4 ft from front of robot to face of target
     private final boolean TESTING = true;
 
     private TalonFX shooter;
@@ -187,12 +187,12 @@ public class Shooter {
     public void ShooterMain() {
         if (oi.runFlyWheelButtonManual()) {
             // oi.copilot.startRumble(0);
-            startShooter(calculateShooterRPMS(DEFAULT_DISTANCE)); // Assume distance is 8 ft in manual mode
+            startShooter(DEFAULT_RPMS); // Assume distance is 8 ft in manual mode
         } else if (oi.autoSteerToHoopButton()) {
             if (checkDependencies()) {
                 startShooter(calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
             } else if (TESTING) {
-                startShooter(calculateShooterRPMS(DEFAULT_DISTANCE));
+                startShooter(calculateShooterRPMS(DEFAULT_RPMS));
             }
         } else {
             oi.copilot.stopRumble();
@@ -238,6 +238,7 @@ public class Shooter {
 
     public void startFeeder(double speed) {
         RESET_ENCODER = true;
+
         feederPid.setReference(speed, ControlType.kDutyCycle);
         if (!gatherLock) {
             if (disableManual && gathererState == holding) {
@@ -329,6 +330,7 @@ public class Shooter {
         // https://docs.google.com/spreadsheets/d/1l1Nxlk29b2KL5FwVklSFhfuychKHfztRSNRqPUuQUIs/edit#gid=695645693
         return 4476 + 158 * distance;
         // return distance;
+        // return 5000; // FIXME return to old formula
     }
 
     public void disable() {
