@@ -269,8 +269,8 @@ public class Shooter {
     // Get and Set shooter states
     public void startShooter(double rpms) {
         SmartDashboard.putNumber("Shooter RPMs", rpms);
-        // shooter.set(TalonFXControlMode.Velocity, rpms / 10 / 60 * 2048);
-        shooter.set(TalonFXControlMode.Velocity, 3000 / 10 / 60 * 2048);
+        shooter.set(TalonFXControlMode.Velocity, rpms / 10 / 60 * 2048);
+        // shooter.set(TalonFXControlMode.Velocity, 6000 / 10 / 60 * 2048);
     }
 
     public void stopShooter() {
