@@ -15,7 +15,7 @@ public class UDPSender {
             to = InetAddress.getByName(address);
             soc = new DatagramSocket();
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
@@ -37,7 +37,7 @@ public class UDPSender {
             DatagramPacket pac = new DatagramPacket(data, data.length, to, port);
             soc.send(pac);
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 

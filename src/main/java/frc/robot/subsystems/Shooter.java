@@ -140,6 +140,7 @@ public class Shooter {
                         System.out.println("gathererMain gathererUp manualIntakeButtonPress set gathererDown");
                         gathererState = gathererDown;
                         }
+                    break;
                     case gathererDown:
                     System.out.println("gathererMain state is down");
                     if (!oi.manualIntakeButton()) { // Stop the intake and hold ball when button is released
