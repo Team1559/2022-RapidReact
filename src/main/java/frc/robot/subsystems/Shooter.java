@@ -12,7 +12,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter {
     private OperatorInterface oi;
@@ -25,10 +24,13 @@ public class Shooter {
     private final double shooter_kD = 0;
     private final double shooter_kI = 0.000;
     private final double shooter_kiz = 0.0;
+    public int ticCounter = 0;
+
+    private double encoderTics = 0;
 
     // TODO: Tune these
-    private final double feeder_kF = 0.045;
-    private final double feeder_kP = 8.0;
+    private final double feeder_kF = 0.00;
+    private final double feeder_kP = 0.06;
     private final double feeder_kD = 0.2;
     private final double feeder_kI = 0.000;
     private final double feeder_kiz = 0.0;
@@ -135,39 +137,30 @@ public class Shooter {
             if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
                 switch (gathererState) {
                     case gathererUp:
-                    System.out.println("gathererMain state is gathererUp");
-                    if (oi.manualIntakeButtonPress()) { // Lower intake if button pressed else stop the intakes
-                        System.out.println("gathererMain gathererUp manualIntakeButtonPress set gathererDown");
-                        gathererState = gathererDown;
+                        if (oi.manualIntakeButtonPress()) { // Lower intake if button pressed else stop the intakes
+                            gathererState = gathererDown;
                         }
-                    break;
+                        break;
                     case gathererDown:
-                    System.out.println("gathererMain state is down");
-                    if (!oi.manualIntakeButton()) { // Stop the intake and hold ball when button is released
+                        if (!oi.manualIntakeButton()) { // Stop the intake and hold ball when button is released
                             gathererState = holding;
-                            System.out.println("gathererMaingathererDown  manualIntakeButton set holding");
                         }
                         break;
                     case holding:
-                    System.out.println("gathererMain state is holding");
-                    if (oi.raiseIntakeButton()) { // intake when the button is pressed again
-                        System.out.println("gathererMain holding raiseIntakeButton set gathererUp");
-                        gathererState = gathererUp;
+                        if (oi.raiseIntakeButton()) { // intake when the button is pressed again
+                            gathererState = gathererUp;
                         } else if (oi.manualIntakeButton()) {
-                            System.out.println("gathererMain holding manualIntakeButton set gathererDown");
                             gathererState = gathererDown;
                         }
                         break;
                 }
             }
         } else {
-            System.out.println("gathererMain disableManual is true");
         }
     }
 
     public void gathererState() {
         if (!disableManual) {
-            System.out.println("gathererState(): disableManual is false, saving state " +gathererState);
             lastState = gathererState;
         }
         switch (gathererState) {
@@ -196,7 +189,6 @@ public class Shooter {
             // oi.copilot.startRumble(0);
             startShooter(calculateShooterRPMS(DEFAULT_DISTANCE)); // Assume distance is 8 ft in manual mode
         } else if (oi.autoSteerToHoopButton()) {
-            System.out.println("running shooter");
             if (checkDependencies()) {
                 startShooter(calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
             } else if (TESTING) {
@@ -238,7 +230,6 @@ public class Shooter {
         } else if (!oi.autoCollectButton()) {
             if (disableManual) {
                 gathererState = lastState;
-                System.out.println("Shooter.feederMain() restore state " + lastState);
                 disableManual = false;
             }
             holdFeeder();
@@ -250,13 +241,10 @@ public class Shooter {
         feederPid.setReference(speed, ControlType.kDutyCycle);
         if (!gatherLock) {
             if (disableManual && gathererState == holding) {
-                System.out.println("startFeeder set gathererDown");
                 gathererState = gathererDown;
             } else if (disableManual) {
-                System.out.println("startFeeder set upRun");
                 gathererState = upRun;
             }
-            System.out.println("startFeeder set gatherLock");
             gatherLock = true;
         }
     }
@@ -264,26 +252,26 @@ public class Shooter {
     public void holdFeeder() {
         if (RESET_ENCODER) {
             feederEncoder.setPosition(0);
+            encoderTics = 0;
             RESET_ENCODER = false;
         }
         if (disableManual && !oi.autoCollectButton() && DriverStation.isTeleop()) {
             gathererState = lastState;
-            System.out.println("Shooter.holdFeeder() restore state " + gathererState);
             disableManual = false;
         }
+        if (ticCounter % 10 == 0) {
+            encoderTics -= 0.2;        }
         gatherLock = false;
-        feederPid.setReference(0, ControlType.kPosition);
+        feederPid.setReference(encoderTics, ControlType.kPosition);
     }
 
     public void stopFeeder() {
-        System.out.println("stopFeeder set gathererUp");
         gathererState = gathererUp;
         feederPid.setReference(0, ControlType.kDutyCycle);
     }
 
     // Get and Set shooter states
     public void startShooter(double rpms) {
-        SmartDashboard.putNumber("Shooter RPMs", rpms);
         shooter.set(TalonFXControlMode.Velocity, rpms / 10 / 60 * 2048);
         // shooter.set(TalonFXControlMode.Velocity, 6000 / 10 / 60 * 2048);
     }

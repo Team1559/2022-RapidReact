@@ -111,7 +111,7 @@ public class Climber {
     }
 
     public void main() {
-        
+
         solenoidMain();
         climber.setNeutralMode(NeutralMode.Brake);
 
@@ -120,7 +120,6 @@ public class Climber {
         // Control for Winch
         if (oi.climberEnableButton()) {
             // disengageSolenoid(); // disengage the solenoid once enabled
-
 
             if (oi.extendClimberPistonsButton()) {
                 extendPistons();
@@ -191,21 +190,17 @@ public class Climber {
 
     public void extendPistons() {
         shooter.disableManual = true;
-        System.out.println("Climber.extendPistons() set holding");
         shooter.gathererState = Shooter.holding;
-        System.out.println("gatherer down");
         climberSolenoid.set(true);
     }
 
     public void retractPistons() {
         climberSolenoid.set(false);
         shooter.disableManual = true;
-        System.out.println("Climber.retractPistons() set gathererUp");
         shooter.gathererState = Shooter.gathererUp;
     }
 
     public void disable() {
-        System.out.println("Climber.disable() set gathererUp");
         shooter.gathererState = Shooter.gathererUp;
     }
 

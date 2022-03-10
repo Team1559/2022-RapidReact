@@ -167,7 +167,6 @@ public class VisionControl {
         } else if (oi.autoCollectButton()) { // <-- PDM not turned off in this case
             if (!usingAuto) {
                 gathererOldState = shooter.gathererState;
-                System.out.println("VC save State "+gathererOldState);
             }
             usingAuto = true;
             double ySpeed = -oi.pilot.getLeftY();
@@ -177,7 +176,6 @@ public class VisionControl {
                 chassis.main();
         } else {
             if (usingAuto && !oi.autoCollectButton()) {
-                System.out.println("VC restore State "+gathererOldState);
                 shooter.disableManual = false;
                 shooter.gathererState = gathererOldState;
             }
@@ -226,7 +224,6 @@ public class VisionControl {
         shooter.disableManual = true;
         if (shooter.gathererState != Shooter.holding && shooter.gathererState != Shooter.gathererDown) {
             shooter.gathererState = Shooter.holding;
-            System.out.println("VisionControl.trackBall() set holding");
         }
 
         if (visionData.isBallValid())
