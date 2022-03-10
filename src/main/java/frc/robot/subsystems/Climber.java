@@ -174,6 +174,10 @@ public class Climber {
         climber.set(TalonFXControlMode.Velocity, -climberRpms);
     }
 
+    public void zeroClimber(){
+        climber.setSelectedSensorPosition(0);
+    }
+
     public void holdRobot() {
         oi.copilot.stopRumble();
         if (resetEncoder) {
