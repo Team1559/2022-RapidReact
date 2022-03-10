@@ -111,6 +111,7 @@ public class Climber {
     }
 
     public void main() {
+        
         solenoidMain();
         climber.setNeutralMode(NeutralMode.Brake);
 
@@ -118,6 +119,8 @@ public class Climber {
         SmartDashboard.putBoolean("Lower Limit Switch", lowerLimitSwitch.get());
         // Control for Winch
         if (oi.climberEnableButton()) {
+            // disengageSolenoid(); // disengage the solenoid once enabled
+
 
             if (oi.extendClimberPistonsButton()) {
                 extendPistons();
@@ -126,13 +129,15 @@ public class Climber {
             }
             // Lower limit switch is hit when the robot is up high
             if (oi.climberUpButton() && !LowerLimitHit()) {
+                disengageSolenoid(); // disengage the solenoid once enabled
+
                 if (watch.getDuration() >= MAX_WAIT) {
-                    disengageSolenoid(); // disengage the solenoid once enabled
                     raiseRobot();
                 }
             } else if (oi.climberDownButton() && !UpperLimitHit()) {
+                disengageSolenoid(); // disengage the solenoid once enabled
+
                 if (watch.getDuration() >= MAX_WAIT) {
-                    disengageSolenoid(); // disengage the solenoid once enabled
                     lowerRobot();
                 }
             } else {
