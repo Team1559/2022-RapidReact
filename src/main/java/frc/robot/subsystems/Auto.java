@@ -488,7 +488,7 @@ public class Auto {
         // double positionError = desiredDistanceFromTarget - robot.vc.hoopx * 12;
         // double ySpeed = positionError * 0.04;
         double positionError = 1000;
-        System.out.println(robot.vc.hoopx);
+        System.out.println("Hoop x: " + robot.vc.hoopx);
         if (robot.vc.hoopx != 0) {
             positionError = robot.vc.hoopx * 12 - desiredDistanceFromTarget;
             ySpeed = positionError * 0.04;

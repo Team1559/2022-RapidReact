@@ -249,7 +249,7 @@ public class Robot extends TimedRobot {
             shooter.disableManual = false;
             shooter.gatherLock = false;
         }
-        if(FeatureFlags.doClimber && FeatureFlags.climberInitialized){
+        if (FeatureFlags.doClimber && FeatureFlags.climberInitialized) {
             climber.zeroClimber();
         }
     }
