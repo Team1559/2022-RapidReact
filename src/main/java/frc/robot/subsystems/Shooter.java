@@ -32,10 +32,12 @@ public class Shooter {
     private final double feeder_kF = 0.00;
     private final double feeder_kP = 0.06;
     private final double feeder_kD = 0.2;
-    private final double feeder_kI = 0.000;
+    private final double feeder_kI = 0.0003;
     private final double feeder_kiz = 0.0;
+    private final double feeder_kiM = 1000;
 
-    public double feederSpeed = 0.2;
+    public double feederSpeed = 1.6;
+
     public double intakeSpeed = 1; // 0.4;
 
     private static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
@@ -93,11 +95,12 @@ public class Shooter {
         feeder.set(0);
         feederEncoder = feeder.getEncoder();
         feederPid = feeder.getPIDController();
-        feederPid.setP(feeder_kP);
-        feederPid.setI(feeder_kI);
-        feederPid.setD(feeder_kD);
-        feederPid.setFF(feeder_kF);
-        feederPid.setIZone(feeder_kiz);
+        feederPid.setP(feeder_kP, 0);
+        feederPid.setI(feeder_kI, 0);
+        feederPid.setD(feeder_kD, 0);
+        feederPid.setFF(feeder_kF, 0);
+        feederPid.setIZone(feeder_kiz, 0);
+        feederPid.setIMaxAccum(feeder_kiM, 0);
 
         intake.set(TalonSRXControlMode.PercentOutput, 0);
 
@@ -130,6 +133,10 @@ public class Shooter {
         // Control for lowering intake
         gathererMain();
         gathererState();
+    }
+
+    public void zeroFeeder() {
+        feederEncoder.setPosition(0);
     }
 
     public void gathererMain() {
@@ -204,7 +211,7 @@ public class Shooter {
     public void feederMain() {
         if (oi.shootButton()) {
             disableManual = true;
-            startFeeder(feederSpeed);
+            startFeeder(feederSpeed, oi.shootButtonPress());
             // if (Math.abs( () - calculateShooterRPMS(DEFAULT_DISTANCE)) <
             // vc.shooterThreshold) {
             // disableManual = true;
@@ -218,15 +225,15 @@ public class Shooter {
                         // Speed check ^^
                         if (Math.abs(getShooterRpms() - calculateShooterRPMS(
                                 vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2)) < vc.shooterThreshold) {
+                            startFeeder(feederSpeed, !disableManual); // flywheel rpm check ^
                             disableManual = true;
-                            startFeeder(feederSpeed); // flywheel rpm check ^
                         }
                     }
                 }
             }
         } else if (oi.reverseIntake()) {
             disableManual = false;
-            startFeeder(-feederSpeed);
+            // startFeeder(-feederSpeed, oi.shootButtonPress());
         } else if (!oi.autoCollectButton()) {
             if (disableManual) {
                 gathererState = lastState;
@@ -236,10 +243,14 @@ public class Shooter {
         }
     }
 
-    public void startFeeder(double speed) {
+    public void startFeeder(double setpoint, boolean setNewTarget) {
+        double target = setpoint;
         RESET_ENCODER = true;
+        if (setNewTarget) {
+            feederEncoder.setPosition(0);
+            feederPid.setReference(target, ControlType.kPosition);
+        }
 
-        feederPid.setReference(speed, ControlType.kDutyCycle);
         if (!gatherLock) {
             if (disableManual && gathererState == holding) {
                 gathererState = gathererDown;
@@ -261,7 +272,8 @@ public class Shooter {
             disableManual = false;
         }
         if (ticCounter % 10 == 0 && (feederEncoder.getPosition() - encoderTics < 2.0)) {
-            encoderTics -= 0.2;        }
+            encoderTics -= 0.2;
+        }
         gatherLock = false;
         feederPid.setReference(encoderTics, ControlType.kPosition);
     }

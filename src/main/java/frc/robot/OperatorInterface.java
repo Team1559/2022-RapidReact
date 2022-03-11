@@ -43,8 +43,16 @@ public class OperatorInterface {
         return copilot.getRightBumper();
     }
 
+    public boolean runFlyWheelButtonManualPress() {
+        return copilot.getRightBumperPressed();
+    }
+
     public boolean shootButton() {
         return copilot.getBButton();
+    }
+
+    public boolean shootButtonPress() {
+        return copilot.getBButtonPressed();
     }
 
     public boolean autoShootButton() {
