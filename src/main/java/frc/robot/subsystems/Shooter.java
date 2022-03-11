@@ -340,9 +340,9 @@ public class Shooter {
     public double calculateShooterRPMS(double distance) {
         // RPM vs. distance fit from
         // https://docs.google.com/spreadsheets/d/1l1Nxlk29b2KL5FwVklSFhfuychKHfztRSNRqPUuQUIs/edit#gid=695645693
-        return 4476 + 158 * distance;
+        // return 4476 + 158 * distance;
         // return distance;
-        // return 5000; // FIXME return to old formula
+        return 5000; // FIXME: return to old formula
     }
 
     public void disable() {
