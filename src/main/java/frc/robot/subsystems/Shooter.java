@@ -34,14 +34,14 @@ public class Shooter {
     private final double feeder_kD = 0.2;
     private final double feeder_kI = 0.0003;
     private final double feeder_kiz = 0.0;
-    private final double feeder_kiM = 1000;
+    private final double feeder_kiM = 0.1;
 
     public double feederSpeed = 1.6;
 
     public double intakeSpeed = 1; // 0.4;
 
     private static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
-    private static final double DEFAULT_RPMS = 4500; // 4 ft from front of robot to face of target
+    public static final double DEFAULT_RPMS = 4500; // 4 ft from front of robot to face of target
     private final boolean TESTING = true;
 
     private TalonFX shooter;
@@ -137,6 +137,7 @@ public class Shooter {
 
     public void zeroFeeder() {
         feederEncoder.setPosition(0);
+        encoderTics = 0;
     }
 
     public void gathererMain() {

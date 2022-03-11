@@ -53,7 +53,7 @@ public class Auto {
             { DRIVE, 69 },
             // { WAIT, 25 },
             { STOP_GATHERER },
-            { START_FLYWHEEL, 7500 },
+            { START_FLYWHEEL, -1 },
             { TURN, 88 },
             { TURN, 88 },
             { DRIVE, 80 },
@@ -242,20 +242,19 @@ public class Auto {
     };
 
     public static final int[][] testVisionAutoWithNewTurningThatStopsWhenItSeesTheHoopBecauseRylanIsNotSuperBadAtLifeBabaWuestAlsoIsntWuestBad = {
-        // Get 1st ball
-        { START_GATHERER },
-        { WAIT, 20 },
-        { DRIVE_BALL, 36 },
-        { DRIVE, 20 },
-        { TURN_HOOP, 90},
-        { TURN_HOOP, 60 },
-        { START_FLYWHEEL, 0 },
-        { DRIVE_HOOP, 60 }, 
-        { WAIT, 50 },
-        { SHOOT }
+            // Get 1st ball
+            { START_GATHERER },
+            { WAIT, 20 },
+            { DRIVE_BALL, 36 },
+            { DRIVE, 20 },
+            { TURN_HOOP, 90 },
+            { TURN_HOOP, 60 },
+            { START_FLYWHEEL, 0 },
+            { DRIVE_HOOP, 60 },
+            { WAIT, 50 },
+            { SHOOT }
 
-};
-
+    };
 
     public Auto(Robot robot) {
         this(robot, basicAutoSteps);
@@ -279,7 +278,7 @@ public class Auto {
             value = step[1];
         }
         stepCounter++;
-        if(holdFeeder){
+        if (holdFeeder) {
             robot.shooter.holdFeeder();
         }
         switch (type) {
@@ -419,7 +418,7 @@ public class Auto {
             Done();
         } else if (stepCounter > 50 * MAX_TURN_SECONDS)
             Fail("Turned for too long");
-        else if(robot.vc.isHoopValid()){
+        else if (robot.vc.isHoopValid()) {
             Done();
         }
     }
@@ -441,6 +440,9 @@ public class Auto {
     private void StartFlywheel(double rpm) {
         if (rpm == 0)
             rpm = robot.shooter.calculateShooterRPMS(robot.vc.hoopx);
+        else if (rpm == -1) {
+            rpm = Shooter.DEFAULT_RPMS;
+        }
         robot.shooter.startShooter(rpm);
         Done();
     }
@@ -464,20 +466,20 @@ public class Auto {
 
     private void DriveBall(int desiredDistanceFromBall) { // in inches
         double positionError = 0;
-        if(robot.vc.ballx != 0){
+        if (robot.vc.ballx != 0) {
             positionError = robot.vc.ballx * 12 - desiredDistanceFromBall;
             ySpeed = positionError * 0.04;
-            if(ySpeed > MAX_DRIVE)
+            if (ySpeed > MAX_DRIVE)
                 ySpeed = MAX_DRIVE;
             System.out.println("Drive value: " + ySpeed);
         }
         if (!robot.vc.trackBall(-Math.abs(ySpeed)))
             Fail("No ball found");
-        if (positionError < 0 && robot.vc.ballx != 0){
-            robot.chassis.drive(0,0,false);
+        if (positionError < 0 && robot.vc.ballx != 0) {
+            robot.chassis.drive(0, 0, false);
             Done();
         }
-        if (stepCounter > MAX_BALL_SECONDS * 500){
+        if (stepCounter > MAX_BALL_SECONDS * 500) {
             Fail("Took too long");
         }
     }
@@ -487,22 +489,22 @@ public class Auto {
         // double ySpeed = positionError * 0.04;
         double positionError = 1000;
         System.out.println(robot.vc.hoopx);
-        if(robot.vc.hoopx != 0){
+        if (robot.vc.hoopx != 0) {
             positionError = robot.vc.hoopx * 12 - desiredDistanceFromTarget;
             ySpeed = positionError * 0.04;
-            if(ySpeed > MAX_DRIVE)
+            if (ySpeed > MAX_DRIVE)
                 ySpeed = MAX_DRIVE;
             System.out.println("Drive value: " + ySpeed);
         }
 
-        if(ySpeed > MAX_DRIVE){
+        if (ySpeed > MAX_DRIVE) {
             ySpeed = MAX_DRIVE;
         }
 
         if (!robot.vc.trackHoop(-ySpeed))
             Fail("No hoop found");
-        if (Math.abs(positionError) < HOOP_ERROR_INCHES && Math.abs(robot.vc.hoopr) < HOOP_ERROR_DEGREES){
-            robot.chassis.drive(0,0,false);
+        if (Math.abs(positionError) < HOOP_ERROR_INCHES && Math.abs(robot.vc.hoopr) < HOOP_ERROR_DEGREES) {
+            robot.chassis.drive(0, 0, false);
         }
     }
 
