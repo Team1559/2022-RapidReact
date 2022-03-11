@@ -41,7 +41,7 @@ public class Shooter {
     public double intakeSpeed = 1; // 0.4;
 
     private static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
-    private static final double DEFAULT_RPMS = 4250; // 4 ft from front of robot to face of target
+    private static final double DEFAULT_RPMS = 4500; // 4 ft from front of robot to face of target
     private final boolean TESTING = true;
 
     private TalonFX shooter;
@@ -63,7 +63,7 @@ public class Shooter {
     public static final int holding = 2;
     public static final int upRun = 3;
 
-    private boolean gatherLock = false;
+    public boolean gatherLock = false;
 
     public int gathererState = gathererUp;
 

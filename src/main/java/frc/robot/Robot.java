@@ -246,6 +246,8 @@ public class Robot extends TimedRobot {
             System.out.println("teleopInit set gathererUp");
             shooter.gathererState = Shooter.gathererUp;
             shooter.zeroFeeder();
+            shooter.disableManual = false;
+            shooter.gatherLock = false;
         }
         if(FeatureFlags.doClimber && FeatureFlags.climberInitialized){
             climber.zeroClimber();
