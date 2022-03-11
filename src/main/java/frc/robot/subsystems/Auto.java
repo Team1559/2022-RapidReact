@@ -81,7 +81,7 @@ public class Auto {
     };
 
     public static final int[][] minAuto = {
-            { DRIVE, 96 },
+            { DRIVE, 12*6 },
     };
     /*
      * Drive to ball 71”
