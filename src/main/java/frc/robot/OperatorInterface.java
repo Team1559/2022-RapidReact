@@ -26,10 +26,14 @@ public class OperatorInterface {
     }
 
     public boolean autoCollectButtonRelease() {
-        return pilot.getAButtonReleased();
+        return pilot.getRelease(autoCollectButton(), 0);
     }
 
-    public boolean compressorToggle(){
+    public boolean autoCollectButtonPress() {
+        return pilot.getPress(autoCollectButton(), 0);
+    }
+
+    public boolean compressorToggle() {
         return pilot.getLeftTriggerAxis() > 0.5;
     }
 
@@ -44,7 +48,7 @@ public class OperatorInterface {
     }
 
     public boolean runFlyWheelButtonManualPress() {
-        return copilot.getRightBumperPressed();
+        return copilot.getPress(runFlyWheelButtonManual(), 1);
     }
 
     public boolean shootButton() {
@@ -52,7 +56,7 @@ public class OperatorInterface {
     }
 
     public boolean shootButtonPress() {
-        return copilot.getBButtonPressed();
+        return copilot.getPress(shootButton(), 2);
     }
 
     public boolean autoShootButton() {
@@ -64,11 +68,11 @@ public class OperatorInterface {
     }
 
     public boolean manualIntakeButtonPress() {
-        return pilot.getLeftBumperPressed();
+        return pilot.getPress(manualIntakeButtonRelease(), 3);
     }
 
     public boolean manualIntakeButtonRelease() {
-        return pilot.getLeftBumperReleased();
+        return pilot.getRelease(manualIntakeButtonRelease(), 3);
     }
 
     public boolean raiseIntakeButton() {

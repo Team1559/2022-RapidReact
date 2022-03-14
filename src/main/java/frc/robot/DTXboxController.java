@@ -1,5 +1,6 @@
 package frc.robot;
 
+import java.util.ArrayList;
 import com.ctre.phoenix.time.StopWatch;
 
 import edu.wpi.first.wpilibj.XboxController;
@@ -9,6 +10,7 @@ public class DTXboxController extends XboxController {
         LEFT, RIGHT, BOTH
     }
 
+    private ArrayList<Boolean> bools = new ArrayList<>();
     private double duration = 0;
     private double power;
     private Side side = Side.BOTH;
@@ -16,11 +18,21 @@ public class DTXboxController extends XboxController {
     private StopWatch stopWatch = new StopWatch();
 
     private boolean wasDpadPressed = false;
+    private boolean wasDpadReleased = false;
 
     public DTXboxController(int port) {
         super(port);
+        for (int i = 0; i < 1000; i++) {
+            bools.add(null);
+        }
     }
 
+    /**
+     * returns true if the dpad is pressed at the specified angle
+     * 
+     * @param angle The desired angle
+     * @return Whether or not the dpad is presses at the specified angle
+     */
     public boolean getDpad(int angle) {
         int pov = getPOV();
 
@@ -37,38 +49,74 @@ public class DTXboxController extends XboxController {
         }
     }
 
+    /**
+     * Returns the curent dpad angle
+     * 
+     * @return The current dpad angle
+     */
     public int getRawDPad() {
         return getPOV();
     }
 
+    /**
+     * Return true when the dpad is depressed
+     * 
+     * @return Whether the dpad is pressed
+     */
     public boolean isDpadPressed() {
         return getPOV() != -1;
     }
 
+    /**
+     * Returns true on the rising edge of when the dpad is pressed at the specified
+     * angle
+     * 
+     * @param angle The desired angle
+     * @return Whether the dpad has just been pressed at the specifed angle
+     */
     public boolean getDPadPress(int angle) {
-        if (!wasDpadPressed) {
-            wasDpadPressed = isDpadPressed();
+        int currentAngle = getRawDPadPress();
+        if (angle == -1 && currentAngle != -1) {
+            return true;
+        }
 
-            if (angle == -1 && getPOV() != -1) {
-                return true;
-            }
-
-            if (getPOV() == angle) {
-                return true;
-            }
-
-            else {
-                return false;
-            }
+        if (currentAngle == angle) {
+            return true;
         }
 
         else {
-            wasDpadPressed = isDpadPressed();
-
             return false;
         }
     }
 
+    /**
+     * Returns true on the rising edge of when the dpad is released at the specified
+     * angle
+     * 
+     * @param angle The desired angle
+     * @return Whether the dpad has just been released at the specifed angle
+     */
+    public boolean getDPadRelease(int angle) {
+        int currentAngle = getRawDPadRelease();
+        if (angle == -1 && currentAngle != -1) {
+            return true;
+        }
+
+        if (currentAngle == angle) {
+            return true;
+        }
+
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the current angle on the rising edge of when the dpad is pressed and
+     * -1 otherwise
+     * 
+     * @return The current angle of the dpad if it has just been pressed
+     */
     public int getRawDPadPress() {
         if (!wasDpadPressed) {
             wasDpadPressed = isDpadPressed();
@@ -80,6 +128,86 @@ public class DTXboxController extends XboxController {
 
             return -1;
         }
+    }
+
+    /**
+     * Returns the current angle on the rising edge of when the dpad is released and
+     * -1 otherwise
+     * 
+     * @return The current angle of the dpad if it has just been released
+     */
+    public int getRawDPadRelease() {
+        int out = -1;
+        if (!wasDpadReleased) {
+            wasDpadReleased = isDpadPressed();
+            out = -1;
+        }
+
+        else {
+            if (wasDpadReleased) {
+                out = getPOV();
+            } else {
+                out = -1;
+            }
+            wasDpadReleased = isDpadPressed();
+
+        }
+        return out;
+    }
+
+    /**
+     * Returns true on the rising edge of boolean being set to true
+     * 
+     * @param button The boolean to track
+     * @param id     The unique id of the button
+     * @return Whether the button has just been pressed
+     */
+    public boolean getPress(boolean button, int id) {
+        try {
+            if (bools.get(id) != null)
+                bools.set(id, false);
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
+        if (button) {
+            if (!bools.get(id)) {
+                bools.set(id, true);
+                return true;
+            }
+        } else
+            bools.set(id, false);
+        return false;
+    }
+
+    /**
+     * Returns true on the rising edge of boolean being set to false
+     * 
+     * @param button The boolean to track
+     * @param id     The unique id of the button
+     * @return Whether the button has just been released
+     */
+    public boolean getRelease(boolean button, int id) {
+        boolean out = false;
+        try {
+            if (bools.get(id) != null)
+                bools.set(id, false);
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
+
+        if (button) {
+            if (!bools.get(id)) {
+                bools.set(id, false);
+                out = false;
+            }
+        } else {
+            if (bools.get(id))
+                out = true;
+            else
+                out = false;
+            bools.set(id, false);
+        }
+        return out;
     }
 
     /**
@@ -159,14 +287,14 @@ public class DTXboxController extends XboxController {
     }
 
     /**
-     * Stops the rumbe on both sides
+     * Stops the rumble on both sides
      */
     public void stopRumble() {
         stopRumble(Side.BOTH);
     }
 
     /**
-     * Stops the rumbe on a certain side
+     * Stops the rumble on a certain side
      * 
      * @param side What side to stop the ruble on <code>LEFT<code>,
      *             <code>RIGHT<code>, <code>BOTH<code>
