@@ -19,10 +19,13 @@ public class DTXboxController extends XboxController {
 
     private boolean wasDpadPressed = false;
     private boolean wasDpadReleased = false;
-
+    /**
+     * Creates a controller object on the specified port
+     * @param port (0-5)
+     */
     public DTXboxController(int port) {
         super(port);
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 1001; i++) {
             bools.add(null);
         }
     }
@@ -159,7 +162,7 @@ public class DTXboxController extends XboxController {
      * Returns true on the rising edge of boolean being set to true
      * 
      * @param button The boolean to track
-     * @param id     The unique id of the button
+     * @param id     The unique id of the button (0-1000)
      * @return Whether the button has just been pressed
      */
     public boolean getPress(boolean button, int id) {
@@ -183,7 +186,7 @@ public class DTXboxController extends XboxController {
      * Returns true on the rising edge of boolean being set to false
      * 
      * @param button The boolean to track
-     * @param id     The unique id of the button
+     * @param id     The unique id of the button (0-1000)
      * @return Whether the button has just been released
      */
     public boolean getRelease(boolean button, int id) {
