@@ -300,6 +300,7 @@ public class DTXboxController extends XboxController {
      *             <code>RIGHT<code>, <code>BOTH<code>
      */
     public void stopRumble(Side side) {
+        duration = 0;
         if (side == Side.LEFT) {
             setRumble(RumbleType.kLeftRumble, 0);
         } else if (side == Side.RIGHT) {
