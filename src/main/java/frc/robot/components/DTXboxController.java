@@ -19,13 +19,15 @@ public class DTXboxController extends XboxController {
 
     private boolean wasDpadPressed = false;
     private boolean wasDpadReleased = false;
+
     /**
      * Creates a controller object on the specified port
+     * 
      * @param port (0-5)
      */
     public DTXboxController(int port) {
         super(port);
-        for (int i = 0; i < 1001; i++) {
+        for (int i = 0; i <= 1000; i++) {
             bools.add(null);
         }
     }
