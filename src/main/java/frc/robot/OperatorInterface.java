@@ -1,5 +1,7 @@
 package frc.robot;
 
+import frc.robot.components.DTXboxController;
+
 public class OperatorInterface {
     private static final int PILOT_PORT = 0;
     private static final int COPILOT_PORT = 1;
