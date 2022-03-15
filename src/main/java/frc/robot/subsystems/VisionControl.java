@@ -37,7 +37,7 @@ public class VisionControl {
     // other variables
     public boolean usingAuto = false;
     private int invalid_ball_counter = 0;
-    private final int invalid_ball_counter_threshold = 40;
+    private final int invalid_ball_counter_threshold = 60;
     private final double align_kP = 0.5;
     private FileLogging fl;
     private double counter = 0;
@@ -231,7 +231,6 @@ public class VisionControl {
         else
             invalid_ball_counter++;
         if (invalid_ball_counter < invalid_ball_counter_threshold) {
-
             drive(ySpeed, calculateBallRotation());
             return true;
         } else

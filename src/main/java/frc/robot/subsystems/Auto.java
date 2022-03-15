@@ -27,14 +27,14 @@ public class Auto {
     private static final int FEEDER_CYCLES = 200;
     boolean holdFeeder = true;
 
-    private static final int MAX_TURN_SECONDS = 3;
+    private static final int MAX_TURN_SECONDS = 5;
     private static final int MAX_BALL_SECONDS = 5;
 
     static final int HOOP_ERROR_INCHES = 3;
     static final int HOOP_ERROR_DEGREES = 1;
 
     static final double MAX_DRIVE = 0.2;
-    static final double MAX_TURN = 0.5;
+    static final double MAX_TURN = 0.6;
 
     double ySpeed = 0;
 
@@ -55,7 +55,7 @@ public class Auto {
             { STOP_GATHERER },
             { START_FLYWHEEL, -1 },
             { TURN, 88 },
-            { TURN, 80 },
+            { TURN, 70 },
             { DRIVE, 80 },
             { START_GATHERER },
             { SHOOT },
