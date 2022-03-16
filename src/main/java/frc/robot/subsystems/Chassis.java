@@ -42,7 +42,8 @@ public class Chassis {
     public static final double TELEOP_RAMP_RATE = 0.0;
 
     // these need to be set once
-    // private final double differpercent = 12 / 25.5; // percent the front needs to move compared to the back
+    // private final double differpercent = 12 / 25.5; // percent the front needs to
+    // move compared to the back
     private final double SLOWMODE_COEFFICIENT = 0.5;
 
     // these can be changed when needed
@@ -148,7 +149,7 @@ public class Chassis {
         blep = -blEncoder.getPosition();
         brep = -brEncoder.getPosition();
     }
-    
+
     public void drive(double ySpeed, double zRotation) {
         drive(ySpeed, 0, zRotation, true);
     }
@@ -158,7 +159,7 @@ public class Chassis {
     }
 
     public void drive(double ySpeed, double zRotation, boolean squareInputs) {
-       drive(ySpeed, 0, zRotation, squareInputs);
+        drive(ySpeed, 0, zRotation, squareInputs);
     }
 
     public void drive(double ySpeed, double xSpeed, double zRotation, boolean squareInputs) {
