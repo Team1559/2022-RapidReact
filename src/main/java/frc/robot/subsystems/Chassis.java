@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.OperatorInterface;
 import frc.robot.Wiring;
 import frc.robot.components.IMU;
+import frc.robot.components.DevilDrive;
 import frc.robot.components.FileLogging;
-import frc.robot.components.SplitDrive;
 
 public class Chassis {
     private static final int TIMEOUT = 20;
@@ -20,9 +20,8 @@ public class Chassis {
     public static final double MAX_TICKS_PER_100MS = MAX_SPEED_FPS_TRACTION * 4096.0
             / (Math.PI * WHEEL_RADIUS_INCHES_MECANUM * 2.0 / 12.0) / 10.0;
     public static final double TICKS_PER_REVOLUTION = 42;
-    public static final double CHASSIS_GEAR_RATIO = (60.0/12.0)*(26.0/22.0)*1.2; // CHASSIS_GEAR_RATIO:1, ~6:1
-    private SplitDrive front;
-    private SplitDrive back;
+    public static final double CHASSIS_GEAR_RATIO = (60.0 / 12.0) * (26.0 / 22.0) * 1.2; // CHASSIS_GEAR_RATIO:1, ~6:1
+    private DevilDrive drive;
     public CANSparkMax CANSparkMax1;
     public CANSparkMax CANSparkMax2;
     public CANSparkMax CANSparkMax3;
@@ -43,7 +42,7 @@ public class Chassis {
     public static final double TELEOP_RAMP_RATE = 0.0;
 
     // these need to be set once
-    private final double differpercent = 12 / 25.5; // percent the front needs to move compared to the back
+    // private final double differpercent = 12 / 25.5; // percent the front needs to move compared to the back
     private final double SLOWMODE_COEFFICIENT = 0.5;
 
     // these can be changed when needed
@@ -81,18 +80,18 @@ public class Chassis {
         return sparky;
     }
 
-    public void autoInit(){
+    public void autoInit() {
         this.initOdometry();
         this.setRampRate(AUTO_RAMP_RATE);
     }
 
-    public void teleopInit(){
+    public void teleopInit() {
         this.imu.zeroYaw();
         this.setPid(6e-5, 0, 0, 0.000015);
         this.setRampRate(TELEOP_RAMP_RATE);
     }
 
-    public void setRampRate(double rate){
+    public void setRampRate(double rate) {
         CANSparkMax1.setClosedLoopRampRate(rate);
         CANSparkMax2.setClosedLoopRampRate(rate);
         CANSparkMax3.setClosedLoopRampRate(rate);
@@ -119,8 +118,9 @@ public class Chassis {
         CANSparkMax4.setInverted(true);
         initEncoders();
 
-        front = new SplitDrive(CANSparkMax1, CANSparkMax2);
-        back = new SplitDrive(CANSparkMax3, CANSparkMax4);
+        // front = new SplitDrive(CANSparkMax1, CANSparkMax2);
+        // back = new SplitDrive(CANSparkMax3, CANSparkMax4);
+        drive = new DevilDrive(CANSparkMax1, CANSparkMax2, CANSparkMax3, CANSparkMax4);
         fl = new FileLogging();
         if (LOGDATA) {
             fl.createfile("encoders");
@@ -130,7 +130,7 @@ public class Chassis {
     public void main() {
         imu.updateValues();
         SmartDashboard.putNumber("IMU", this.imu.yaw);
-        drive(oi.pilot.getLeftY(), oi.pilot.getRightX());
+        drive(oi.pilot.getLeftY(), oi.pilot.getLeftX(), oi.pilot.getRightX());
         updateEncoders();
         if (LOGDATA) {
             SmartDashboard.putNumber("Front left encoder velocity is: ", flEncoder.getVelocity());
@@ -148,32 +148,39 @@ public class Chassis {
         blep = -blEncoder.getPosition();
         brep = -brEncoder.getPosition();
     }
-
+    
     public void drive(double ySpeed, double zRotation) {
-        drive(ySpeed, zRotation, true);
+        drive(ySpeed, 0, zRotation, true);
+    }
+
+    public void drive(double ySpeed, double xSpeed, double zRotation) {
+        drive(ySpeed, xSpeed, zRotation, true);
     }
 
     public void drive(double ySpeed, double zRotation, boolean squareInputs) {
+       drive(ySpeed, 0, zRotation, squareInputs);
+    }
+
+    public void drive(double ySpeed, double xSpeed, double zRotation, boolean squareInputs) {
         ySpeed *= oi.slowModeButton() ? SLOWMODE_COEFFICIENT : 1;
         zRotation *= oi.slowModeButton() ? SLOWMODE_COEFFICIENT : 1;
-        front.splitDrive(ySpeed, (differpercent) * -zRotation, squareInputs);
-        back.splitDrive(ySpeed, -zRotation, squareInputs);
+        xSpeed *= oi.slowModeButton() ? SLOWMODE_COEFFICIENT : 1;
+        drive.driveCartesian(ySpeed, xSpeed, zRotation, squareInputs);
     }
 
     /**
      * @deprecated
      */
     public void pathDrive(double l, double r) {
-        front.pathDrive(l, r);
-        back.coast();
+        // front.pathDrive(l, r);
+        // back.coast();
     }
 
     /**
      * @deprecated
      */
     public void pathDrive(double fl, double fr, double bl, double br) {
-        front.pathDrive(fl, fr);
-        back.pathDrive(bl, br);
+        drive.pathDrive(fl, fr, bl, br);
     }
 
     public void setPid(double kp, double ki, double kd, double kf) {
@@ -257,7 +264,7 @@ public class Chassis {
     }
 
     public double inchesToRevolutions(double inches) {
-        //inches to Revolutions
+        // inches to Revolutions
         return CHASSIS_GEAR_RATIO * inches / (2 * Math.PI * WHEEL_RADIUS_INCHES_MECANUM);
     }
 
