@@ -41,7 +41,7 @@ public class Shooter {
     public double intakeSpeed = 1; // 0.4;
 
     private static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
-    public static final double DEFAULT_RPMS = 4500; // 4 ft from front of robot to face of target
+    public static final double DEFAULT_RPMS = 5000; // 4 ft from front of robot to face of target
     private final boolean TESTING = true;
 
     private TalonFX shooter;
@@ -101,6 +101,7 @@ public class Shooter {
         feederPid.setFF(feeder_kF, 0);
         feederPid.setIZone(feeder_kiz, 0);
         feederPid.setIMaxAccum(feeder_kiM, 0);
+        feeder.setSmartCurrentLimit(500, 500);
 
         intake.set(TalonSRXControlMode.PercentOutput, 0);
 
