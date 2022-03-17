@@ -5,7 +5,7 @@ import com.ctre.phoenix.time.StopWatch;
 
 import edu.wpi.first.wpilibj.XboxController;
 
-public class DTXboxController extends XboxController {
+public class DTXboxController extends XboxController implements Runnable {
     public enum Side {
         LEFT, RIGHT, BOTH
     }
@@ -229,8 +229,8 @@ public class DTXboxController extends XboxController {
      * Sets the rumble on the controller
      * 
      * @param duration Time in seconds for the rumble to last
-     * @param side     What side the ruble on <code>LEFT<code>,
-     *                 <code>RIGHT<code>, <code>BOTH<code>
+     * @param side     What side the ruble on <code>LEFT</code>,
+     *                 <code>RIGHT</code>, or <code>BOTH</code>
      */
     public void startRumble(double duration, Side side) {
         startRumble(duration, 1, side);
@@ -253,8 +253,8 @@ public class DTXboxController extends XboxController {
      * 
      * @param duration Time in seconds for the rumble to last
      * @param power    Strength of rumble. Values range from 0-1
-     * @param side     What side the ruble on <code>LEFT<code>,
-     *                 <code>RIGHT<code>, <code>BOTH<code>
+     * @param side     What side the ruble on <code>LEFT</code>,
+     *                 <code>RIGHT</code>, or <code>BOTH</code>
      */
     public void startRumble(double duration, double power, Side side) {
         this.duration = duration;
@@ -266,27 +266,31 @@ public class DTXboxController extends XboxController {
     /**
      * Runs the rumble periodically
      */
-    public void rumblePeriodic() {
-        if (stopWatch.getDuration() < duration && duration > 0 || duration == -1) {
-            if (side == Side.LEFT) {
-                setRumble(RumbleType.kLeftRumble, power);
-            } else if (side == Side.RIGHT) {
-                setRumble(RumbleType.kRightRumble, power);
-            } else {
-                setRumble(RumbleType.kLeftRumble, power);
-                setRumble(RumbleType.kRightRumble, power);
+    @Override
+    public void run() {
+        System.out.println("Rumble periodc started");
+        while (true) {
+            if (stopWatch.getDuration() < duration && duration > 0 || duration == -1) {
+                if (side == Side.LEFT) {
+                    setRumble(RumbleType.kLeftRumble, power);
+                } else if (side == Side.RIGHT) {
+                    setRumble(RumbleType.kRightRumble, power);
+                } else {
+                    setRumble(RumbleType.kLeftRumble, power);
+                    setRumble(RumbleType.kRightRumble, power);
+                }
             }
-        }
 
-        if (duration > 0 && stopWatch.getDuration() >= duration) {
-            duration = 0;
-            if (side == Side.LEFT) {
-                setRumble(RumbleType.kLeftRumble, 0);
-            } else if (side == Side.RIGHT) {
-                setRumble(RumbleType.kRightRumble, 0);
-            } else {
-                setRumble(RumbleType.kLeftRumble, 0);
-                setRumble(RumbleType.kRightRumble, 0);
+            if (duration > 0 && stopWatch.getDuration() >= duration) {
+                duration = 0;
+                if (side == Side.LEFT) {
+                    setRumble(RumbleType.kLeftRumble, 0);
+                } else if (side == Side.RIGHT) {
+                    setRumble(RumbleType.kRightRumble, 0);
+                } else {
+                    setRumble(RumbleType.kLeftRumble, 0);
+                    setRumble(RumbleType.kRightRumble, 0);
+                }
             }
         }
     }
@@ -301,8 +305,8 @@ public class DTXboxController extends XboxController {
     /**
      * Stops the rumble on a certain side
      * 
-     * @param side What side to stop the ruble on <code>LEFT<code>,
-     *             <code>RIGHT<code>, <code>BOTH<code>
+     * @param side What side to stop the ruble on <code>LEFT</code>,
+     *             <code>RIGHT</code>, or <code>BOTH</code>
      */
     public void stopRumble(Side side) {
         duration = 0;

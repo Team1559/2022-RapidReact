@@ -94,8 +94,6 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         oi.copilot.stopRumble();
         updateColor();
-        oi.pilot.rumblePeriodic();
-        oi.copilot.rumblePeriodic();
         if (FeatureFlags.doShooter && FeatureFlags.shooterInitialized) {
             shooter.ticCounter += 1;
         }

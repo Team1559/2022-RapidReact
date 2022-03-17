@@ -23,7 +23,7 @@ public class Vision {
             VisionData NewData = new VisionData();
             NewData.hoopStatus = 2;
             NewData.ballStatus = 2;
-            String in = client.get();
+            String in = client.getData();
 
             if (in != null) {
                 // System.out.println(in);

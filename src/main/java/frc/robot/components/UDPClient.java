@@ -13,19 +13,32 @@ import java.io.InputStream;
 public class UDPClient implements Runnable {
     // private static final String HOST = "169.254.210.151";// "10.15.59.6"; //
     // 169.254.227.6
-    private static final int PORT = 5801;
+    private int port;
     Thread clientThread;
     boolean running;
     String data;
     DatagramSocket socket;
     byte[] receive;
 
+    /**
+     * Creates a listening socket that listens on port <code>5801</code>
+     */
     public UDPClient() {
+        this(5801);
+    }
+
+    /**
+     * Creates a listening socket that listens on the specified port
+     * 
+     * @param port The port to listen on
+     */
+    public UDPClient(int port) {
+        this.port = port;
         clientThread = new Thread(this);
         receive = new byte[65535];
 
         try {
-            socket = new DatagramSocket(PORT);
+            socket = new DatagramSocket(this.port);
         }
 
         catch (Exception e) {
@@ -35,6 +48,9 @@ public class UDPClient implements Runnable {
         clientThread.start();
     }
 
+    /**
+     * Receives data periodically
+     */
     @Override
     public void run() {
         running = true;
@@ -49,11 +65,21 @@ public class UDPClient implements Runnable {
         }
     }
 
-    public String get() {
+    /**
+     * Returs the most recently fetched data
+     * 
+     * @return The most current data
+     */
+    public String getData() {
         return data;
     }
 
-    public String receive() {
+    /**
+     * Gets teh most current data
+     * 
+     * @return The most current data
+     */
+    private String receive() {
         String ret = null;
         DatagramPacket DpReceive = new DatagramPacket(receive, receive.length);
 
