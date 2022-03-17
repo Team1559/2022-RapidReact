@@ -3,8 +3,8 @@ package frc.robot.components;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.*;
 
-public class IMU {
-    AHRS ahrs;
+public class IMU implements Runnable{
+    private AHRS ahrs;
     public double roll = 0;
     public double pitch = 0;
     public double yaw = 0;
@@ -13,9 +13,11 @@ public class IMU {
     public double z_acceleration = 0;
     public double y_angularVelocity = 0;
     public double turnRate;
-    public double maxAutoYaw = 60;// messured in degrees, may change
+    public double maxYaw = 60;// messured in degrees, may change
 
-    // the init method
+    /**
+     * Creates the imu object
+     */
     public IMU() {
         try {
             ahrs = new AHRS(SPI.Port.kMXP);
@@ -27,16 +29,31 @@ public class IMU {
         }
     }
 
-    // sets the yaw to zero
+    /**
+     * Sets the maximum yaw
+     * 
+     * @param yaw The desired range +- yaw
+     */
+    public void setMaxYaw(double yaw) {
+        maxYaw = yaw;
+    }
+
+    /**
+     * Sets the yaw to zero
+     */
     public void zeroYaw() {
         ahrs.zeroYaw();
         ahrs.reset();
         yaw = 0;
     }
 
-    // returns true if the yaw is between the valid range
+    /**
+     * Returns true if the yaw is between the valid range
+     * 
+     * @return Whether or not the yawis within the valid range
+     */
     public boolean isYawValid() {
-        if (ahrs.getYaw() < maxAutoYaw && ahrs.getYaw() > -maxAutoYaw) {
+        if (ahrs.getYaw() < maxYaw && ahrs.getYaw() > -maxYaw) {
             return true;
         }
 
@@ -45,8 +62,11 @@ public class IMU {
         }
     }
 
-    // gets all the yaw values
-    public void updateValues() {
+    /**
+     * Updates all the yaw values
+     */
+    @Override
+    public void run() {
         x_acceleration = ahrs.getWorldLinearAccelX();
         y_acceleration = ahrs.getWorldLinearAccelY();
         z_acceleration = ahrs.getWorldLinearAccelZ();

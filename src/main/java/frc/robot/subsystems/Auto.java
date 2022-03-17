@@ -391,7 +391,6 @@ public class Auto {
             robot.chassis.imu.zeroYaw();
         }
         double rotation = robot.chassis.degreesToZRotation(degrees);
-        robot.chassis.imu.updateValues();
         SmartDashboard.putNumber("IMU", robot.chassis.imu.yaw);
         double turnValue = Math.abs(rotation) > MAX_TURN ? Math.copySign(MAX_TURN, rotation) : rotation;
         SmartDashboard.putNumber("turnValue", turnValue);
@@ -408,7 +407,6 @@ public class Auto {
             robot.chassis.imu.zeroYaw();
         }
         double rotation = robot.chassis.degreesToZRotation(degrees);
-        robot.chassis.imu.updateValues();
         SmartDashboard.putNumber("IMU", robot.chassis.imu.yaw);
         double turnValue = Math.abs(rotation) > MAX_TURN ? Math.copySign(MAX_TURN, rotation) : rotation;
         SmartDashboard.putNumber("turnValue", turnValue);

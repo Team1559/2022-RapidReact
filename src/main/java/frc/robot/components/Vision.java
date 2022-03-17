@@ -1,6 +1,6 @@
 package frc.robot.components;
 
-public class Vision {
+public class Vision implements Runnable{
     private UDPClient client;
     private static Vision instance;
     private VisionData VData;
@@ -10,7 +10,9 @@ public class Vision {
     double ballCameraYOffset = 0;
     double ballCameraXOffset = 0;
     double ballCameraROffset = 0;
-
+    /**
+     * Creates new vision object
+     */
     public Vision() {
         client = new UDPClient();
         VData = new VisionData();
@@ -18,7 +20,11 @@ public class Vision {
         VData.ballStatus = 0;
     }
 
-    public void update() {
+    /**
+     * Gets new vision data and parses it
+     */
+    @Override
+    public void run() {
         try {
             VisionData NewData = new VisionData();
             NewData.hoopStatus = 2;
@@ -59,12 +65,17 @@ public class Vision {
             System.err.println(e.toString());
         }
     }
-
+    /**
+     * Gets the most current data
+     * @return The most current data
+     */
     public VisionData getData() {
-        update();
         return VData;
     }
-
+    /**
+     * Gets the intance
+     * @return The instance
+     */
     public static Vision getInstance() {
         if (instance == null) {
             instance = new Vision();

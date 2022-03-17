@@ -129,7 +129,6 @@ public class Chassis {
     }
 
     public void main() {
-        imu.updateValues();
         SmartDashboard.putNumber("IMU", this.imu.yaw);
         drive(oi.pilot.getLeftY(), oi.pilot.getLeftX(), oi.pilot.getRightX());
         updateEncoders();
