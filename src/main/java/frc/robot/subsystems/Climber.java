@@ -28,7 +28,7 @@ public class Climber {
     private boolean disable = false;
     private boolean press = false;
 
-    private double climberRpms = 7500;
+    private double climberRpms = 3000;
 
     private boolean resetEncoder = true;
 
@@ -163,7 +163,7 @@ public class Climber {
             climber.selectProfileSlot(0, 0);
             resetEncoder = true;
         }
-        climber.set(TalonFXControlMode.Velocity, climberRpms);
+        climber.set(TalonFXControlMode.Velocity, climberRpms / 10 / 60 * 2048);
     }
 
     public void lowerRobot() {
