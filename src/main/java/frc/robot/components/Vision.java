@@ -1,6 +1,6 @@
 package frc.robot.components;
 
-public class Vision implements Runnable{
+public class Vision implements Runnable {
     private UDPClient client;
     private static Vision instance;
     private VisionData VData;
@@ -10,6 +10,7 @@ public class Vision implements Runnable{
     double ballCameraYOffset = 0;
     double ballCameraXOffset = 0;
     double ballCameraROffset = 0;
+
     /**
      * Creates new vision object
      */
@@ -65,15 +66,19 @@ public class Vision implements Runnable{
             System.err.println(e.toString());
         }
     }
+
     /**
      * Gets the most current data
+     * 
      * @return The most current data
      */
     public VisionData getData() {
         return VData;
     }
+
     /**
      * Gets the intance
+     * 
      * @return The instance
      */
     public static Vision getInstance() {

@@ -3,7 +3,7 @@ package frc.robot.components;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.*;
 
-public class IMU implements Runnable{
+public class IMU implements Runnable {
     private AHRS ahrs;
     public double roll = 0;
     public double pitch = 0;
