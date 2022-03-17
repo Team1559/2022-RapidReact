@@ -15,23 +15,38 @@ public class CompressorControl {
     private boolean press = false;
     private OperatorInterface oi;
 
-
+    /**
+     * Creates a compressor object
+     * 
+     * @param oi The OpertorInterface object to allow for the compressor to be
+     *           toggled in test mode
+     */
     public CompressorControl(OperatorInterface oi) {
         ph = new PneumaticHub(Wiring.PNEUMATICS_HUB);
         airCompressor = new Compressor(Wiring.PNEUMATICS_HUB, PneumaticsModuleType.REVPH);
         this.oi = oi;
     }
 
+    /**
+     * Enables the compressor
+     */
     public void enable() {
         airCompressor.enableDigital();
         isCompressorOn = true;
     }
 
+    /**
+     * Disables teh compressor
+     */
     public void disable() {
         airCompressor.disable();
         isCompressorOn = false;
     }
 
+    /**
+     * Call during test periodic to allow the compressor to be toggled on or off
+     * during test mode
+     */
     public void testPeriodic() {
 
         if (oi.compressorToggle()) {
