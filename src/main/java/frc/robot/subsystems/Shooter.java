@@ -193,17 +193,17 @@ public class Shooter {
                 break;
         }
     }
-
+    
     public void ShooterMain() {
         if (oi.runFlyWheelButtonManual()) {
             // oi.copilot.startRumble(0);
 
-            startShooter(DEFAULT_RPMS); // Assume distance is 8 ft in manual mode
+            startShooter(getDefaultShooterRpm()); // Assume distance is 8 ft in manual mode
         } else if (oi.autoSteerToHoopButton()) {
             if (checkDependencies()) {
                 startShooter(calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
             } else if (TESTING) {
-                startShooter(calculateShooterRPMS(DEFAULT_RPMS));
+                startShooter(getDefaultShooterRpm());
             }
         } else {
             oi.copilot.stopRumble();
@@ -341,6 +341,11 @@ public class Shooter {
 
     public double getRpmError() {
         return shooter.getClosedLoopError() * 10 / 2048 * 60;
+    }
+
+    public double getDefaultShooterRpm() {
+        // return DEFAULT_RPMS;
+        return SmartDashboard.getNumber("Shooter RPM", DEFAULT_RPMS);
     }
 
     public double calculateShooterRPMS(double distance) {
