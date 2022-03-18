@@ -264,7 +264,6 @@ public class VisionControl {
         hoopx = visionData.hx;
         ballr = visionData.br;
         ballx = visionData.bx;
-        chassis.updateEncoders();
     }
 
     private double calculateHoopRotation() {

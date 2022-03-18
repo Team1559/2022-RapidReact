@@ -81,7 +81,7 @@ public class Auto {
     };
 
     public static final int[][] minAuto = {
-            { DRIVE, 12*6 },
+            { DRIVE, 12 * 6 },
     };
     /*
      * Drive to ball 71”
@@ -343,7 +343,6 @@ public class Auto {
     }
 
     private void Drive(int inches) {
-        robot.chassis.updateEncoders();
         double revs = robot.chassis.inchesToRevolutions(inches);
         SmartDashboard.putNumber("Revs", revs);
         double kP = 1.0 / 25.0;

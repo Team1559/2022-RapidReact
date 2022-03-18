@@ -13,7 +13,10 @@ import frc.robot.components.IMU;
 import frc.robot.components.DevilDrive;
 import frc.robot.components.FileLogging;
 
-public class Chassis {
+/**
+ * All things chassis
+ */
+public class Chassis implements Runnable {
     private static final int TIMEOUT = 20;
     public static final double WHEEL_RADIUS_INCHES_MECANUM = 3;
     public static final double MAX_SPEED_FPS_TRACTION = 9.67 * 1.01;
@@ -50,12 +53,10 @@ public class Chassis {
     private final boolean LOGDATA = false;
 
     /**
-     * private static final double kF = 0.14614285; //F-gain = (100% X 1023) /
-     * 7350 F-gain = 0.139183673 - (7350 is max speed) private static final
-     * double kP = 0.475; // P-gain = (.1*1023)/(155) = 0.66 - (350 is average
-     * error) private static final double kD = (5.0*kP); private static final
-     * double cLR = 0.1; This was ctrl c ctrl v'd from 2020. I don't now what
-     * these values mean so I don't want to delete them.
+     * Creates a Sparkmax object and sets default values for the pid controller
+     * 
+     * @param id The CAN ID of the Sparkmax
+     * @return The Sparkmax object
      */
     private CANSparkMax initMotor(int id) {
         CANSparkMax sparky = new CANSparkMax(id, MotorType.kBrushless);
@@ -81,25 +82,43 @@ public class Chassis {
         return sparky;
     }
 
+    /**
+     * Preps the chassis for auto
+     */
     public void autoInit() {
         this.initOdometry();
         this.setRampRate(AUTO_RAMP_RATE);
     }
 
+    /**
+     * Preps the chassis for teleop
+     */
     public void teleopInit() {
         this.imu.zeroYaw();
         this.setPid(6e-5, 0, 0, 0.000015);
         this.setRampRate(TELEOP_RAMP_RATE);
     }
 
+    /**
+     * Sets the ramp rate of the chassis motors
+     * 
+     * @param rate The time in seconds for the motors to reach full power
+     */
     public void setRampRate(double rate) {
         CANSparkMax1.setClosedLoopRampRate(rate);
         CANSparkMax2.setClosedLoopRampRate(rate);
         CANSparkMax3.setClosedLoopRampRate(rate);
         CANSparkMax4.setClosedLoopRampRate(rate);
+        CANSparkMax1.setOpenLoopRampRate(rate);
+        CANSparkMax2.setOpenLoopRampRate(rate);
+        CANSparkMax3.setOpenLoopRampRate(rate);
+        CANSparkMax4.setOpenLoopRampRate(rate);
     }
 
-    public void initEncoders() {
+    /**
+     * Creates the encoder objects
+     */
+    private void initEncoders() {
         flEncoder = CANSparkMax1.getEncoder();
         frEncoder = CANSparkMax2.getEncoder();
         blEncoder = CANSparkMax3.getEncoder();
@@ -107,6 +126,13 @@ public class Chassis {
 
     }
 
+    /**
+     * Creates a new Chassis object, it handles all aspects of the drivetrain for
+     * the robot
+     * 
+     * @param oi  OperatorInterface used to get drive values from the controller
+     * @param imu Imu is used to calculate the rotation error of the drivetrain
+     */
     public Chassis(OperatorInterface oi, IMU imu) {
         this.oi = oi;
         this.imu = imu;
@@ -128,10 +154,12 @@ public class Chassis {
         }
     }
 
+    /**
+     * main method run during periodic
+     */
     public void main() {
         SmartDashboard.putNumber("IMU", this.imu.yaw);
         drive(oi.pilot.getLeftY(), oi.pilot.getLeftX(), oi.pilot.getRightX());
-        updateEncoders();
         if (LOGDATA) {
             SmartDashboard.putNumber("Front left encoder velocity is: ", flEncoder.getVelocity());
             SmartDashboard.putNumber("Front right encoder velocity is: ", frEncoder.getVelocity());
@@ -142,51 +170,105 @@ public class Chassis {
         }
     }
 
-    public void updateEncoders() {
+    /**
+     * Updates the encoder positions
+     */
+    private void updateEncoders() {
         flep = -flEncoder.getPosition();
         frep = -frEncoder.getPosition();
         blep = -blEncoder.getPosition();
         brep = -brEncoder.getPosition();
     }
 
-    public void drive(double ySpeed, double zRotation) {
-        drive(ySpeed, 0, zRotation, true);
-    }
-
-    public void drive(double ySpeed, double xSpeed, double zRotation) {
-        drive(ySpeed, xSpeed, zRotation, true);
-    }
-
-    public void drive(double ySpeed, double zRotation, boolean squareInputs) {
-        drive(ySpeed, 0, zRotation, squareInputs);
-    }
-
-    public void drive(double ySpeed, double xSpeed, double zRotation, boolean squareInputs) {
-        ySpeed *= oi.slowModeButton() ? SLOWMODE_COEFFICIENT : 1;
-        zRotation *= oi.slowModeButton() ? SLOWMODE_COEFFICIENT : 1;
-        xSpeed *= oi.slowModeButton() ? SLOWMODE_COEFFICIENT : 1;
-        drive.driveCartesian(ySpeed, xSpeed, zRotation, squareInputs);
-    }
-
     /**
-     * @deprecated
+     * Runs periodically
      */
-    public void pathDrive(double l, double r) {
-        // front.pathDrive(l, r);
-        // back.coast();
+    @Override
+    public void run() {
+        updateEncoders();
     }
 
     /**
+     * Drives the chassis in velocity mode
+     * 
+     * @param forwardSpeed The speed forward and backwards
+     * @param rotation     The rotational speed
+     */
+    public void drive(double forwardSpeed, double rotation) {
+        drive(forwardSpeed, 0, rotation, true);
+    }
+
+    /**
+     * Drives the chassis in velocity mode
+     * 
+     * @param forwardSpeed The speed forward and backwards
+     * @param sideSpeed    The straife speed
+     * @param rotation     The rotational speed
+     */
+    public void drive(double forwardSpeed, double sideSpeed, double rotation) {
+        drive(forwardSpeed, sideSpeed, rotation, true);
+    }
+
+    /**
+     * Drives the chassis in velocity mode
+     * 
+     * @param forwardSpeed The speed forward and backwards
+     * @param rotation     The rotational speed
+     * @param squareInputs Whether or not to square the driver inputs
+     */
+    public void drive(double forwardSpeed, double rotation, boolean squareInputs) {
+        drive(forwardSpeed, 0, rotation, squareInputs);
+    }
+
+    /**
+     * Drives the chassis in velocity mode
+     * 
+     * @param forwardSpeed The speed forward and backwards
+     * @param sideSpeed    The straife speed
+     * @param rotation     The rotational speed
+     * @param squareInputs Whether or not to square the driver inputs
+     */
+    public void drive(double forwardSpeed, double sideSpeed, double rotation, boolean squareInputs) {
+        forwardSpeed *= oi.slowModeButton() ? SLOWMODE_COEFFICIENT : 1;
+        rotation *= oi.slowModeButton() ? SLOWMODE_COEFFICIENT : 1;
+        sideSpeed *= oi.slowModeButton() ? SLOWMODE_COEFFICIENT : 1;
+        drive.driveCartesian(forwardSpeed, sideSpeed, rotation, squareInputs);
+    }
+
+    /**
+     * Drives the chassis according to the provided encoder positions
+     * 
+     * @param fl The position for the front left motor
+     * @param fr The position for the front right motor
+     * @param bl The position for the back left motor
+     * @param br The position for the back right motor
      * @deprecated
      */
     public void pathDrive(double fl, double fr, double bl, double br) {
         drive.pathDrive(fl, fr, bl, br);
     }
 
+    /**
+     * Configures the pidf controllers of all the chassis motors
+     * 
+     * @param kp New value for kp
+     * @param ki New value for ki
+     * @param kd New value for kd
+     * @param kf New value for kf
+     */
     public void setPid(double kp, double ki, double kd, double kf) {
         setPid(kp, ki, kd, kf, 0);
     }
 
+    /**
+     * Configures the pidf controllers of all the chassis motors
+     * 
+     * @param kp  New value for kp
+     * @param ki  New value for ki
+     * @param kd  New value for kd
+     * @param kf  New value for kf
+     * @param kiz New value for ki zone
+     */
     public void setPid(double kp, double ki, double kd, double kf, double kiz) {
         setKP(kp);
         setKI(ki);
@@ -204,6 +286,11 @@ public class Chassis {
         return (flEncoder.getVelocity() / CHASSIS_GEAR_RATIO + frEncoder.getVelocity() / CHASSIS_GEAR_RATIO) / 2;
     }
 
+    /**
+     * Sets the value for kp
+     * 
+     * @param kp The new value for kp
+     */
     public void setKP(double kp) {
         SparkMaxPIDController pid1 = CANSparkMax1.getPIDController();
         SparkMaxPIDController pid2 = CANSparkMax2.getPIDController();
@@ -215,6 +302,11 @@ public class Chassis {
         pid4.setP(kp);
     }
 
+    /**
+     * Sets the value for ki
+     * 
+     * @param ki The new value for ki
+     */
     public void setKI(double ki) {
         SparkMaxPIDController pid1 = CANSparkMax1.getPIDController();
         SparkMaxPIDController pid2 = CANSparkMax2.getPIDController();
@@ -226,6 +318,11 @@ public class Chassis {
         pid4.setI(ki);
     }
 
+    /**
+     * Sets the value for the ki zone
+     * 
+     * @param kiz The new value for ki zone
+     */
     public void setKIZ(double kiz) {
         SparkMaxPIDController pid1 = CANSparkMax1.getPIDController();
         SparkMaxPIDController pid2 = CANSparkMax2.getPIDController();
@@ -237,6 +334,11 @@ public class Chassis {
         pid4.setIZone(kiz);
     }
 
+    /**
+     * Sets the value for kd
+     * 
+     * @param kd The new value for kd
+     */
     public void setKD(double kd) {
         SparkMaxPIDController pid1 = CANSparkMax1.getPIDController();
         SparkMaxPIDController pid2 = CANSparkMax2.getPIDController();
@@ -248,6 +350,11 @@ public class Chassis {
         pid4.setD(kd);
     }
 
+    /**
+     * Sets the value for kf
+     * 
+     * @param kf The new value for kf
+     */
     public void setKF(double kf) {
         SparkMaxPIDController pid1 = CANSparkMax1.getPIDController();
         SparkMaxPIDController pid2 = CANSparkMax2.getPIDController();
@@ -259,25 +366,59 @@ public class Chassis {
         pid4.setP(kf);
     }
 
+    /**
+     * Converts fron degrees to a rotational speed to pass into the
+     * {@link #drive(double, double)} function
+     * 
+     * @param desiredAngle The desired angle
+     * @return The error to the desired angle
+     */
     public double degreesToZRotation(double desiredAngle) {
         return (desiredAngle - this.imu.yaw) * 0.12; // TODO: modify proportion (and calibrate IMU yaw)
     }
 
+    /**
+     * Converts fron inches to wheel revolutions to pass into the
+     * {@link #drive(double, double)} function
+     * 
+     * @param inches the distance in inches
+     * @return the number of wheel revolutions required to reach the desired
+     *         distance
+     */
     public double inchesToRevolutions(double inches) {
         // inches to Revolutions
         return CHASSIS_GEAR_RATIO * inches / (2 * Math.PI * WHEEL_RADIUS_INCHES_MECANUM);
     }
 
+    /**
+     * Converts fron inches to wheel revolutions to pass into the
+     * {@link #pathDrive(double, double, double, double)} function
+     * 
+     * @param inches the distance in inches
+     * @return the number of encoder tics required to reach the desired distance
+     */
     public double inchesToEncoderTicks(double inches) {
         return TICKS_PER_REVOLUTION * inchesToRevolutions(inches);
         // return inches * 2.1;
     }
 
+    /**
+     * Converts from encoder ticks to inches
+     * 
+     * @param ticks The number of encoder ticks
+     * @return The distance in inches
+     */
     public double encoderTicksToInches(double ticks) {
         return revolutionsToInches(ticks / TICKS_PER_REVOLUTION);
         // return ticks / 2.1;
     }
 
+    /**
+     * Converts from wheel revolutions to inches
+     * 
+     * @param revs The number of wheel revolution
+     * @return The distance in inches
+     */
     public double revolutionsToInches(double revs) {
         return revs * 2 * Math.PI * WHEEL_RADIUS_INCHES_MECANUM / CHASSIS_GEAR_RATIO;
     }
@@ -292,13 +433,26 @@ public class Chassis {
         return (rpm * 2 * Math.PI * (WHEEL_RADIUS_INCHES_MECANUM / 12)) / 60;
     }
 
-    public void initOdometry() {
+    /**
+     * Resets the encoder positions for all the drivetrain motors
+     */
+    public void zeroEncoders() {
         flEncoder.setPosition(0);
         frEncoder.setPosition(0);
         blEncoder.setPosition(0);
         brEncoder.setPosition(0);
     }
 
+    /**
+     * Preps the drivetrain for odemetry
+     */
+    public void initOdometry() {
+        zeroEncoders();
+    }
+
+    /**
+     * Runs during {@link #disabledInit()} and preps the chassis to be disables
+     */
     public void disable() {
         if (LOGDATA) {
             fl.write();
