@@ -167,7 +167,6 @@ public class DTXboxController extends XboxController implements Runnable {
             }
             bools.set(id, false);
         }
-
         if (button) {
             if (!bools.get(id)) {
                 bools.set(id, true);
@@ -191,7 +190,7 @@ public class DTXboxController extends XboxController implements Runnable {
             if (bools.get(id) == null)
                 bools.set(id, false);
         } catch (IndexOutOfBoundsException e) {
-            for (int i = bools.size() - 1; i < id; i++) {
+            for (int i = bools.size(); i < id; i++) {
                 bools.add(null);
             }
             bools.set(id, false);
@@ -199,7 +198,7 @@ public class DTXboxController extends XboxController implements Runnable {
         try {
             bools.get(id);
         } catch (NullPointerException e) {
-            for (int i = bools.size() - 1; i < id; i++) {
+            for (int i = bools.size(); i < id; i++) {
                 bools.add(null);
             }
             bools.set(id, false);
@@ -207,7 +206,7 @@ public class DTXboxController extends XboxController implements Runnable {
 
         if (button) {
             if (!bools.get(id)) {
-                bools.set(id, false);
+                bools.set(id, true);
                 out = false;
             }
         } else {

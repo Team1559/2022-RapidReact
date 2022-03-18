@@ -41,7 +41,7 @@ public class Shooter {
     public double intakeSpeed = 1; // 0.4;
 
     private static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
-    public static final double DEFAULT_RPMS = 5000; // 4 ft from front of robot to face of target
+    public static final double DEFAULT_RPMS = 2500; // 4 ft from front of robot to face of target
     private final boolean TESTING = true;
 
     private TalonFX shooter;
@@ -211,9 +211,10 @@ public class Shooter {
 
     // FEEDER STUFF
     public void feederMain() {
+        boolean press = oi.shootButtonPress();
         if (oi.shootButton()) {
             disableManual = true;
-            startFeeder(feederSpeed, oi.shootButtonPress());
+            startFeeder(feederSpeed, press);
             // if (Math.abs( () - calculateShooterRPMS(DEFAULT_DISTANCE)) <
             // vc.shooterThreshold) {
             // disableManual = true;

@@ -70,11 +70,11 @@ public class OperatorInterface {
     }
 
     public boolean manualIntakeButtonPress() {
-        return pilot.getPress(manualIntakeButtonRelease(), 3);
+        return pilot.getPress(manualIntakeButton(), 3);
     }
 
     public boolean manualIntakeButtonRelease() {
-        return pilot.getRelease(manualIntakeButtonRelease(), 3);
+        return pilot.getRelease(manualIntakeButton(), 3);
     }
 
     public boolean raiseIntakeButton() {

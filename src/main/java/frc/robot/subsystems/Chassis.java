@@ -147,7 +147,7 @@ public class Chassis implements Runnable {
 
         // front = new SplitDrive(CANSparkMax1, CANSparkMax2);
         // back = new SplitDrive(CANSparkMax3, CANSparkMax4);
-        drive = new DevilDrive(CANSparkMax1, CANSparkMax2, CANSparkMax3, CANSparkMax4);
+        drive = new DevilDrive(CANSparkMax1, CANSparkMax3, CANSparkMax2, CANSparkMax4);
         fl = new FileLogging();
         if (LOGDATA) {
             fl.createfile("encoders");
@@ -232,7 +232,7 @@ public class Chassis implements Runnable {
         forwardSpeed *= oi.slowModeButton() ? SLOWMODE_COEFFICIENT : 1;
         rotation *= oi.slowModeButton() ? SLOWMODE_COEFFICIENT : 1;
         sideSpeed *= oi.slowModeButton() ? SLOWMODE_COEFFICIENT : 1;
-        drive.driveCartesian(forwardSpeed, sideSpeed, rotation, squareInputs);
+        drive.driveCartesian(forwardSpeed, -sideSpeed, -rotation, squareInputs);
     }
 
     /**
