@@ -169,10 +169,11 @@ public class DTXboxController extends XboxController implements Runnable {
      */
     public boolean getPress(boolean button, int id) {
         try {
-            if (bools.get(id) != null)
+            if (bools.get(id) == null)
                 bools.set(id, false);
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
+            bools.add(id, false);
         }
         if (button) {
             if (!bools.get(id)) {
@@ -194,10 +195,11 @@ public class DTXboxController extends XboxController implements Runnable {
     public boolean getRelease(boolean button, int id) {
         boolean out = false;
         try {
-            if (bools.get(id) != null)
+            if (bools.get(id) == null)
                 bools.set(id, false);
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
+            bools.add(id, false);
         }
 
         if (button) {
