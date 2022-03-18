@@ -13,7 +13,7 @@ public class IMU implements Runnable {
     public double z_acceleration = 0;
     public double y_angularVelocity = 0;
     public double turnRate;
-    public double maxYaw = 60;// messured in degrees, may change
+    public double maxYaw = 60; // messured in degrees, may change
 
     /**
      * Creates the imu object

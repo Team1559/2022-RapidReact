@@ -32,7 +32,7 @@ public class FileLogging {
      */
     public void setDirectory(String dir) {
         if (new File(dir).mkdir()) {
-            System.out.println("Created directory");
+            System.out.println("Created " + dir);
         }
         this.dir = DEFAULT_PATH + dir;
     }
@@ -66,8 +66,7 @@ public class FileLogging {
         }
 
         catch (IOException e) {
-            System.out.println("An error occurred.");
-            // // e.printStackTrace();
+            System.out.println("An error occurred when creating " + dir + name + ".");
         }
     }
 
@@ -85,38 +84,25 @@ public class FileLogging {
      * @param data Data to be written
      */
     public void write(String data) {
-        try {
-            FileWriter myWriter = new FileWriter(dir + filename);
-
-            myWriter.write(data);
-            myWriter.close();
-            // System.out.println("Successfully wrote to the file.");
-        }
-
-        catch (IOException e) {
-            System.out.println("An error occurred.");
-            // e.printStackTrace();
-        }
+        write(filename, data);
     }
 
     /**
      * Writes data to the designated file
      * 
-     * @param filename Name of the file to be written
+     * @param fileName Name of the file to be written
      * @param data     Data to be written
      */
-    public void write(String filename, String data) {
+    public void write(String fileName, String data) {
         try {
-            FileWriter myWriter = new FileWriter(dir + filename);
+            FileWriter myWriter = new FileWriter(dir + fileName);
 
             myWriter.write(data);
             myWriter.close();
-            // System.out.println("Successfully wrote to the file.");
         }
 
         catch (IOException e) {
-            System.out.println("An error occurred.");
-            // e.printStackTrace();
+            System.out.println("An error occurred while writing to " + dir + fileName + ".");
         }
     }
 
@@ -147,7 +133,7 @@ public class FileLogging {
         }
 
         catch (IOException e) {
-            // e.printStackTrace();
+            System.out.println("An error occurred while reading to " + dir + fileName + ".");
         }
 
         return fileContent;
