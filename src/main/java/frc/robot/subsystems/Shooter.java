@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter {
     private OperatorInterface oi;
@@ -273,8 +274,9 @@ public class Shooter {
             gathererState = lastState;
             disableManual = false;
         }
-        // if (ticCounter % 10 == 0 && (feederEncoder.getPosition() - encoderTics < 2.0)) {
-        //     encoderTics -= 0.2;
+        // if (ticCounter % 10 == 0 && (feederEncoder.getPosition() - encoderTics <
+        // 2.0)) {
+        // encoderTics -= 0.2;
         // }
         gatherLock = false;
         feederPid.setReference(encoderTics, ControlType.kPosition);
@@ -344,7 +346,7 @@ public class Shooter {
         // https://docs.google.com/spreadsheets/d/1l1Nxlk29b2KL5FwVklSFhfuychKHfztRSNRqPUuQUIs/edit#gid=695645693
         // return 4476 + 158 * distance;
         // return distance;
-        return 5000; // FIXME: return to old formula
+        return SmartDashboard.getNumber("Shooter RPM", 5000);
     }
 
     public void disable() {
