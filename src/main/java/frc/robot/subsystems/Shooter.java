@@ -193,7 +193,7 @@ public class Shooter {
                 break;
         }
     }
-    
+
     public void ShooterMain() {
         if (oi.runFlyWheelButtonManual()) {
             // oi.copilot.startRumble(0);
