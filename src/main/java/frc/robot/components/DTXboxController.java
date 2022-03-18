@@ -146,7 +146,7 @@ public class DTXboxController extends XboxController implements Runnable {
      * Returns true on the rising edge of boolean being set to true
      * 
      * @param button The boolean to track
-     * @param id     The unique id of the button (0-1000)
+     * @param id     The unique id of the button
      * @return Whether the button has just been pressed
      */
     public boolean getPress(boolean button, int id) {
@@ -182,7 +182,7 @@ public class DTXboxController extends XboxController implements Runnable {
      * Returns true on the rising edge of boolean being set to false
      * 
      * @param button The boolean to track
-     * @param id     The unique id of the button (0-1000)
+     * @param id     The unique id of the button
      * @return Whether the button has just been released
      */
     public boolean getRelease(boolean button, int id) {
