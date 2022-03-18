@@ -350,10 +350,9 @@ public class Shooter {
 
     public double calculateShooterRPMS(double distance) {
         // RPM vs. distance fit from
-        // https://docs.google.com/spreadsheets/d/1l1Nxlk29b2KL5FwVklSFhfuychKHfztRSNRqPUuQUIs/edit#gid=695645693
+        // https://docs.google.com/spreadsheets/d/1l1Nxlk29b2KL5FwVklSFhfuychKHfztRSNRqPUuQUIs/edit#gid=1365511344
         // return 4476 + 158 * distance;
-        // return distance;
-        return SmartDashboard.getNumber("Shooter RPM", 5000);
+        return getDefaultShooterRpm();
     }
 
     public void disable() {
