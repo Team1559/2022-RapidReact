@@ -40,13 +40,9 @@ public class DTXboxController extends XboxController implements Runnable {
 
         if (angle == -1 && pov != -1) {
             return true;
-        }
-
-        else if (pov == angle) {
+        } else if (pov == angle) {
             return true;
-        }
-
-        else {
+        } else {
             return false;
         }
     }
@@ -81,12 +77,9 @@ public class DTXboxController extends XboxController implements Runnable {
         if (angle == -1 && currentAngle != -1) {
             return true;
         }
-
         if (currentAngle == angle) {
             return true;
-        }
-
-        else {
+        } else {
             return false;
         }
     }
@@ -103,12 +96,9 @@ public class DTXboxController extends XboxController implements Runnable {
         if (angle == -1 && currentAngle != -1) {
             return true;
         }
-
         if (currentAngle == angle) {
             return true;
-        }
-
-        else {
+        } else {
             return false;
         }
     }
@@ -123,11 +113,8 @@ public class DTXboxController extends XboxController implements Runnable {
         if (!wasDpadPressed) {
             wasDpadPressed = isDpadPressed();
             return getPOV();
-        }
-
-        else {
+        } else {
             wasDpadPressed = isDpadPressed();
-
             return -1;
         }
     }
@@ -143,16 +130,13 @@ public class DTXboxController extends XboxController implements Runnable {
         if (!wasDpadReleased) {
             wasDpadReleased = isDpadPressed();
             out = -1;
-        }
-
-        else {
+        } else {
             if (wasDpadReleased) {
                 out = getPOV();
             } else {
                 out = -1;
             }
             wasDpadReleased = isDpadPressed();
-
         }
         return out;
     }
