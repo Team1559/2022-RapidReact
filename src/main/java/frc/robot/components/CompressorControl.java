@@ -6,6 +6,9 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import frc.robot.OperatorInterface;
 import frc.robot.Wiring;
 
+/**
+ * Controls the compressor
+ */
 public class CompressorControl {
     public PneumaticHub ph;
     public Compressor airCompressor;

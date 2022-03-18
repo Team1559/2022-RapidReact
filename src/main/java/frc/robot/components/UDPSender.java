@@ -4,6 +4,10 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+/**
+ * This class is responsible for sending data over UDP.
+ * 
+ */
 public class UDPSender {
     private int port;
     private String address;

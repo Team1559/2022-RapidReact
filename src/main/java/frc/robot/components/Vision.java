@@ -1,5 +1,9 @@
 package frc.robot.components;
 
+/**
+ * This class is responciple for reciving data from the jetson and structuring
+ * it it also writes it to the VisionData class
+ */
 public class Vision implements Runnable {
     private UDPClient client;
     private static Vision instance;

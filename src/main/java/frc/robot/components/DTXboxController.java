@@ -2,9 +2,11 @@ package frc.robot.components;
 
 import java.util.ArrayList;
 import com.ctre.phoenix.time.StopWatch;
-
 import edu.wpi.first.wpilibj.XboxController;
 
+/**
+ * All functions for the xbox controllers
+ */
 public class DTXboxController extends XboxController implements Runnable {
     public enum Side {
         LEFT, RIGHT, BOTH

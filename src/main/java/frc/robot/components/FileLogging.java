@@ -2,6 +2,9 @@ package frc.robot.components;
 
 import java.io.*;
 
+/**
+ * Allows for file writing
+ */
 public class FileLogging {
     private String filename, out, dir;
     private final String DEFAULT_PATH = "/1559data/";

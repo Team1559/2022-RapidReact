@@ -8,7 +8,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 /**
- * This class is responsible for communicating to a server over UDP.
+ * This class is responsible for listining over UDP.
  */
 public class UDPClient implements Runnable {
     // private static final String HOST = "169.254.210.151";// "10.15.59.6"; //

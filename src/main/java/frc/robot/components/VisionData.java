@@ -1,5 +1,8 @@
 package frc.robot.components;
 
+/**
+ * Holds all the data for the vision system
+ */
 public class VisionData {
 
     public double hx;
@@ -14,6 +17,7 @@ public class VisionData {
 
     /**
      * Returns whether or not the vision system sees the hoop
+     * 
      * @return Whether or not the vision system sees the hoop
      */
     public boolean isHoopValid() {
@@ -25,8 +29,10 @@ public class VisionData {
             return true;
         }
     }
+
     /**
      * Returns whether or not the vision system sees a ball of the correct color
+     * 
      * @return Whether or not the vision system sees a ball of the correct color
      */
     public boolean isBallValid() {
@@ -38,6 +44,7 @@ public class VisionData {
             return true;
         }
     }
+
     /**
      * Prints the current values
      */

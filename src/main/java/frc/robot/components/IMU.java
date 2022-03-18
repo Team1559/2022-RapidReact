@@ -3,6 +3,9 @@ package frc.robot.components;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.*;
 
+/**
+ * All functions for the navx imu
+ */
 public class IMU implements Runnable {
     private AHRS ahrs;
     public double roll = 0;
