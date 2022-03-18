@@ -5,7 +5,7 @@ import com.ctre.phoenix.time.StopWatch;
 import edu.wpi.first.wpilibj.XboxController;
 
 /**
- * All functions for the xbox controllers
+ * All functions for the Xbox controllers
  */
 public class DTXboxController extends XboxController implements Runnable {
     public enum Side {
@@ -20,19 +20,18 @@ public class DTXboxController extends XboxController implements Runnable {
     private StopWatch stopWatch = new StopWatch();
 
     private boolean wasDpadPressed = false;
-    private boolean wasDpadReleased = false;
 
     /**
      * Creates a controller object on the specified port
      * 
-     * @param port (0-5)
+     * @param port The port of the controller (0-5)
      */
     public DTXboxController(int port) {
         super(port);
     }
 
     /**
-     * returns true if the dpad is pressed at the specified angle
+     * Returns true if the dpad is pressed at the specified angle
      * 
      * @param angle The desired angle
      * @return Whether or not the dpad is presses at the specified angle
@@ -129,16 +128,16 @@ public class DTXboxController extends XboxController implements Runnable {
      */
     public int getRawDPadRelease() {
         int out = -1;
-        if (!wasDpadReleased) {
-            wasDpadReleased = isDpadPressed();
+        if (!wasDpadPressed) {
+            wasDpadPressed = isDpadPressed();
             out = -1;
         } else {
-            if (wasDpadReleased) {
+            if (wasDpadPressed) {
                 out = getPOV();
             } else {
                 out = -1;
             }
-            wasDpadReleased = isDpadPressed();
+            wasDpadPressed = isDpadPressed();
         }
         return out;
     }
