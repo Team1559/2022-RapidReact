@@ -41,7 +41,7 @@ public class Shooter {
     public double intakeSpeed = 1; // 0.4;
 
     private static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
-    public static final double DEFAULT_RPMS = 4500; // 4 ft from front of robot to face of target
+    public static final double DEFAULT_RPMS = 2150; // 4 ft from front of robot to face of target
     private final boolean TESTING = true;
 
     private TalonFX shooter;
@@ -195,6 +195,7 @@ public class Shooter {
     public void ShooterMain() {
         if (oi.runFlyWheelButtonManual()) {
             // oi.copilot.startRumble(0);
+
             startShooter(DEFAULT_RPMS); // Assume distance is 8 ft in manual mode
         } else if (oi.autoSteerToHoopButton()) {
             if (checkDependencies()) {
