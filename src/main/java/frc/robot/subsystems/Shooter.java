@@ -275,9 +275,9 @@ public class Shooter {
             gathererState = lastState;
             disableManual = false;
         }
-        if (ticCounter % 10 == 0 && (feederEncoder.getPosition() - encoderTics < 2.0)) {
-            encoderTics -= 0.2;
-        }
+        // if (ticCounter % 10 == 0 && (feederEncoder.getPosition() - encoderTics < 2.0)) {
+        //     encoderTics -= 0.2;
+        // }
         gatherLock = false;
         feederPid.setReference(encoderTics, ControlType.kPosition);
     }
