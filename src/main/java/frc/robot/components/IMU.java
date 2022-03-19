@@ -17,11 +17,13 @@ public class IMU implements Runnable {
     public double y_angularVelocity = 0;
     public double turnRate;
     public double maxYaw = 60; // messured in degrees, may change
+    private Thread thread;
 
     /**
      * Creates the imu object
      */
     public IMU() {
+        thread = new Thread(this);
         try {
             ahrs = new AHRS(SPI.Port.kMXP);
             ahrs.enableLogging(true);
@@ -30,6 +32,7 @@ public class IMU implements Runnable {
         catch (RuntimeException ex) {
             DriverStation.reportError("Error instantiating navX MXP:  " + ex.getMessage(), true);
         }
+        thread.start();
     }
 
     /**

@@ -8,6 +8,8 @@ public class Vision implements Runnable {
     private UDPClient client;
     private static Vision instance;
     private VisionData VData;
+    private Thread clientThread;
+
     double hoopCameraYOffset = 0;
     double hoopCameraXOffset = 0;
     double hoopCameraROffset = 0;
@@ -19,10 +21,13 @@ public class Vision implements Runnable {
      * Creates new vision object
      */
     public Vision() {
+        clientThread = new Thread(this);
         client = new UDPClient();
         VData = new VisionData();
         VData.hoopStatus = 0;
         VData.ballStatus = 0;
+        clientThread.start();
+
     }
 
     /**

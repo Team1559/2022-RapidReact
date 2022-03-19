@@ -40,6 +40,7 @@ public class Chassis implements Runnable {
     private OperatorInterface oi;
     public IMU imu;
     private FileLogging fl;
+    private Thread thread;
 
     public static final double AUTO_RAMP_RATE = 0.2;
     public static final double TELEOP_RAMP_RATE = 0.0;
@@ -80,6 +81,7 @@ public class Chassis implements Runnable {
         pid.setFF(kFF);
         pid.setOutputRange(kMinOutput, kMaxOutput);
         return sparky;
+       
     }
 
     /**
@@ -134,6 +136,7 @@ public class Chassis implements Runnable {
      * @param imu Imu is used to calculate the rotation error of the drivetrain
      */
     public Chassis(OperatorInterface oi, IMU imu) {
+        thread = new Thread(this);
         this.oi = oi;
         this.imu = imu;
         CANSparkMax1 = initMotor(Wiring.FLMOTOR);
@@ -152,6 +155,7 @@ public class Chassis implements Runnable {
         if (LOGDATA) {
             fl.createfile("encoders");
         }
+        thread.start();
     }
 
     /**

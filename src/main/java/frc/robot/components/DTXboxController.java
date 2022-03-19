@@ -16,6 +16,7 @@ public class DTXboxController extends XboxController implements Runnable {
     private double duration = 0;
     private double power;
     private Side side = Side.BOTH;
+    private Thread clientThread;
 
     private StopWatch stopWatch = new StopWatch();
 
@@ -28,6 +29,8 @@ public class DTXboxController extends XboxController implements Runnable {
      */
     public DTXboxController(int port) {
         super(port);
+        clientThread = new Thread(this);
+        clientThread.start();
     }
 
     /**
