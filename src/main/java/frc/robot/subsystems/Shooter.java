@@ -13,7 +13,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 
-public class Shooter {
+public class Shooter implements Runnable {
+    private Thread thread;
     private OperatorInterface oi;
     private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(true, 60, 40, 2);
     private final int TIMEOUT = 0;
@@ -70,6 +71,7 @@ public class Shooter {
     public int lastState = holding;
 
     public Shooter(OperatorInterface operatorinterface, Chassis chassis, Robot robot) {
+        thread = new Thread(this);
         oi = operatorinterface;
         this.chassis = chassis;
         this.robot = robot;
@@ -119,7 +121,7 @@ public class Shooter {
         shooter.setNeutralMode(NeutralMode.Coast);
         shooter.config_IntegralZone(0, shooter_kiz, TIMEOUT);
         shooter.configSupplyCurrentLimit(shooterLimit, TIMEOUT);
-
+        thread.start();
     }
 
     public void initVision() {
@@ -133,6 +135,10 @@ public class Shooter {
 
         // Control for lowering intake
         gathererMain();
+    }
+
+    @Override
+    public void run() {
         gathererState();
     }
 

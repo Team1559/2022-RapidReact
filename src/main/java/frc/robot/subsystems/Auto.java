@@ -319,7 +319,6 @@ public class Auto {
                 TurnHoop(value);
                 break;
         }
-        robot.shooter.gathererState();
     }
 
     private void Done() {

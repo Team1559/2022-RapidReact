@@ -14,7 +14,7 @@ public class UDPClient implements Runnable {
     // private static final String HOST = "169.254.210.151";// "10.15.59.6"; //
     // 169.254.227.6
     private int port;
-    Thread clientThread;
+    private Thread clientThread;
     boolean running;
     String data;
     DatagramSocket socket;
