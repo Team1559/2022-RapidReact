@@ -77,8 +77,7 @@ public class DTXboxController extends XboxController implements Runnable {
         int currentAngle = getRawDPadPress();
         if (angle == -1 && currentAngle != -1) {
             return true;
-        }
-        else if (currentAngle == angle) {
+        } else if (currentAngle == angle) {
             return true;
         } else {
             return false;
@@ -96,8 +95,7 @@ public class DTXboxController extends XboxController implements Runnable {
         int currentAngle = getRawDPadRelease();
         if (angle == -1 && currentAngle != -1) {
             return true;
-        }
-        else if (currentAngle == angle) {
+        } else if (currentAngle == angle) {
             return true;
         } else {
             return false;
@@ -222,7 +220,8 @@ public class DTXboxController extends XboxController implements Runnable {
     /**
      * Sets the rumble on the controller
      * 
-     * @param duration Time in seconds for the rumble to last
+     * @param duration Time in seconds for the rumble to last. Set to -1 to run
+     *                 until {@link #stopRumble()} is called
      */
     public void startRumble(double duration) {
         startRumble(duration, 1);
@@ -232,7 +231,8 @@ public class DTXboxController extends XboxController implements Runnable {
     /**
      * Sets the rumble on the controller
      * 
-     * @param duration Time in seconds for the rumble to last
+     * @param duration Time in seconds for the rumble to last. Set to -1 to run
+     *                 until {@link #stopRumble()} is called
      * @param side     What side the ruble on <code>LEFT</code>,
      *                 <code>RIGHT</code>, or <code>BOTH</code>
      */
@@ -244,7 +244,8 @@ public class DTXboxController extends XboxController implements Runnable {
     /**
      * Sets the rumble on the controller
      * 
-     * @param duration Time in seconds for the rumble to last
+     * @param duration Time in seconds for the rumble to last. Set to -1 to run
+     *                 until {@link #stopRumble()} is called
      * @param power    Strength of rumble. Values range from 0-1
      */
     public void startRumble(double duration, double power) {
@@ -255,7 +256,8 @@ public class DTXboxController extends XboxController implements Runnable {
     /**
      * Sets the rumble on the controller
      * 
-     * @param duration Time in seconds for the rumble to last
+     * @param duration Time in seconds for the rumble to last. Set to -1 to run
+     *                 until {@link #stopRumble()} is called
      * @param power    Strength of rumble. Values range from 0-1
      * @param side     What side the ruble on <code>LEFT</code>,
      *                 <code>RIGHT</code>, or <code>BOTH</code>
@@ -285,16 +287,8 @@ public class DTXboxController extends XboxController implements Runnable {
                 }
             }
 
-            if (duration > 0 && stopWatch.getDuration() >= duration) {
-                duration = 0;
-                if (side == Side.LEFT) {
-                    setRumble(RumbleType.kLeftRumble, 0);
-                } else if (side == Side.RIGHT) {
-                    setRumble(RumbleType.kRightRumble, 0);
-                } else {
-                    setRumble(RumbleType.kLeftRumble, 0);
-                    setRumble(RumbleType.kRightRumble, 0);
-                }
+            if (duration >= 0 && stopWatch.getDuration() >= duration) {
+                stopRumble(side);
             }
         }
     }
@@ -314,13 +308,17 @@ public class DTXboxController extends XboxController implements Runnable {
      */
     public void stopRumble(Side side) {
         duration = 0;
-        if (side == Side.LEFT) {
-            setRumble(RumbleType.kLeftRumble, 0);
-        } else if (side == Side.RIGHT) {
-            setRumble(RumbleType.kRightRumble, 0);
-        } else {
-            setRumble(RumbleType.kLeftRumble, 0);
-            setRumble(RumbleType.kRightRumble, 0);
+        switch (side) {
+            case LEFT:
+                setRumble(RumbleType.kLeftRumble, 0);
+                break;
+            case RIGHT:
+                setRumble(RumbleType.kRightRumble, 0);
+                break;
+            case BOTH:
+                setRumble(RumbleType.kLeftRumble, 0);
+                setRumble(RumbleType.kRightRumble, 0);
+                break;
         }
     }
 }
