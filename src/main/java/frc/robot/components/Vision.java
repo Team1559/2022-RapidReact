@@ -37,7 +37,7 @@ public class Vision implements Runnable {
             String in = client.getData();
 
             if (in != null) {
-                // System.out.println(in);
+                System.out.println(in);
                 String[] parameters = in.split(" ");
 
                 if (parameters.length >= 9) {
@@ -68,6 +68,8 @@ public class Vision implements Runnable {
             VData = NewData;
         } catch (NumberFormatException | NullPointerException e) {
             System.err.println(e.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
