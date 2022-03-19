@@ -248,6 +248,7 @@ public class Robot extends TimedRobot {
             shooter.zeroFeeder();
             shooter.disableManual = false;
             shooter.gatherLock = false;
+            SmartDashboard.putNumber("Shooter RPM", Shooter.DEFAULT_RPMS);
         }
         if (FeatureFlags.doClimber && FeatureFlags.climberInitialized) {
             climber.zeroClimber();
@@ -280,7 +281,7 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         oi.copilot.stopRumble();
-        PDM.setSwitchableChannel(false);
+        // PDM.setSwitchableChannel(false);
 
         if (FeatureFlags.doClimber && FeatureFlags.climberInitialized) {
             climber.disable();
@@ -302,7 +303,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledPeriodic() {
-        PDM.setSwitchableChannel(false);
+        // PDM.setSwitchableChannel(false);
     }
 
     /** This function is called once when test mode is enabled. */

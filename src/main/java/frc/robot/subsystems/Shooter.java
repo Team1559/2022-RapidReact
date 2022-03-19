@@ -41,7 +41,7 @@ public class Shooter {
 
     public double intakeSpeed = 1; // 0.4;
 
-    private static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
+    public static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
     public static final double DEFAULT_RPMS = 2150; // 4 ft from front of robot to face of target
     private final boolean TESTING = true;
 
@@ -194,12 +194,16 @@ public class Shooter {
     }
 
     public void ShooterMain() {
+        SmartDashboard.putNumber("Actual shotoer", getShooterRpms());
         if (oi.runFlyWheelButtonManual()) {
             // oi.copilot.startRumble(0);
 
             startShooter(getDefaultShooterRpm()); // Assume distance is 8 ft in manual mode
         } else if (oi.autoSteerToHoopButton()) {
             if (checkDependencies()) {
+                SmartDashboard.putNumber("hoopx", vc.hoopx);
+                SmartDashboard.putNumber("Shooter setpt",
+                        calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
                 startShooter(calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
             } else if (TESTING) {
                 startShooter(getDefaultShooterRpm());
@@ -350,7 +354,8 @@ public class Shooter {
         // RPM vs. distance fit from
         // https://docs.google.com/spreadsheets/d/1l1Nxlk29b2KL5FwVklSFhfuychKHfztRSNRqPUuQUIs/edit#gid=1365511344
         // return 4476 + 158 * distance;
-        return getDefaultShooterRpm();
+        return 1750 + 20.2 * distance + 1.85 * Math.pow(distance, 2);
+        // return getDefaultShooterRpm();
     }
 
     public void disable() {
