@@ -78,7 +78,7 @@ public class DTXboxController extends XboxController implements Runnable {
         if (angle == -1 && currentAngle != -1) {
             return true;
         }
-        if (currentAngle == angle) {
+        else if (currentAngle == angle) {
             return true;
         } else {
             return false;
@@ -97,7 +97,7 @@ public class DTXboxController extends XboxController implements Runnable {
         if (angle == -1 && currentAngle != -1) {
             return true;
         }
-        if (currentAngle == angle) {
+        else if (currentAngle == angle) {
             return true;
         } else {
             return false;
