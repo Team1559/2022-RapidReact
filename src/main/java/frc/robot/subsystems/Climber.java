@@ -28,7 +28,8 @@ public class Climber {
     private boolean disable = false;
     private boolean press = false;
 
-    private final double CLIMBER_RPMS = 3000;
+    private final double CLIMBER_DOWN_RPMS = 3000;
+    private final double CLIMBER_UP_RPMS = 2000;
 
     private boolean resetEncoder = true;
 
@@ -164,7 +165,7 @@ public class Climber {
             climber.selectProfileSlot(0, 0);
             resetEncoder = true;
         }
-        climber.set(TalonFXControlMode.Velocity, CLIMBER_RPMS);
+        climber.set(TalonFXControlMode.Velocity, CLIMBER_UP_RPMS * 2048 / 10 / 60);
     }
 
     public void lowerRobot() {
@@ -172,7 +173,7 @@ public class Climber {
             climber.selectProfileSlot(0, 0);
             resetEncoder = true;
         }
-        climber.set(TalonFXControlMode.Velocity, -CLIMBER_RPMS / 10 / 60 * 2048);
+        climber.set(TalonFXControlMode.Velocity, -CLIMBER_DOWN_RPMS * 2048 / 10 / 60);
     }
 
     public void zeroClimber() {
