@@ -6,6 +6,10 @@ package frc.robot.components;
 
 import static java.util.Objects.requireNonNull;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
+
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
@@ -13,7 +17,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
-import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.drive.RobotDriveBase;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 
@@ -80,10 +83,10 @@ import edu.wpi.first.wpilibj.drive.Vector2d;
 public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseable {
     private static int instances;
 
-    private final SpeedController m_frontLeftMotor;
-    private final SpeedController m_rearLeftMotor;
-    private final SpeedController m_frontRightMotor;
-    private final SpeedController m_rearRightMotor;
+    private final CANSparkMax m_frontLeftMotor;
+    private final CANSparkMax m_rearLeftMotor;
+    private final CANSparkMax m_frontRightMotor;
+    private final CANSparkMax m_rearRightMotor;
 
     private boolean m_reported;
 
@@ -132,10 +135,10 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
      * @param rearRightMotor  The motor on the rear-right corner.
      */
     public DevilDrive(
-            SpeedController frontLeftMotor,
-            SpeedController rearLeftMotor,
-            SpeedController frontRightMotor,
-            SpeedController rearRightMotor) {
+            CANSparkMax frontLeftMotor,
+            CANSparkMax rearLeftMotor,
+            CANSparkMax frontRightMotor,
+            CANSparkMax rearRightMotor) {
         requireNonNull(frontLeftMotor, "Front-left motor cannot be null");
         requireNonNull(rearLeftMotor, "Rear-left motor cannot be null");
         requireNonNull(frontRightMotor, "Front-right motor cannot be null");
@@ -211,10 +214,10 @@ public class DevilDrive extends RobotDriveBase implements Sendable, AutoCloseabl
 
         var speeds = driveCartesianIK(ySpeed, xSpeed, zRotation, gyroAngle);
 
-        m_frontLeftMotor.set(speeds.frontLeft * m_maxOutput);
-        m_frontRightMotor.set(speeds.frontRight * m_maxOutput);
-        m_rearLeftMotor.set(speeds.rearLeft * m_maxOutput);
-        m_rearRightMotor.set(speeds.rearRight * m_maxOutput);
+        m_frontLeftMotor.getPIDController().setReference(speeds.frontLeft * m_maxOutput, ControlType.kVelocity);
+        m_frontRightMotor.getPIDController().setReference(speeds.frontRight * m_maxOutput, ControlType.kVelocity);
+        m_rearLeftMotor.getPIDController().setReference(speeds.rearLeft * m_maxOutput, ControlType.kVelocity);
+        m_rearRightMotor.getPIDController().setReference(speeds.rearRight * m_maxOutput, ControlType.kVelocity);
 
         feed();
     }

@@ -122,6 +122,7 @@ public class Chassis {
         // front = new SplitDrive(CANSparkMax1, CANSparkMax2);
         // back = new SplitDrive(CANSparkMax3, CANSparkMax4);
         drive = new DevilDrive(CANSparkMax1, CANSparkMax3, CANSparkMax2, CANSparkMax4);
+        drive.setMaxOutput(30000);
         fl = new FileLogging();
         if (LOGDATA) {
             fl.createfile("encoders");
