@@ -121,26 +121,6 @@ public class VisionControl {
         chassis.setPid(kP, kI, kD, kF);
     }
 
-    /**
-     * @deprecated
-     */
-    public void autoPeriodic() {
-        switch (autostate) {
-            case PATH:
-                if (!RECORD_PATH) {
-                    update();
-                    followPath();
-                }
-
-                else {
-                    System.out.println("Please enable in teleop to record a new path");
-                }
-                break;
-            case SHOOT:
-                break;
-        }
-    }
-
     public void teleopInit() {
         if (RECORD_PATH)
             chassis.initOdometry();
@@ -150,7 +130,7 @@ public class VisionControl {
         update();
         // visionData.Print();
         if (RECORD_PATH && recordCounter <= MAX_SIZE) {
-            record(oi.pilot.getLeftY(), oi.pilot.getRightX());
+            record(-oi.pilot.getLeftY(), oi.pilot.getRightX());
             recordCounter++;
         } else if (RECORD_PATH && recordCounter > MAX_SIZE) {
             System.out.println("Max recording size has been reached");
@@ -181,21 +161,6 @@ public class VisionControl {
             }
             usingAuto = false;
             Robot.PDM.setSwitchableChannel(true);
-        }
-    }
-
-    /**
-     * Follows a preplanned path using encoder positions
-     * 
-     * @deprecated
-     */
-    public void followPath() {
-        if (counter < frontLeftSpeed.length) {
-            chassis.pathDrive(fl.interpolate(counter, frontLeftSpeed), fl.interpolate(counter, frontRightSpeed),
-                    fl.interpolate(counter, backLeftSpeed), fl.interpolate(counter, backRightSpeed));
-            counter += counterSpeed;
-        } else {
-            chassis.drive(0, 0, false);
         }
     }
 

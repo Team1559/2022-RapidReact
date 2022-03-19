@@ -227,7 +227,7 @@ public class Shooter {
         } else if (oi.autoShootButton() && checkDependencies()) { // Shoot when ready
             if (Math.abs(vc.hoopr) <= vc.hoopChassisThreshold) { // Angle check
                 if (vc.hoopx <= vc.maxHoopDistance) { // distance check
-                    if (oi.pilot.getLeftY() < 0.05
+                    if (Math.abs(oi.pilot.getLeftY()) < 0.05
                             && Math.abs(chassis.rpmToFps(chassis.getFrontAverageWheelRPM())) < 2) {
                         // Speed check ^^
                         if (Math.abs(getShooterRpms() - calculateShooterRPMS(

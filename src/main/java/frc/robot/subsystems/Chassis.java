@@ -115,13 +115,13 @@ public class Chassis {
         CANSparkMax3 = initMotor(Wiring.BLMOTOR);
         CANSparkMax4 = initMotor(Wiring.BRMOTOR);
         // encoders
-        CANSparkMax2.setInverted(true);
-        CANSparkMax4.setInverted(true);
+        CANSparkMax1.setInverted(true);
+        CANSparkMax3.setInverted(true);
         initEncoders();
 
         // front = new SplitDrive(CANSparkMax1, CANSparkMax2);
         // back = new SplitDrive(CANSparkMax3, CANSparkMax4);
-        drive = new DevilDrive(CANSparkMax1, CANSparkMax2, CANSparkMax3, CANSparkMax4);
+        drive = new DevilDrive(CANSparkMax1, CANSparkMax3, CANSparkMax2, CANSparkMax4);
         fl = new FileLogging();
         if (LOGDATA) {
             fl.createfile("encoders");
@@ -131,7 +131,7 @@ public class Chassis {
     public void main() {
         imu.updateValues();
         SmartDashboard.putNumber("IMU", this.imu.yaw);
-        drive(oi.pilot.getLeftY(), oi.pilot.getLeftX(), oi.pilot.getRightX());
+        drive(-oi.pilot.getLeftY(), oi.pilot.getLeftX(), oi.pilot.getRightX());
         updateEncoders();
         if (LOGDATA) {
             SmartDashboard.putNumber("Front left encoder velocity is: ", flEncoder.getVelocity());
@@ -166,22 +166,11 @@ public class Chassis {
         ySpeed *= oi.slowModeButton() ? SLOWMODE_COEFFICIENT : 1;
         zRotation *= oi.slowModeButton() ? SLOWMODE_COEFFICIENT : 1;
         xSpeed *= oi.slowModeButton() ? SLOWMODE_COEFFICIENT : 1;
-        drive.driveCartesian(ySpeed, xSpeed, zRotation, squareInputs);
-    }
-
-    /**
-     * @deprecated
-     */
-    public void pathDrive(double l, double r) {
-        // front.pathDrive(l, r);
-        // back.coast();
-    }
-
-    /**
-     * @deprecated
-     */
-    public void pathDrive(double fl, double fr, double bl, double br) {
-        drive.pathDrive(fl, fr, bl, br);
+        if (squareInputs) {
+            ySpeed = Math.copySign(ySpeed * ySpeed, ySpeed);
+            xSpeed = Math.copySign(xSpeed * xSpeed, xSpeed);
+        }
+        drive.driveCartesian(ySpeed, xSpeed, zRotation);
     }
 
     public void setPid(double kp, double ki, double kd, double kf) {
