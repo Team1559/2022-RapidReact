@@ -71,7 +71,7 @@ public class DTXboxController extends XboxController implements Runnable {
      * angle
      * 
      * @param angle The desired angle
-     * @return Whether the dpad has just been pressed at the specifed angle
+     * @return Whether the dpad has just been pressed at the specified angle
      */
     public boolean getDPadPress(int angle) {
         int currentAngle = getRawDPadPress();
@@ -89,7 +89,7 @@ public class DTXboxController extends XboxController implements Runnable {
      * angle
      * 
      * @param angle The desired angle
-     * @return Whether the dpad has just been released at the specifed angle
+     * @return Whether the dpad has just been released at the specified angle
      */
     public boolean getDPadRelease(int angle) {
         int currentAngle = getRawDPadRelease();
