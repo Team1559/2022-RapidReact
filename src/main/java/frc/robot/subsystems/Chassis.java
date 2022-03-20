@@ -81,7 +81,7 @@ public class Chassis implements Runnable {
         pid.setFF(kFF);
         pid.setOutputRange(kMinOutput, kMaxOutput);
         return sparky;
-       
+
     }
 
     /**
@@ -189,7 +189,9 @@ public class Chassis implements Runnable {
      */
     @Override
     public void run() {
-        updateEncoders();
+        while (true) {
+            updateEncoders();
+        }
     }
 
     /**

@@ -73,14 +73,16 @@ public class IMU implements Runnable {
      */
     @Override
     public void run() {
-        x_acceleration = ahrs.getWorldLinearAccelX();
-        y_acceleration = ahrs.getWorldLinearAccelY();
-        z_acceleration = ahrs.getWorldLinearAccelZ();
-        roll = ahrs.getPitch();
-        pitch = ahrs.getRoll();
-        yaw = ahrs.getYaw();
-        turnRate = ahrs.getRate();
-        y_angularVelocity = ahrs.getRate();
+        while (true) {
+            x_acceleration = ahrs.getWorldLinearAccelX();
+            y_acceleration = ahrs.getWorldLinearAccelY();
+            z_acceleration = ahrs.getWorldLinearAccelZ();
+            roll = ahrs.getPitch();
+            pitch = ahrs.getRoll();
+            yaw = ahrs.getYaw();
+            turnRate = ahrs.getRate();
+            y_angularVelocity = ahrs.getRate();
+        }
     }
 
     /* the following are all the functions avalible */

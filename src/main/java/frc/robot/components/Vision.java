@@ -35,44 +35,46 @@ public class Vision implements Runnable {
      */
     @Override
     public void run() {
-        try {
-            VisionData NewData = new VisionData();
-            NewData.hoopStatus = 2;
-            NewData.ballStatus = 2;
-            String in = client.getData();
+        while (true) {
+            try {
+                VisionData NewData = new VisionData();
+                NewData.hoopStatus = 2;
+                NewData.ballStatus = 2;
+                String in = client.getData();
 
-            if (in != null) {
-                // System.out.println(in);
-                String[] parameters = in.split(" ");
+                if (in != null) {
+                    // System.out.println(in);
+                    String[] parameters = in.split(" ");
 
-                if (parameters.length >= 9) {
-                    NewData.ballStatus = Integer.parseInt(parameters[7]);
-                    NewData.hoopStatus = Integer.parseInt(parameters[6]);
+                    if (parameters.length >= 9) {
+                        NewData.ballStatus = Integer.parseInt(parameters[7]);
+                        NewData.hoopStatus = Integer.parseInt(parameters[6]);
 
-                    if (NewData.ballStatus == 1) {
-                        NewData.br = -(Double.parseDouble(parameters[3]) - ballCameraXOffset);
-                        NewData.bx = Double.parseDouble(parameters[5]) - ballCameraYOffset;
-                        NewData.by = Double.parseDouble(parameters[4]) - ballCameraYOffset;
-                    }
+                        if (NewData.ballStatus == 1) {
+                            NewData.br = -(Double.parseDouble(parameters[3]) - ballCameraXOffset);
+                            NewData.bx = Double.parseDouble(parameters[5]) - ballCameraYOffset;
+                            NewData.by = Double.parseDouble(parameters[4]) - ballCameraYOffset;
+                        }
 
-                    if (NewData.hoopStatus == 1) {
-                        NewData.hx = Double.parseDouble(parameters[0]) - hoopCameraXOffset;
-                        NewData.hy = Double.parseDouble(parameters[2]) - hoopCameraYOffset; // Always 0
-                        NewData.hr = Double.parseDouble(parameters[1]) - hoopCameraROffset;
-                    }
+                        if (NewData.hoopStatus == 1) {
+                            NewData.hx = Double.parseDouble(parameters[0]) - hoopCameraXOffset;
+                            NewData.hy = Double.parseDouble(parameters[2]) - hoopCameraYOffset; // Always 0
+                            NewData.hr = Double.parseDouble(parameters[1]) - hoopCameraROffset;
+                        }
 
-                    if (Integer.parseInt(parameters[8]) == 1) {
-                        NewData.waitForOtherRobot = true;
-                    }
+                        if (Integer.parseInt(parameters[8]) == 1) {
+                            NewData.waitForOtherRobot = true;
+                        }
 
-                    else {
-                        NewData.waitForOtherRobot = false;
+                        else {
+                            NewData.waitForOtherRobot = false;
+                        }
                     }
                 }
+                VData = NewData;
+            } catch (NumberFormatException | NullPointerException e) {
+                System.err.println(e.toString());
             }
-            VData = NewData;
-        } catch (NumberFormatException | NullPointerException e) {
-            System.err.println(e.toString());
         }
     }
 

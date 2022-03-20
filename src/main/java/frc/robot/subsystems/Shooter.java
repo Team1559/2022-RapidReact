@@ -139,7 +139,9 @@ public class Shooter implements Runnable {
 
     @Override
     public void run() {
-        gathererState();
+        while (true) {
+            gathererState();
+        }
     }
 
     public void zeroFeeder() {
