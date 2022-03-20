@@ -2,7 +2,7 @@ package frc.robot.components;
 
 /**
  * This class is responciple for reciving data from the jetson and structuring
- * it. It also writes it to the VisionData class
+ * it. It also writes the data to the VisionData class
  */
 public class Vision implements Runnable {
     private UDPClient client;
@@ -34,9 +34,8 @@ public class Vision implements Runnable {
     public void run() {
         while (true) {
             try {
-                VisionData.hoopStatus = 2;
-                VisionData.ballStatus = 2;
                 String in = client.getData();
+                VisionData.restoreDefaults();
 
                 if (in != null) {
                     // System.out.println(in);

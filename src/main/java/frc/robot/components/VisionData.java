@@ -4,16 +4,15 @@ package frc.robot.components;
  * Holds all the data for the vision system
  */
 public class VisionData {
-
-    public static double hx;
-    public static double hy;
-    public static double hr;
-    public static double bx;
-    public static double by;
-    public static double br;
-    public static int hoopStatus;
-    public static int ballStatus;
-    public static boolean waitForOtherRobot;
+    public static double hx = 0;
+    public static double hy = 0;
+    public static double hr = 0;
+    public static double bx = 0;
+    public static double by = 0;
+    public static double br = 0;
+    public static int hoopStatus = 2;
+    public static int ballStatus = 2;
+    public static boolean waitForOtherRobot = false;
 
     /**
      * Returns whether or not the vision system sees the hoop
@@ -43,6 +42,21 @@ public class VisionData {
         else {
             return true;
         }
+    }
+
+    /**
+     * Sets all values to their defaults
+     */
+    public static void restoreDefaults() {
+        hx = 0;
+        hy = 0;
+        hr = 0;
+        bx = 0;
+        by = 0;
+        br = 0;
+        hoopStatus = 2;
+        ballStatus = 2;
+        waitForOtherRobot = false;
     }
 
     /**
