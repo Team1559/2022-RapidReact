@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter implements Runnable {
     private Thread thread;
@@ -38,11 +39,11 @@ public class Shooter implements Runnable {
     private final double feeder_kI = 0.0003;
     private final double feeder_kiz = 0.0;
     private final double feeder_kiM = 0.1;
-    private static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
     public final double feederSpeed = 3.2;
     public final double intakeSpeed = 1; // 0.4;
-    public static final double DEFAULT_RPMS = 2150; // 4 ft from front of robot to face of target
     private final boolean TESTING = false;
+    public static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
+    public static final double DEFAULT_RPMS = 2150; // 4 ft from front of robot to face of target
 
     // States for gatherer
     public static final int gathererUp = 0;
@@ -57,6 +58,7 @@ public class Shooter implements Runnable {
     public boolean gatherLock = false;
     public int gathererState = gathererUp;
     public int lastState = holding;
+
 
     public Shooter(OperatorInterface operatorinterface, Chassis chassis, Robot robot) {
         thread = new Thread(this);
@@ -190,14 +192,19 @@ public class Shooter implements Runnable {
     }
 
     public void ShooterMain() {
+        SmartDashboard.putNumber("Actual shotoer", getShooterRpms());
+
         if (oi.runFlyWheelButtonManual()) {
             // oi.copilot.startRumble(0);
-            startShooter(DEFAULT_RPMS); // Assume distance is 8 ft in manual mode
+            startShooter(getDefaultShooterRpm()); // Assume distance is 8 ft in manual mode
         } else if (oi.autoSteerToHoopButton()) {
             if (checkDependencies()) {
+                SmartDashboard.putNumber("hoopx", vc.hoopx);
+                SmartDashboard.putNumber("Shooter setpt",
+                        calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
                 startShooter(calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
             } else if (TESTING) {
-                startShooter(calculateShooterRPMS(DEFAULT_RPMS));
+                startShooter(getDefaultShooterRpm());
             }
         } else {
             oi.copilot.stopRumble();
@@ -219,7 +226,7 @@ public class Shooter implements Runnable {
         } else if (oi.autoShootButton() && checkDependencies()) { // Shoot when ready
             if (Math.abs(vc.hoopr) <= vc.hoopChassisThreshold) { // Angle check
                 if (vc.hoopx <= vc.maxHoopDistance) { // distance check
-                    if (oi.pilot.getLeftY() < 0.05
+                    if (Math.abs(oi.pilot.getLeftY()) < 0.05
                             && Math.abs(chassis.rpmToFps(chassis.getFrontAverageWheelRPM())) < 2) {
                         // Speed check ^^
                         if (Math.abs(getShooterRpms() - calculateShooterRPMS(
@@ -270,8 +277,9 @@ public class Shooter implements Runnable {
             gathererState = lastState;
             disableManual = false;
         }
-        // if (ticCounter % 10 == 0 && (feederEncoder.getPosition() - encoderTics < 2.0)) {
-        //     encoderTics -= 0.2;
+        // if (ticCounter % 10 == 0 && (feederEncoder.getPosition() - encoderTics <
+        // 2.0)) {
+        // encoderTics -= 0.2;
         // }
         gatherLock = false;
         feederPid.setReference(encoderTics, ControlType.kPosition);
@@ -334,6 +342,11 @@ public class Shooter implements Runnable {
 
     public double getRpmError() {
         return shooter.getClosedLoopError() * 10 / 2048 * 60;
+    }
+
+    public double getDefaultShooterRpm() {
+        // return DEFAULT_RPMS;
+        return SmartDashboard.getNumber("Shooter RPM", DEFAULT_RPMS);
     }
 
     public double calculateShooterRPMS(double distance) {

@@ -32,6 +32,8 @@ public class Robot extends TimedRobot {
     private String m_autoSelected = "";
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+    
+
     public Chassis chassis;
     public Climber climber;
     public static PowerDistribution PDM = new PowerDistribution(Wiring.PDP, ModuleType.kRev);
@@ -76,6 +78,10 @@ public class Robot extends TimedRobot {
         m_chooser.addOption(TEST_AUTO2, TEST_AUTO2);
 
         SmartDashboard.putData("Auto Paths", m_chooser);
+
+        if(FeatureFlags.doShooter && FeatureFlags.shooterInitialized){
+            SmartDashboard.putNumber("Shooter RPM", Shooter.DEFAULT_RPMS);
+        }
     }
 
     /**

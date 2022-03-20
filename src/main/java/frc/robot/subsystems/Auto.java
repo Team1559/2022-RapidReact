@@ -424,7 +424,7 @@ public class Auto {
 
     private void StartFlywheel(double rpm) {
         if (rpm == 0)
-            rpm = robot.shooter.calculateShooterRPMS(robot.vc.hoopx);
+            rpm = robot.shooter.calculateShooterRPMS(robot.vc.hoopx + Shooter.SHOOTER_DISTANCE_FROM_CAMERA + 2);
         else if (rpm == -1) {
             rpm = Shooter.DEFAULT_RPMS;
         }
