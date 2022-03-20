@@ -54,7 +54,6 @@ public class UDPReceiver implements Runnable {
         System.out.println("UDPClient thread running");
         while (running) {
             String rec = receive();
-            // System.out.println(rec);
             if (rec != null) {
                 data = rec;
             }

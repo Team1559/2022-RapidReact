@@ -41,8 +41,8 @@ public class Shooter implements Runnable {
     private static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
     public final double feederSpeed = 3.2;
     public final double intakeSpeed = 1; // 0.4;
-    public static final double DEFAULT_RPMS = 2500; // 4 ft from front of robot to face of target
-    private final boolean TESTING = true;
+    public static final double DEFAULT_RPMS = 2150; // 4 ft from front of robot to face of target
+    private final boolean TESTING = false;
 
     // States for gatherer
     public static final int gathererUp = 0;
@@ -270,9 +270,9 @@ public class Shooter implements Runnable {
             gathererState = lastState;
             disableManual = false;
         }
-        if (ticCounter % 10 == 0 && (feederEncoder.getPosition() - encoderTics < 2.0)) {
-            encoderTics -= 0.2;
-        }
+        // if (ticCounter % 10 == 0 && (feederEncoder.getPosition() - encoderTics < 2.0)) {
+        //     encoderTics -= 0.2;
+        // }
         gatherLock = false;
         feederPid.setReference(encoderTics, ControlType.kPosition);
     }
