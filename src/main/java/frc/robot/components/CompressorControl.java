@@ -39,7 +39,7 @@ public class CompressorControl {
     }
 
     /**
-     * Disables teh compressor
+     * Disables the compressor
      */
     public void disable() {
         airCompressor.disable();

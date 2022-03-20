@@ -17,9 +17,7 @@ public class DTXboxController extends XboxController implements Runnable {
     private double power;
     private Side side = Side.BOTH;
     private Thread clientThread;
-
     private StopWatch stopWatch = new StopWatch();
-
     private boolean wasDpadPressed = false;
 
     /**

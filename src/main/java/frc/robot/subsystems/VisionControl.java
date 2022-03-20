@@ -20,7 +20,6 @@ public class VisionControl {
 
     private autoState autostate = autoState.PATH;
     public shooterState shooterstate = shooterState.ALIGN;
-
     private OperatorInterface oi;
     private Vision vision = new Vision();
     private VisionData visionData;
@@ -29,9 +28,7 @@ public class VisionControl {
     public double ballr = 0;
     public double hoopx = 0;
     public double ballx = 0;
-
     private int gathererOldState = 0;
-
     private Chassis chassis;
 
     // other variables

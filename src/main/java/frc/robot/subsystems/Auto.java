@@ -5,12 +5,6 @@ import frc.robot.*;
 
 // @SuppressWarnings("unused")
 public class Auto {
-
-    private int stepNumber = 0;
-    private int stepCounter = 0;
-
-    private double rightTarget;
-
     private static final int WAIT = 0;
     private static final int DRIVE = 1;
     private static final int TURN = 2;
@@ -23,23 +17,20 @@ public class Auto {
     private static final int DRIVE_HOOP = 9;
     private static final int ALIGN_HOOP = 10;
     private static final int TURN_HOOP = 11;
-
     private static final int FEEDER_CYCLES = 200;
-    boolean holdFeeder = true;
-
     private static final int MAX_TURN_SECONDS = 5;
     private static final int MAX_BALL_SECONDS = 5;
-
     static final int HOOP_ERROR_INCHES = 3;
     static final int HOOP_ERROR_DEGREES = 1;
-
     static final double MAX_DRIVE = 0.2;
     static final double MAX_TURN = 0.6;
 
-    double ySpeed = 0;
-
+    private int stepNumber = 0;
+    private int stepCounter = 0;
+    private double rightTarget;
+    private boolean holdFeeder = true;
+    private double ySpeed = 0;
     private Robot robot;
-
     private int[][] steps;
 
     // No Auto
