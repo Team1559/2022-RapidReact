@@ -28,7 +28,6 @@ public class Robot extends TimedRobot {
     private OperatorInterface oi = new OperatorInterface();
     private Auto auto;
     private IMU imu;
-    private VisionData vData = new VisionData();
     public VisionControl vc;
     public boolean usingVision = false;
 
@@ -367,7 +366,7 @@ public class Robot extends TimedRobot {
         }
 
         if (FeatureFlags.doVision && !FeatureFlags.visionInitialized) {
-            vc = new VisionControl(vData, oi, chassis, shooter);
+            vc = new VisionControl(oi, chassis, shooter);
             shooter.initVision();
             FeatureFlags.visionInitialized = true;
         }

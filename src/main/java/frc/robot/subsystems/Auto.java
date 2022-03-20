@@ -34,9 +34,10 @@ public class Auto {
     static final int HOOP_ERROR_DEGREES = 1;
 
     static final double MAX_DRIVE = 0.2;
-    static final double MAX_TURN = 0.1;
+    static final double MAX_TURN = 0.15;
 
     double ySpeed = 0;
+    double shooterSetVelocity = 0;
 
     private Robot robot;
 
@@ -67,14 +68,16 @@ public class Auto {
     public static final int[][] basicVisionAuto = {
             { WAIT, 20 },
             { START_GATHERER },
-            { DRIVE, 71 },
+            { DRIVE, 76 },
             { WAIT, 25 },
             { STOP_GATHERER },
             { TURN, 88 },
             { TURN, 88 },
-            { START_FLYWHEEL, 0 },
             { ALIGN_HOOP },
+            { START_FLYWHEEL, 0 },
             { WAIT, 100 },
+            { SHOOT },
+            { WAIT, 50 },
             { SHOOT },
             { STOP_FLYWHEEL }
     };
@@ -280,6 +283,11 @@ public class Auto {
         if (holdFeeder) {
             robot.shooter.holdFeeder();
         }
+        if (shooterSetVelocity == 0) {
+            robot.shooter.stopShooter();
+        } else {
+            robot.shooter.startShooter(shooterSetVelocity);
+        }
         SmartDashboard.putNumber("Auto state", type);
         switch (type) {
             case WAIT:
@@ -337,7 +345,7 @@ public class Auto {
     }
 
     private void Wait(int cycles) {
-        System.out.println("Wait: " + stepCounter + "/" + cycles);
+        // System.out.println("Wait: " + stepCounter + "/" + cycles);
         if (stepCounter >= cycles)
             Done();
     }
@@ -439,16 +447,16 @@ public class Auto {
 
     private void StartFlywheel(double rpm) {
         if (rpm == 0)
-            rpm = robot.shooter.calculateShooterRPMS(robot.vc.hoopx + Shooter.SHOOTER_DISTANCE_FROM_CAMERA + 2);
+            shooterSetVelocity = robot.shooter
+                    .calculateShooterRPMS(robot.vc.hoopx + Shooter.SHOOTER_DISTANCE_FROM_CAMERA + 2);
         else if (rpm == -1) {
-            rpm = Shooter.DEFAULT_RPMS;
+            shooterSetVelocity = Shooter.DEFAULT_RPMS;
         }
-        robot.shooter.startShooter(rpm);
         Done();
     }
 
     private void StopFlywheel() {
-        robot.shooter.stopShooter();
+        shooterSetVelocity = 0;
         Done();
     }
 
@@ -509,9 +517,12 @@ public class Auto {
     }
 
     private void AlignHoop() {
-        if (!robot.vc.trackHoop(0))
+        robot.vc.visionData.Print();
+        if (!robot.vc.trackHoop(0)) {
             Fail("No hoop found");
-        else if (Math.abs(robot.vc.hoopr) < HOOP_ERROR_DEGREES)
+        } else if (robot.vc.isHoopValid() && Math.abs(robot.vc.hoopr) < VisionControl.hoopChassisThreshold)
             Done();
+        System.out.println("I'm trying to align hoop");
+        System.out.println("Hoopr: " + robot.vc.hoopr);
     }
 }
