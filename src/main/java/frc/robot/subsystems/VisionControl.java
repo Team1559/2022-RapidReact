@@ -57,7 +57,7 @@ public class VisionControl {
     private final int MAX_SIZE = 2000;// should only need to be 750
     public static final double ballChassisThreshold = 1; // angle in degrees
     public static final double hoopChassisThreshold = 2; // angle in degrees
-    public static final double maxHoopDistance = 12; // MAX distance in ft
+    public static final double maxHoopDistance = 13; // MAX distance in ft
     public static final double shooterThreshold = 50; // threshold in rpm
 
     private final boolean SQUARE_DRIVER_INPUTS = true;
@@ -114,10 +114,10 @@ public class VisionControl {
             if (!trackBall(ySpeed))
                 chassis.main();
         } else {
-            if (usingAuto && !oi.autoCollectButton()) {
-                shooter.disableManual = false;
-                shooter.gathererState = gathererOldState;
-            }
+            // if (usingAuto && !oi.autoCollectButton()) {
+            // shooter.disableManual = false;
+            // shooter.gathererState = gathererOldState;
+            // }
             usingAuto = false;
             Robot.PDM.setSwitchableChannel(true);
         }

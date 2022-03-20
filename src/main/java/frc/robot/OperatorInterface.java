@@ -48,11 +48,12 @@ public class OperatorInterface {
     }
 
     public boolean shootButton() {
-        return copilot.getBButton();
+        // return copilot.getBButton();
+        return pilot.getYButton();
     }
 
     public boolean shootButtonPress() {
-        return copilot.getBButtonPressed();
+        return pilot.getYButtonPressed();
     }
 
     public boolean autoShootButton() {
