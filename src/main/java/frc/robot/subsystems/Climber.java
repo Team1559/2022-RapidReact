@@ -28,8 +28,8 @@ public class Climber {
     private boolean disable = false;
     private boolean press = false;
 
-    private final double CLIMBER_DOWN_RPMS = 3000;
-    private final double CLIMBER_UP_RPMS = 2000;
+    private final double CLIMBER_DOWN_RPMS = 2500;
+    private final double CLIMBER_UP_RPMS = 1600;
 
     private boolean resetEncoder = true;
 
