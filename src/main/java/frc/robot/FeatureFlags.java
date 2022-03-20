@@ -26,6 +26,7 @@ public final class FeatureFlags {
     public static boolean shooterInitialized = false;
     public static boolean compressorInitialized = false;
     public static boolean climberInitialized = false;
+
     /**
      * Updates which subsystems are enabled based on their dependencies
      */
