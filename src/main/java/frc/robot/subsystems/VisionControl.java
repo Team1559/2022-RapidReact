@@ -2,13 +2,10 @@ package frc.robot.subsystems;
 
 import frc.robot.components.*;
 import frc.robot.routes.*;
-
 import com.ctre.phoenix.time.StopWatch;
-
 import frc.robot.*;
 
 @SuppressWarnings("unused")
-
 public class VisionControl {
     public enum autoState {
         PATH, SHOOT
@@ -22,20 +19,22 @@ public class VisionControl {
     public shooterState shooterstate = shooterState.ALIGN;
     private OperatorInterface oi;
     private Vision vision = new Vision();
-    private VisionData visionData;
     private Shooter shooter;
+    private Chassis chassis;
+    private StopWatch clock = new StopWatch();
+    private StopWatch sendTmer = new StopWatch();
+    private UDPSender sender = new UDPSender();
+    private final int invalid_ball_counter_threshold = 60;
+    private final double align_kP = 0.30;
+
     public double hoopr = 0;
     public double ballr = 0;
     public double hoopx = 0;
     public double ballx = 0;
     private int gathererOldState = 0;
-    private Chassis chassis;
-
-    // other variables
+    private String selector;
     public boolean usingAuto = false;
     private int invalid_ball_counter = 0;
-    private final int invalid_ball_counter_threshold = 60;
-    private final double align_kP = 0.30;
     private FileLogging fl;
     private double counter = 0;
     private int recordCounter = 0;
@@ -44,9 +43,6 @@ public class VisionControl {
     private double frontLeftSpeed[] = {};
     private double backRightSpeed[] = {};
     private double backLeftSpeed[] = {};
-    private StopWatch clock = new StopWatch();
-    private StopWatch sendTmer = new StopWatch();
-    private UDPSender sender = new UDPSender();
 
     // we need to determine what to set these to
 
@@ -57,18 +53,15 @@ public class VisionControl {
     public final double maxHoopDistance = 12; // MAX distance in ft
     public final double shooterThreshold = 50; // threshold in rpm
 
-    private final boolean SQUARE_DRIVER_INPUTS = true;
-
     // edit these
+    private final boolean SQUARE_DRIVER_INPUTS = true;
     private final boolean RECORD_PATH = false;
     private final String FILE_NAME = "path4";
-    private String selector;
 
-    public VisionControl(VisionData visionData, OperatorInterface oi, Chassis chassis,
+    public VisionControl(OperatorInterface oi, Chassis chassis,
             Shooter shooter) {
         this.selector = "";
         this.oi = oi;
-        this.visionData = visionData;
         this.chassis = chassis;
         this.shooter = shooter;
         fl = new FileLogging();
@@ -204,7 +197,7 @@ public class VisionControl {
 
     public boolean trackHoop(double ySpeed) {
         // visionData.Print();
-        if (visionData.isHoopValid()) {
+        if (VisionData.isHoopValid()) {
             invalid_ball_counter = 0;
         } else {
             invalid_ball_counter++;
@@ -223,7 +216,7 @@ public class VisionControl {
             shooter.gathererState = Shooter.holding;
         }
 
-        if (visionData.isBallValid())
+        if (VisionData.isBallValid())
             invalid_ball_counter = 0;
         else
             invalid_ball_counter++;
@@ -256,11 +249,10 @@ public class VisionControl {
     }
 
     public void update() {
-        visionData = vision.getData();
-        hoopr = visionData.hr;
-        hoopx = visionData.hx;
-        ballr = visionData.br;
-        ballx = visionData.bx;
+        hoopr = VisionData.hr;
+        hoopx = VisionData.hx;
+        ballr = VisionData.br;
+        ballx = VisionData.bx;
     }
 
     private double calculateHoopRotation() {
@@ -299,7 +291,7 @@ public class VisionControl {
                 break;
             case WAIT:
                 drive(0, 0);
-                double rpm = visionData.isHoopValid() ? shooter.calculateShooterRPMS(hoopx) : 0;
+                double rpm = VisionData.isHoopValid() ? shooter.calculateShooterRPMS(hoopx) : 0;
                 shooter.startShooter(rpm);
                 if (Math.abs(shooter.getShooterRpms() - rpm) < shooterThreshold) {
                     shooterstate = shooterState.SHOOT;
@@ -308,7 +300,7 @@ public class VisionControl {
                 break;
             case SHOOT:
                 drive(0, 0);
-                double rpms = visionData.isHoopValid() ? shooter.calculateShooterRPMS(hoopx) : 0;
+                double rpms = VisionData.isHoopValid() ? shooter.calculateShooterRPMS(hoopx) : 0;
                 shooter.startShooter(rpms);
                 shooter.startFeeder(shooter.feederSpeed, !shooter.disableManual);
                 if (clock.getDuration() == 2) {
@@ -325,7 +317,7 @@ public class VisionControl {
     }
 
     public boolean isHoopValid() {
-        return visionData.isHoopValid();
+        return VisionData.isHoopValid();
     }
 
     /**

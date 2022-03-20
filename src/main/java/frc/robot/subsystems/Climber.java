@@ -16,41 +16,36 @@ public class Climber {
 
     private OperatorInterface oi;
     private Shooter shooter;
-    private TalonSRX relay = new TalonSRX(Wiring.RELAY_SRX);
-    DigitalInput upperLimitSwitch = new DigitalInput(Wiring.upperLimitSwitchInput);
-    DigitalInput lowerLimitSwitch = new DigitalInput(Wiring.lowerLimitSwitchInput);
-    private boolean wait = true;
-
-    private SupplyCurrentLimitConfiguration climberLimit = new SupplyCurrentLimitConfiguration(true, 80, 90, 0);
+    private TalonFX climber;
+    private Solenoid climberSolenoid;
+    private TalonSRX relay;
+    private StopWatch watch = new StopWatch();
+    private DigitalInput upperLimitSwitch = new DigitalInput(Wiring.upperLimitSwitchInput);
+    private DigitalInput lowerLimitSwitch = new DigitalInput(Wiring.lowerLimitSwitchInput);
     private final int TIMEOUT = 0;
     private final double cLR = 0.1;
-
-    private boolean disable = false;
-    private boolean press = false;
-
     private final double CLIMBER_DOWN_RPMS = 3000;
     private final double CLIMBER_UP_RPMS = 2000;
-
-    private boolean resetEncoder = true;
-
-    // TODO Tune this PID controller, It will need an I value
+    // TODO: Tune this PID controller, It will probably need an I value
+    // pid controller for velocity mode
     private final double kF = 0.015;
     private final double kP = 0.15;
     private final double kD = 0.06;
     private final double kI = 0.000;
     private final double kiz = 0;
-
+    // pid controller for position mode
     private final double pkF = 0.0;
     private final double pkP = 0.07;
     private final double pkD = 0.06;
     private final double pkI = 0.000;
     private final double pkiz = 0;
-    private StopWatch watch = new StopWatch();
     private final double MAX_WAIT = 0.125;
+    private SupplyCurrentLimitConfiguration climberLimit = new SupplyCurrentLimitConfiguration(true, 80, 90, 0);
     private boolean disengageSolenoid = false;
-
-    private TalonFX climber;
-    private Solenoid climberSolenoid;
+    private boolean resetEncoder = true;
+    private boolean wait = true;
+    private boolean disable = false;
+    private boolean press = false;
 
     public Climber(OperatorInterface oi, Shooter shooter) {
         this.oi = oi;
@@ -58,7 +53,7 @@ public class Climber {
         climberSolenoid = new Solenoid(Wiring.PNEUMATICS_HUB, PneumaticsModuleType.REVPH, Wiring.CLIMBER_SOLENOID);
 
         // MotorController Config
-
+        relay = new TalonSRX(Wiring.RELAY_SRX);
         climber = new TalonFX(Wiring.climberMotor);
 
         // climber Velocity mode configs
@@ -77,7 +72,6 @@ public class Climber {
         climber.config_kI(0, kI, TIMEOUT);
         climber.config_kF(0, kF, TIMEOUT);
         climber.config_IntegralZone(0, kiz, TIMEOUT);
-
         climber.config_kP(1, pkP, TIMEOUT);
         climber.config_kD(1, pkD, TIMEOUT);
         climber.config_kI(1, pkI, TIMEOUT);
@@ -85,7 +79,6 @@ public class Climber {
         climber.config_IntegralZone(1, pkiz, TIMEOUT);
         climber.setInverted(true);
         climber.selectProfileSlot(0, 0);
-
         relay.configFactoryDefault();
         relay.setNeutralMode(NeutralMode.Coast);
     }

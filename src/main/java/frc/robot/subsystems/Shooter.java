@@ -3,12 +3,10 @@ package frc.robot.subsystems;
 import frc.robot.OperatorInterface;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
-
 import frc.robot.*;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -16,35 +14,6 @@ import edu.wpi.first.wpilibj.Solenoid;
 public class Shooter implements Runnable {
     private Thread thread;
     private OperatorInterface oi;
-    private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(true, 60, 40, 2);
-    private final int TIMEOUT = 0;
-    private final double cLR = 0.75;
-
-    private final double shooter_kF = 0.045;
-    private final double shooter_kP = 0.4;
-    private final double shooter_kD = 0;
-    private final double shooter_kI = 0.000;
-    private final double shooter_kiz = 0.0;
-    public int ticCounter = 0;
-
-    private double encoderTics = 0;
-
-    // TODO: Tune these
-    private final double feeder_kF = 0.00;
-    private final double feeder_kP = 0.06;
-    private final double feeder_kD = 0.2;
-    private final double feeder_kI = 0.0003;
-    private final double feeder_kiz = 0.0;
-    private final double feeder_kiM = 0.1;
-
-    public double feederSpeed = 3.2;
-
-    public double intakeSpeed = 1; // 0.4;
-
-    private static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
-    public static final double DEFAULT_RPMS = 2500; // 4 ft from front of robot to face of target
-    private final boolean TESTING = true;
-
     private TalonFX shooter;
     private CANSparkMax feeder;
     private Solenoid lowerIntake;
@@ -54,20 +23,39 @@ public class Shooter implements Runnable {
     private RelativeEncoder feederEncoder;
     private SparkMaxPIDController feederPid;
     private Robot robot;
-
-    public boolean RESET_ENCODER = true;
-    public boolean disableManual = false;
+    private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(true, 60, 40, 2);
+    private final int TIMEOUT = 0;
+    private final double cLR = 0.75;
+    private final double shooter_kF = 0.045;
+    private final double shooter_kP = 0.4;
+    private final double shooter_kD = 0;
+    private final double shooter_kI = 0.000;
+    private final double shooter_kiz = 0.0;
+    // TODO: Tune these
+    private final double feeder_kF = 0.00;
+    private final double feeder_kP = 0.06;
+    private final double feeder_kD = 0.2;
+    private final double feeder_kI = 0.0003;
+    private final double feeder_kiz = 0.0;
+    private final double feeder_kiM = 0.1;
+    private static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
+    public final double feederSpeed = 3.2;
+    public final double intakeSpeed = 1; // 0.4;
+    public static final double DEFAULT_RPMS = 2500; // 4 ft from front of robot to face of target
+    private final boolean TESTING = true;
 
     // States for gatherer
     public static final int gathererUp = 0;
     public static final int gathererDown = 1;
     public static final int holding = 2;
     public static final int upRun = 3;
-
+    // Other
+    public int ticCounter = 0;
+    private double encoderTics = 0;
+    public boolean RESET_ENCODER = true;
+    public boolean disableManual = false;
     public boolean gatherLock = false;
-
     public int gathererState = gathererUp;
-
     public int lastState = holding;
 
     public Shooter(OperatorInterface operatorinterface, Chassis chassis, Robot robot) {

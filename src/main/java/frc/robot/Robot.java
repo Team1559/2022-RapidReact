@@ -9,8 +9,6 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import frc.robot.components.VisionData;
-
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.*;
@@ -28,7 +26,6 @@ public class Robot extends TimedRobot {
     private OperatorInterface oi = new OperatorInterface();
     private Auto auto;
     private IMU imu;
-    private VisionData vData = new VisionData();
     public VisionControl vc;
     public boolean usingVision = false;
 
@@ -365,7 +362,7 @@ public class Robot extends TimedRobot {
         }
 
         if (FeatureFlags.doVision && !FeatureFlags.visionInitialized) {
-            vc = new VisionControl(vData, oi, chassis, shooter);
+            vc = new VisionControl(oi, chassis, shooter);
             shooter.initVision();
             FeatureFlags.visionInitialized = true;
         }
