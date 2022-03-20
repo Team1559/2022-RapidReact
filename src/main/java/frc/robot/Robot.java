@@ -246,6 +246,7 @@ public class Robot extends TimedRobot {
             shooter.gathererState = Shooter.gathererUp;
             shooter.zeroFeeder();
             shooter.disableManual = false;
+            shooter.gatherLock = false;
             SmartDashboard.putNumber("Shooter RPM", Shooter.DEFAULT_RPMS);
         }
         if (FeatureFlags.doClimber && FeatureFlags.climberInitialized) {

@@ -122,7 +122,6 @@ public class Climber {
 
         // Control for Winch
         if (oi.climberEnableButton()) {
-            shooter.disableManual = true;
             disengageSolenoid(); // disengage the solenoid once enabled
             if (oi.extendClimberPistonsButton()) {
                 extendPistons();
@@ -196,12 +195,14 @@ public class Climber {
     }
 
     public void extendPistons() {
-        shooter.gathererState = Shooter.gathererDown;
+        shooter.disableManual = true;
+        shooter.gathererState = shooter.gathererDown;
         climberSolenoid.set(true);
     }
 
     public void retractPistons() {
-        shooter.gathererState = Shooter.gathererUp;
+        shooter.disableManual = true;
+        shooter.gathererState = shooter.gathererUp;
         climberSolenoid.set(false);
     }
 

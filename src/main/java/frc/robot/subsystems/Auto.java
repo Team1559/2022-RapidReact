@@ -463,6 +463,7 @@ public class Auto {
     private void Shoot() {
         holdFeeder = false;
         robot.shooter.disableManual = true;
+        robot.shooter.gatherLock = false;
         robot.shooter.startFeeder(robot.shooter.feederSpeed, stepCounter == 1);
 
         if (stepCounter >= FEEDER_CYCLES) {
