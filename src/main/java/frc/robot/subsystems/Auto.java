@@ -48,10 +48,9 @@ public class Auto {
     // Start gatherer, drive X feet, stop gatherer, start flywheel at known RPM,
     // turn 180, shoot, stop flywheel
     public static final int[][] basicAutoSteps = {
-            { WAIT, 100 },
+            { WAIT, 20 },
             { START_GATHERER },
             { DRIVE, 69 },
-            // { WAIT, 25 },
             { STOP_GATHERER },
             { START_FLYWHEEL, -1 },
             { TURN, 88 },
@@ -66,16 +65,15 @@ public class Auto {
     };
 
     public static final int[][] basicVisionAuto = {
-            { WAIT, 50 },
-            { DRIVE_BALL, 48 },
+            { WAIT, 20 },
             { START_GATHERER },
-            { DRIVE, 48 + 3 },
-            { WAIT, 30 },
+            { DRIVE, 69 },
             { STOP_GATHERER },
-            { TURN, 180 },
+            { TURN, 88 },
+            { TURN, 88 },
             { START_FLYWHEEL, 0 },
             { ALIGN_HOOP },
-            { WAIT, 50 },
+            { WAIT, 100 },
             { SHOOT },
             { STOP_FLYWHEEL }
     };
