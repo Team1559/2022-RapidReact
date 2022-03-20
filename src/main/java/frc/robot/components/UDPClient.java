@@ -75,7 +75,7 @@ public class UDPClient implements Runnable {
     }
 
     /**
-     * Gets teh most current data
+     * Gets the most current data
      * 
      * @return The most current data
      */

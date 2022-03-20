@@ -353,7 +353,9 @@ public class Shooter implements Runnable {
         // https://docs.google.com/spreadsheets/d/1l1Nxlk29b2KL5FwVklSFhfuychKHfztRSNRqPUuQUIs/edit#gid=695645693
         // return 4476 + 158 * distance;
         // return distance;
-        return 5000; // FIXME: return to old formula
+        // return 5000; // FIXME: return to old formula
+        return 1750 + 20.2 * distance + 1.85 * Math.pow(distance, 2);
+
     }
 
     public void disable() {
