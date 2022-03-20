@@ -39,12 +39,9 @@ public class UDPClient implements Runnable {
 
         try {
             socket = new DatagramSocket(this.port);
-        }
-
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(e.toString());
         }
-
         clientThread.start();
     }
 
@@ -58,7 +55,6 @@ public class UDPClient implements Runnable {
         while (running) {
             String rec = receive();
             // System.out.println(rec);
-
             if (rec != null) {
                 data = rec;
             }
@@ -66,7 +62,7 @@ public class UDPClient implements Runnable {
     }
 
     /**
-     * Returs the most recently fetched data
+     * Returns the most recent data recived
      * 
      * @return The most current data
      */
@@ -87,15 +83,11 @@ public class UDPClient implements Runnable {
             socket.receive(DpReceive);
             InputStream is = new ByteArrayInputStream(receive);
             BufferedReader bfReader = new BufferedReader(new InputStreamReader(is));
-
             ret = bfReader.readLine();
             // System.out.println(ret);
-        }
-
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(e.toString());
         }
-
         return ret;
     }
 }

@@ -8,13 +8,12 @@ public class Vision implements Runnable {
     private UDPClient client;
     private static Vision instance;
     private Thread clientThread;
-
-    double hoopCameraYOffset = 0;
-    double hoopCameraXOffset = 0;
-    double hoopCameraROffset = 0;
-    double ballCameraYOffset = 0;
-    double ballCameraXOffset = 0;
-    double ballCameraROffset = 0;
+    private double hoopCameraYOffset = 0;
+    private double hoopCameraXOffset = 0;
+    private double hoopCameraROffset = 0;
+    private double ballCameraYOffset = 0;
+    private double ballCameraXOffset = 0;
+    private double ballCameraROffset = 0;
 
     /**
      * Creates new vision object
@@ -22,8 +21,6 @@ public class Vision implements Runnable {
     public Vision() {
         clientThread = new Thread(this);
         client = new UDPClient();
-        VisionData.hoopStatus = 0;
-        VisionData.ballStatus = 0;
         clientThread.start();
     }
 
@@ -48,7 +45,7 @@ public class Vision implements Runnable {
                         if (VisionData.ballStatus == 1) {
                             VisionData.br = -(Double.parseDouble(parameters[3]) - ballCameraXOffset);
                             VisionData.bx = Double.parseDouble(parameters[5]) - ballCameraYOffset;
-                            VisionData.by = Double.parseDouble(parameters[4]) - ballCameraYOffset;
+                            VisionData.by = Double.parseDouble(parameters[4]) - ballCameraROffset;
                         }
 
                         if (VisionData.hoopStatus == 1) {

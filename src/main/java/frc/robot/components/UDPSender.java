@@ -73,8 +73,7 @@ public class UDPSender {
     }
 
     /**
-     * Sends provided data to the target specified during instantiation (or the
-     * default one if none is provided)
+     * Sends provided data to the target
      * 
      * @param text Data to be sent
      */
