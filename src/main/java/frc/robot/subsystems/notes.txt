@@ -1,2 +1,1 @@
-3566 - ~18 ft
-2000 - 
+MAX_MIN calculate shooter rpms

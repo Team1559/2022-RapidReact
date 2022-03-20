@@ -34,7 +34,7 @@ public class Auto {
     static final int HOOP_ERROR_DEGREES = 1;
 
     static final double MAX_DRIVE = 0.2;
-    static final double MAX_TURN = 0.5;
+    static final double MAX_TURN = 0.1;
 
     double ySpeed = 0;
 
@@ -67,7 +67,8 @@ public class Auto {
     public static final int[][] basicVisionAuto = {
             { WAIT, 20 },
             { START_GATHERER },
-            { DRIVE, 69 },
+            { DRIVE, 71 },
+            { WAIT, 25 },
             { STOP_GATHERER },
             { TURN, 88 },
             { TURN, 88 },
@@ -279,6 +280,7 @@ public class Auto {
         if (holdFeeder) {
             robot.shooter.holdFeeder();
         }
+        SmartDashboard.putNumber("Auto state", type);
         switch (type) {
             case WAIT:
                 Wait((int) value);
@@ -349,28 +351,28 @@ public class Auto {
             // establish setpoints for end of travel
             rightTarget = robot.chassis.frep + revs;
         }
-        double remaining = (rightTarget - robot.chassis.frep);
-        double driveValue = -(remaining * kP);
-        // SmartDashboard.clearPersistent("FLEP");
-        // SmartDashboard.clearPersistent("FREP");
-        // SmartDashboard.clearPersistent("Remaining");
+        double remaining = rightTarget - robot.chassis.frep;
+        double driveValue = remaining * kP;
+        SmartDashboard.clearPersistent("FLEP");
+        SmartDashboard.clearPersistent("FREP");
+        SmartDashboard.clearPersistent("Remaining");
         SmartDashboard.clearPersistent("Drive value: ");
-        // SmartDashboard.clearPersistent("FLEV");
-        // SmartDashboard.clearPersistent("FREV");
-        // SmartDashboard.clearPersistent("Revs");
-        // SmartDashboard.putNumber("FLEP", robot.chassis.flep);
-        // SmartDashboard.putNumber("FREP", robot.chassis.frep);
-        // SmartDashboard.putNumber("Remaining", remaining);
+        SmartDashboard.clearPersistent("FLEV");
+        SmartDashboard.clearPersistent("FREV");
+        SmartDashboard.clearPersistent("Revs");
+        SmartDashboard.putNumber("FLEP", robot.chassis.flep);
+        SmartDashboard.putNumber("FREP", robot.chassis.frep);
+        SmartDashboard.putNumber("Remaining", remaining);
         SmartDashboard.putNumber("Drive value: ", driveValue);
-        // SmartDashboard.putNumber("FLEV", robot.chassis.flEncoder.getVelocity());
-        // SmartDashboard.putNumber("FREV", robot.chassis.frEncoder.getVelocity());
+        SmartDashboard.putNumber("FLEV", robot.chassis.flEncoder.getVelocity());
+        SmartDashboard.putNumber("FREV", robot.chassis.frEncoder.getVelocity());
         double done = revs - remaining;
         System.out.println("Done:" + done);
         int inchesDone = (int) robot.chassis.revolutionsToInches(done);
         System.out.println("Drive: " + inchesDone + "/" + inches);
         System.out.println("stepCounter: " + stepCounter);
         if (stepCounter <= 50.0 * 4.5) {
-            robot.chassis.drive(-Math.abs(Math.abs(driveValue) > MAX_DRIVE ? MAX_DRIVE : driveValue), 0,
+            robot.chassis.drive(Math.abs(driveValue) > MAX_DRIVE ? Math.copySign(MAX_DRIVE, driveValue) : driveValue, 0,
                     false);
         } else {
             robot.chassis.drive(0, 0, false);
@@ -453,6 +455,7 @@ public class Auto {
     private void Shoot() {
         holdFeeder = false;
         robot.shooter.disableManual = true;
+        robot.shooter.gatherLock = false;
         robot.shooter.startFeeder(robot.shooter.feederSpeed, stepCounter == 1);
 
         if (stepCounter >= FEEDER_CYCLES) {

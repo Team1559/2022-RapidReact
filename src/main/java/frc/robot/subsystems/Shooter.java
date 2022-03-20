@@ -251,13 +251,11 @@ public class Shooter {
     }
 
     public void startFeeder(double setpoint, boolean setNewTarget) {
-        double target = setpoint;
         RESET_ENCODER = true;
         if (setNewTarget) {
             feederEncoder.setPosition(0);
-            feederPid.setReference(target, ControlType.kPosition);
+            feederPid.setReference(setpoint, ControlType.kPosition);
         }
-
         if (!gatherLock) {
             if (disableManual && gathererState == holding) {
                 gathererState = gathererDown;

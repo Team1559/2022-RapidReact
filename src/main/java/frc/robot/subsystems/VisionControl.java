@@ -240,7 +240,7 @@ public class VisionControl {
             hoop_rotation = 0D;
         }
 
-        return hoop_rotation;
+        return Math.abs(hoop_rotation) < Auto.MAX_TURN ? hoop_rotation : Math.copySign(Auto.MAX_TURN, hoop_rotation);
     }
 
     private double calculateBallRotation() {

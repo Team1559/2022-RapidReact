@@ -26,7 +26,7 @@ public class Vision {
             String in = client.get();
 
             if (in != null) {
-                System.out.println(in);
+                // System.out.println(in);
                 String[] parameters = in.split(" ");
 
                 if (parameters.length >= 9) {

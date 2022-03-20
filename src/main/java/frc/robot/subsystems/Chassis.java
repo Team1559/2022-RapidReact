@@ -145,10 +145,10 @@ public class Chassis {
     }
 
     public void updateEncoders() {
-        flep = -flEncoder.getPosition();
-        frep = -frEncoder.getPosition();
-        blep = -blEncoder.getPosition();
-        brep = -brEncoder.getPosition();
+        flep = flEncoder.getPosition();
+        frep = frEncoder.getPosition();
+        blep = blEncoder.getPosition();
+        brep = brEncoder.getPosition();
     }
 
     public void drive(double ySpeed, double zRotation) {
@@ -251,7 +251,7 @@ public class Chassis {
     }
 
     public double degreesToZRotation(double desiredAngle) {
-        return (desiredAngle - this.imu.yaw) * 0.12; // TODO: modify proportion (and calibrate IMU yaw)
+        return (desiredAngle - this.imu.yaw) * 0.005; // TODO: modify proportion (and calibrate IMU yaw)
     }
 
     public double inchesToRevolutions(double inches) {
