@@ -222,13 +222,13 @@ public class Shooter {
             // startFeeder(feederSpeed); // flywheel rpm check ^
             // }
         } else if (oi.autoShootButton() && checkDependencies()) { // Shoot when ready
-            if (Math.abs(vc.hoopr) <= vc.hoopChassisThreshold) { // Angle check
-                if (vc.hoopx <= vc.maxHoopDistance) { // distance check
+            if (Math.abs(vc.hoopr) <= VisionControl.hoopChassisThreshold) { // Angle check
+                if (vc.hoopx <= VisionControl.maxHoopDistance) { // distance check
                     if (Math.abs(oi.pilot.getLeftY()) < 0.05
                             && Math.abs(chassis.rpmToFps(chassis.getFrontAverageWheelRPM())) < 2) {
                         // Speed check ^^
                         if (Math.abs(getShooterRpms() - calculateShooterRPMS(
-                                vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2)) < vc.shooterThreshold) {
+                                vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2)) < VisionControl.shooterThreshold) {
                             startFeeder(feederSpeed, !disableManual); // flywheel rpm check ^
                             disableManual = true;
                         }
@@ -284,6 +284,10 @@ public class Shooter {
 
     // Get and Set shooter states
     public void startShooter(double rpms) {
+        if (rpms > 2700)
+            rpms = 2700;
+        else if (rpms < 2000)
+            rpms = 2050;
         shooter.set(TalonFXControlMode.Velocity, rpms / 10 / 60 * 2048);
         // shooter.set(TalonFXControlMode.Velocity, 6000 / 10 / 60 * 2048);
     }
