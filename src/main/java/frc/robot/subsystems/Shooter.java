@@ -64,8 +64,6 @@ public class Shooter {
     public static final int holding = 2;
     public static final int upRun = 3;
 
-    public boolean gatherLock = false;
-
     public int gathererState = gathererUp;
 
     public int lastState = holding;
@@ -164,7 +162,6 @@ public class Shooter {
                         break;
                 }
             }
-        } else {
         }
     }
 
@@ -256,13 +253,10 @@ public class Shooter {
             feederEncoder.setPosition(0);
             feederPid.setReference(setpoint, ControlType.kPosition);
         }
-        if (!gatherLock) {
-            if (disableManual && gathererState == holding) {
-                gathererState = gathererDown;
-            } else if (disableManual) {
-                gathererState = upRun;
-            }
-            gatherLock = true;
+        if (disableManual && gathererState == holding) {
+            gathererState = gathererDown;
+        } else if (disableManual) {
+            gathererState = upRun;
         }
     }
 
@@ -280,7 +274,6 @@ public class Shooter {
         // 2.0)) {
         // encoderTics -= 0.2;
         // }
-        gatherLock = false;
         feederPid.setReference(encoderTics, ControlType.kPosition);
     }
 
