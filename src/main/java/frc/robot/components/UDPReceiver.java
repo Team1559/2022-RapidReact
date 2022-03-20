@@ -10,7 +10,7 @@ import java.io.InputStream;
 /**
  * This class is responsible for listining over UDP.
  */
-public class UDPClient implements Runnable {
+public class UDPReceiver implements Runnable {
     // private static final String HOST = "169.254.210.151";// "10.15.59.6"; //
     // 169.254.227.6
     private int port;
@@ -23,7 +23,7 @@ public class UDPClient implements Runnable {
     /**
      * Creates a listening socket that listens on port <code>5801</code>
      */
-    public UDPClient() {
+    public UDPReceiver() {
         this(5801);
     }
 
@@ -32,7 +32,7 @@ public class UDPClient implements Runnable {
      * 
      * @param port The port to listen on
      */
-    public UDPClient(int port) {
+    public UDPReceiver(int port) {
         this.port = port;
         clientThread = new Thread(this);
         receive = new byte[65535];
@@ -62,7 +62,7 @@ public class UDPClient implements Runnable {
     }
 
     /**
-     * Returns the most recent data recived
+     * Returns the most recent data received
      * 
      * @return The most current data
      */

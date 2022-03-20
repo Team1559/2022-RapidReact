@@ -5,7 +5,7 @@ package frc.robot.components;
  * it. It also writes the data to the VisionData class
  */
 public class Vision implements Runnable {
-    private UDPClient client;
+    private UDPReceiver client;
     private static Vision instance;
     private Thread clientThread;
     private double hoopCameraYOffset = 0;
@@ -20,7 +20,7 @@ public class Vision implements Runnable {
      */
     public Vision() {
         clientThread = new Thread(this);
-        client = new UDPClient();
+        client = new UDPReceiver();
         clientThread.start();
     }
 
