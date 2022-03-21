@@ -65,8 +65,18 @@ public class Auto {
             { STOP_GATHERER },
     };
 
-    public static final int[][] basicVisionAuto = {
+    public static final int[][] oneBallAuto = {
             { WAIT, 20 },
+            { DRIVE, -80 },
+            { ALIGN_HOOP },
+            { START_FLYWHEEL, 0 },
+            { WAIT, 100 },
+            { SHOOT },
+            { STOP_FLYWHEEL }
+    };
+
+    public static final int[][] basicVisionAuto = {
+            { WAIT, 100 }, //TODO CHANGE TO 20
             { START_GATHERER },
             { DRIVE, 76 },
             { WAIT, 25 },
@@ -244,17 +254,22 @@ public class Auto {
     };
 
     public static final int[][] testVisionAutoWithNewTurningThatStopsWhenItSeesTheHoopBecauseRylanIsNotSuperBadAtLifeBabaWuestAlsoIsntWuestBad = {
-            // Get 1st ball
-            { START_GATHERER },
             { WAIT, 20 },
-            { DRIVE_BALL, 36 },
-            { DRIVE, 20 },
-            { TURN_HOOP, 90 },
-            { TURN_HOOP, 60 },
+            { START_GATHERER },
+            { DRIVE, 30 },
+            { DRIVE_BALL, 24 },
+            { DRIVE, 22 },
+            { WAIT, 25 },
+            { STOP_GATHERER },
+            { TURN, 88 },
+            { TURN, 88 },
+            { ALIGN_HOOP },
             { START_FLYWHEEL, 0 },
-            { DRIVE_HOOP, 60 },
+            { WAIT, 100 },
+            { SHOOT },
             { WAIT, 50 },
-            { SHOOT }
+            { SHOOT },
+            { STOP_FLYWHEEL }
 
     };
 
@@ -441,7 +456,8 @@ public class Auto {
     private void StopGatherer() {
         robot.shooter.disableManual = false;
         System.out.println("StopGatherer set holding");
-        robot.shooter.gathererState = Shooter.holding;
+        robot.shooter.gathererState = Shooter.holding;  
+
         Done();
     }
 
@@ -474,7 +490,7 @@ public class Auto {
     }
 
     private void DriveBall(int desiredDistanceFromBall) { // in inches
-        double positionError = 0;
+        double positionError = 1000;
         if (robot.vc.ballx != 0) {
             positionError = robot.vc.ballx * 12 - desiredDistanceFromBall;
             ySpeed = positionError * 0.04;
@@ -482,7 +498,7 @@ public class Auto {
                 ySpeed = MAX_DRIVE;
             System.out.println("Drive value: " + ySpeed);
         }
-        if (!robot.vc.trackBall(-Math.abs(ySpeed)))
+        if (!robot.vc.trackBall(-ySpeed))
             Fail("No ball found");
         if (positionError < 0 && robot.vc.ballx != 0) {
             robot.chassis.drive(0, 0, false);

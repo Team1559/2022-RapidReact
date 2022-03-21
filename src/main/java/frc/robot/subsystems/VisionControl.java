@@ -38,7 +38,9 @@ public class VisionControl {
     public boolean usingAuto = false;
     private int invalid_ball_counter = 0;
     private final int invalid_ball_counter_threshold = 40;
-    private static final double align_kP = 0.5;
+    public static double align_kP = 0;
+    public static final double teleop_align_kP = 0.5;
+    public static final double auto_align_kP = 0.1;
     private FileLogging fl;
     private double counter = 0;
     private int recordCounter = 0;

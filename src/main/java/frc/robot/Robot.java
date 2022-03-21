@@ -49,6 +49,7 @@ public class Robot extends TimedRobot {
     private static final String MID_BALL_AUTO = "Mid Ball Auto";
     private static final String TEST_AUTO = "Test Auto";
     private static final String TEST_AUTO2 = "Better Basic Vision Auto";
+    private static final String ONE_BALL_AUTO = "One Ball Auto";
 
     private static final String autoText = "Selected Auto";
     private static final String colorText = "Current Allience Color";
@@ -76,6 +77,7 @@ public class Robot extends TimedRobot {
         m_chooser.addOption(MID_BALL_AUTO, MID_BALL_AUTO);
         m_chooser.addOption(TEST_AUTO, TEST_AUTO);
         m_chooser.addOption(TEST_AUTO2, TEST_AUTO2);
+        m_chooser.addOption(ONE_BALL_AUTO, ONE_BALL_AUTO);
 
         SmartDashboard.putData("Auto Paths", m_chooser);
     }
@@ -164,6 +166,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        vc.align_kP = VisionControl.auto_align_kP;
+
         shooter.RESET_ENCODER = true;
         shooter.holdFeeder();
         m_autoSelected = m_chooser.getSelected();
@@ -214,6 +218,9 @@ public class Robot extends TimedRobot {
                 auto = new Auto(this,
                         Auto.testVisionAutoWithNewTurningThatStopsWhenItSeesTheHoopBecauseRylanIsNotSuperBadAtLifeBabaWuestAlsoIsntWuestBad);
                 break;
+            case ONE_BALL_AUTO:
+                auto = new Auto(this, Auto.oneBallAuto);
+                break;
         }
     }
 
@@ -228,6 +235,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
+        vc.align_kP = VisionControl.teleop_align_kP;
+
         if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
             compressorControl.enable();
         }
