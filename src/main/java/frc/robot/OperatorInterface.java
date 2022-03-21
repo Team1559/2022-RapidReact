@@ -29,7 +29,7 @@ public class OperatorInterface {
         return pilot.getAButtonReleased();
     }
 
-    public boolean compressorToggle(){
+    public boolean compressorToggle() {
         return pilot.getLeftTriggerAxis() > 0.5;
     }
 
@@ -48,12 +48,11 @@ public class OperatorInterface {
     }
 
     public boolean shootButton() {
-        // return copilot.getBButton();
-        return pilot.getYButton();
+        return pilot.getRightBumper();
     }
 
     public boolean shootButtonPress() {
-        return pilot.getYButtonPressed();
+        return pilot.getRightBumperPressed();
     }
 
     public boolean autoShootButton() {
@@ -73,7 +72,7 @@ public class OperatorInterface {
     }
 
     public boolean raiseIntakeButton() {
-        return pilot.getRightBumper();
+        return pilot.getRightTriggerAxis() > 0.25;
     }
 
     public boolean reverseIntake() {

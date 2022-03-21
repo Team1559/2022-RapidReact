@@ -38,7 +38,7 @@ public class VisionControl {
     public boolean usingAuto = false;
     private int invalid_ball_counter = 0;
     private final int invalid_ball_counter_threshold = 40;
-    private static final double align_kP = 0.1;
+    private static final double align_kP = 0.5;
     private FileLogging fl;
     private double counter = 0;
     private int recordCounter = 0;
@@ -100,7 +100,7 @@ public class VisionControl {
             usingAuto = true;
             double ySpeed = -oi.pilot.getLeftY();
             if (SQUARE_DRIVER_INPUTS)
-                ySpeed = -Math.copySign(ySpeed * ySpeed, ySpeed);
+                ySpeed = Math.copySign(ySpeed * ySpeed, ySpeed);
             if (!trackHoop(ySpeed))
                 chassis.main();
         } else if (oi.autoCollectButton()) { // <-- PDM not turned off in this case
