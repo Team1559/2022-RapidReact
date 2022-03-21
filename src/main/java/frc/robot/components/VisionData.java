@@ -20,13 +20,7 @@ public class VisionData {
      * @return Whether or not the vision system sees the hoop
      */
     public static boolean isHoopValid() {
-        if (hoopStatus != 1) {
-            return false;
-        }
-
-        else {
-            return true;
-        }
+        return hoopStatus == 1;
     }
 
     /**
@@ -35,13 +29,7 @@ public class VisionData {
      * @return Whether or not the vision system sees a ball of the correct color
      */
     public static boolean isBallValid() {
-        if (ballStatus != 1) {
-            return false;
-        }
-
-        else {
-            return true;
-        }
+        return ballStatus == 1;
     }
 
     /**

@@ -24,8 +24,8 @@ public class Climber {
     private DigitalInput lowerLimitSwitch = new DigitalInput(Wiring.lowerLimitSwitchInput);
     private final int TIMEOUT = 0;
     private final double cLR = 0.1;
-    private final double CLIMBER_DOWN_RPMS = 3000;
-    private final double CLIMBER_UP_RPMS = 2000;
+    private final double CLIMBER_DOWN_RPMS = 2500;
+    private final double CLIMBER_UP_RPMS = 1600;
     // TODO: Tune this PID controller, It will probably need an I value
     // pid controller for velocity mode
     private final double kF = 0.015;

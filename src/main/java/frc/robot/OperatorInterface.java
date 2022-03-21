@@ -54,7 +54,7 @@ public class OperatorInterface {
     }
 
     public boolean shootButton() {
-        return copilot.getBButton();
+        return pilot.getYButton();
     }
 
     public boolean shootButtonPress() {

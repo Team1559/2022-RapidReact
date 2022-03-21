@@ -25,8 +25,7 @@ public class VisionControl {
     private StopWatch sendTmer = new StopWatch();
     private UDPSender sender = new UDPSender();
     private final int invalid_ball_counter_threshold = 60;
-    private final double align_kP = 0.30;
-
+    private static final double align_kP = 0.1;
     public double hoopr = 0;
     public double ballr = 0;
     public double hoopx = 0;
@@ -48,10 +47,10 @@ public class VisionControl {
 
     // thresholds
     private final int MAX_SIZE = 2000;// should only need to be 750
-    public final double ballChassisThreshold = 1; // angle in degrees
-    public final double hoopChassisThreshold = 2; // angle in degrees
-    public final double maxHoopDistance = 12; // MAX distance in ft
-    public final double shooterThreshold = 50; // threshold in rpm
+    public static final double ballChassisThreshold = 1; // angle in degrees
+    public static final double hoopChassisThreshold = 2; // angle in degrees
+    public static final double maxHoopDistance = 13; // MAX distance in ft
+    public static final double shooterThreshold = 50; // threshold in rpm
 
     // edit these
     private final boolean SQUARE_DRIVER_INPUTS = true;
@@ -262,7 +261,8 @@ public class VisionControl {
             hoop_rotation = 0D;
         }
 
-        return hoop_rotation;
+        return Math.abs(hoop_rotation) < Auto.MAX_TURN ? hoop_rotation : Math.copySign(Auto.MAX_TURN, hoop_rotation);
+
     }
 
     private double calculateBallRotation() {

@@ -380,7 +380,7 @@ public class Chassis implements Runnable {
      * @return The error to the desired angle
      */
     public double degreesToZRotation(double desiredAngle) {
-        return (desiredAngle - this.imu.yaw) * 0.12; // TODO: modify proportion (and calibrate IMU yaw)
+        return (desiredAngle - this.imu.yaw) * 0.01; // TODO: modify proportion (and calibrate IMU yaw)
     }
 
     /**

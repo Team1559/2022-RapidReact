@@ -59,7 +59,6 @@ public class Shooter implements Runnable {
     public int gathererState = gathererUp;
     public int lastState = holding;
 
-
     public Shooter(OperatorInterface operatorinterface, Chassis chassis, Robot robot) {
         thread = new Thread(this);
         oi = operatorinterface;
@@ -224,13 +223,16 @@ public class Shooter implements Runnable {
             // startFeeder(feederSpeed); // flywheel rpm check ^
             // }
         } else if (oi.autoShootButton() && checkDependencies()) { // Shoot when ready
-            if (Math.abs(vc.hoopr) <= vc.hoopChassisThreshold) { // Angle check
-                if (vc.hoopx <= vc.maxHoopDistance) { // distance check
-                    if (Math.abs(oi.pilot.getLeftY()) < 0.05
-                            && Math.abs(chassis.rpmToFps(chassis.getFrontAverageWheelRPM())) < 2) {
-                        // Speed check ^^
-                        if (Math.abs(getShooterRpms() - calculateShooterRPMS(
-                                vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2)) < vc.shooterThreshold) {
+            if (Math.abs(vc.hoopr) <= VisionControl.hoopChassisThreshold) { // Angle check
+                System.out.println("Angle check passed");
+                if (vc.hoopx <= VisionControl.maxHoopDistance) { // distance check
+                    System.out.println("Distance passed");
+                    if (Math.abs(chassis.rpmToFps(chassis.getFrontAverageWheelRPM())) < 2) {
+                        System.out.println("Speed passed");
+                        if (Math.abs(Math.abs(getShooterRpms()) -
+                                Math.abs(calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA
+                                        + 2))) < VisionControl.shooterThreshold) {
+                            System.out.println("RPM check " + disableManual);
                             startFeeder(feederSpeed, !disableManual); // flywheel rpm check ^
                             disableManual = true;
                         }
@@ -292,6 +294,10 @@ public class Shooter implements Runnable {
 
     // Get and Set shooter states
     public void startShooter(double rpms) {
+        if (rpms > 2700)
+            rpms = 2700;
+        else if (rpms < 2000)
+            rpms = 2050;
         shooter.set(TalonFXControlMode.Velocity, rpms / 10 / 60 * 2048);
         // shooter.set(TalonFXControlMode.Velocity, 6000 / 10 / 60 * 2048);
     }
