@@ -38,7 +38,7 @@ public class Chassis {
     public IMU imu;
     private FileLogging fl;
 
-    public static final double AUTO_RAMP_RATE = 0.2;
+    public static final double AUTO_RAMP_RATE = 0.05;
     public static final double TELEOP_RAMP_RATE = 0.0;
 
     // these need to be set once

@@ -187,6 +187,12 @@ public class Robot extends TimedRobot {
         if (FeatureFlags.doChassis && FeatureFlags.chassisInitialized) {
             chassis.autoInit();
         }
+        if(FeatureFlags.shooterInitialized && FeatureFlags.SHOOTER_INSTALLED){
+            shooter.gathererState = Shooter.gathererUp;
+            shooter.zeroFeeder();
+            shooter.disableManual = false;
+            shooter.gatherLock = false;
+        }
         shooter.holdFeeder();
         switch (m_autoSelected) {
             case NONE:

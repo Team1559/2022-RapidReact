@@ -76,7 +76,7 @@ public class Auto {
     };
 
     public static final int[][] basicVisionAuto = {
-            { WAIT, 100 }, //TODO CHANGE TO 20
+            { WAIT, 20 }, 
             { START_GATHERER },
             { DRIVE, 76 },
             { WAIT, 25 },
@@ -456,7 +456,8 @@ public class Auto {
     private void StopGatherer() {
         robot.shooter.disableManual = false;
         System.out.println("StopGatherer set holding");
-        robot.shooter.gathererState = Shooter.holding;  
+        robot.shooter.gathererState = Shooter.holding;
+        robot.shooter.gathererState();
 
         Done();
     }
