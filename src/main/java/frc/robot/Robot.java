@@ -68,15 +68,10 @@ public class Robot extends TimedRobot {
         initialize();
         PDM.setSwitchableChannel(false);
 
-        m_chooser.setDefaultOption(MINI_AUTO, MINI_AUTO);
+        m_chooser.setDefaultOption(BASIC_VISION_AUTO, BASIC_VISION_AUTO);
         m_chooser.addOption(BASIC_AUTO_STEPS, BASIC_AUTO_STEPS);
         m_chooser.addOption(BASIC_VISION_AUTO, BASIC_VISION_AUTO);
         m_chooser.addOption(MINI_AUTO, MINI_AUTO);
-        m_chooser.addOption(LEFT_BALL_AUTO, LEFT_BALL_AUTO);
-        m_chooser.addOption(RIGHT_BALL_AUTO, RIGHT_BALL_AUTO);
-        m_chooser.addOption(MID_BALL_AUTO, MID_BALL_AUTO);
-        m_chooser.addOption(TEST_AUTO, TEST_AUTO);
-        m_chooser.addOption(TEST_AUTO2, TEST_AUTO2);
         m_chooser.addOption(ONE_BALL_AUTO, ONE_BALL_AUTO);
 
         SmartDashboard.putData("Auto Paths", m_chooser);
@@ -187,7 +182,7 @@ public class Robot extends TimedRobot {
         if (FeatureFlags.doChassis && FeatureFlags.chassisInitialized) {
             chassis.autoInit();
         }
-        if(FeatureFlags.shooterInitialized && FeatureFlags.SHOOTER_INSTALLED){
+        if (FeatureFlags.shooterInitialized && FeatureFlags.SHOOTER_INSTALLED) {
             shooter.gathererState = Shooter.gathererUp;
             shooter.zeroFeeder();
             shooter.disableManual = false;
