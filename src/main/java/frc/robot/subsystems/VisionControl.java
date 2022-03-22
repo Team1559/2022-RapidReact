@@ -38,10 +38,12 @@ public class VisionControl {
     public boolean usingAuto = false;
     private int invalid_ball_counter = 0;
     private final int invalid_ball_counter_threshold = 40;
-    public static double align_kP = 0;
     public static final double teleop_align_kP = 0.5;
-    public static final double auto_align_kP = 0.2;
+    public static final double auto_align_kP = 0.19;
     public static final double AUTO_MAX_TURN = 0.05;
+    public static final double TELEOP_MAX_TURN = 0.1;
+    public double align_kP = auto_align_kP;
+    public double maxTurn = AUTO_MAX_TURN;
     private FileLogging fl;
     private double counter = 0;
     private int recordCounter = 0;
@@ -201,7 +203,7 @@ public class VisionControl {
         if (Math.abs(hoopr) <= hoopChassisThreshold) {
             hoop_rotation = 0D;
         }
-        return Math.abs(hoop_rotation) < AUTO_MAX_TURN ? hoop_rotation : Math.copySign(AUTO_MAX_TURN, hoop_rotation);
+        return Math.abs(hoop_rotation) < maxTurn ? hoop_rotation : Math.copySign(maxTurn, hoop_rotation);
     }
 
     private double calculateBallRotation() {

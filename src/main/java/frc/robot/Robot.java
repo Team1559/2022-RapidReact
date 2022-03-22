@@ -162,6 +162,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         vc.align_kP = VisionControl.auto_align_kP;
+        vc.maxTurn = VisionControl.AUTO_MAX_TURN;
 
         shooter.RESET_ENCODER = true;
         shooter.holdFeeder();
@@ -237,6 +238,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         vc.align_kP = VisionControl.teleop_align_kP;
+        vc.maxTurn = VisionControl.TELEOP_MAX_TURN;
 
         if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
             compressorControl.enable();
@@ -290,7 +292,6 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         oi.copilot.stopRumble();
-        // PDM.setSwitchableChannel(false);
 
         if (FeatureFlags.doClimber && FeatureFlags.climberInitialized) {
             climber.disable();
@@ -312,7 +313,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledPeriodic() {
-        // PDM.setSwitchableChannel(false);
+        PDM.setSwitchableChannel(false);
     }
 
     /** This function is called once when test mode is enabled. */

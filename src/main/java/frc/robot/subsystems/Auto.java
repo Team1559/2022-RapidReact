@@ -70,6 +70,7 @@ public class Auto {
             { DRIVE, -50 },
             { WAIT, 140 },
             { ALIGN_HOOP },
+            { TURN, -4 },
             { START_FLYWHEEL, 0 },
             { WAIT, 100 },
             { SHOOT },
