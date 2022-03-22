@@ -24,7 +24,7 @@ public class Auto {
     private static final int ALIGN_HOOP = 10;
     private static final int TURN_HOOP = 11;
 
-    private static final int FEEDER_CYCLES = 200;
+    private static final int FEEDER_CYCLES = 50;
     boolean holdFeeder = true;
 
     private static final int MAX_TURN_SECONDS = 3;
@@ -34,7 +34,7 @@ public class Auto {
     static final int HOOP_ERROR_DEGREES = 1;
 
     static final double MAX_DRIVE = 0.2;
-    static final double MAX_TURN = 0.1;
+    static final double MAX_TURN = 0.15;
 
     double ySpeed = 0;
     double shooterSetVelocity = 0;
@@ -67,7 +67,8 @@ public class Auto {
 
     public static final int[][] oneBallAuto = {
             { WAIT, 20 },
-            { DRIVE, -80 },
+            { DRIVE, -50 },
+            { WAIT, 140 },
             { ALIGN_HOOP },
             { START_FLYWHEEL, 0 },
             { WAIT, 100 },
@@ -538,7 +539,7 @@ public class Auto {
         robot.vc.visionData.Print();
         if (!robot.vc.trackHoop(0)) {
             Fail("No hoop found");
-        } else if (robot.vc.isHoopValid() && Math.abs(robot.vc.hoopr) < VisionControl.hoopChassisThreshold)
+        } else if (robot.vc.isHoopValid() && Math.abs(robot.vc.hoopr) <= VisionControl.hoopChassisThreshold)
             Done();
         System.out.println("I'm trying to align hoop");
         System.out.println("Hoopr: " + robot.vc.hoopr);
