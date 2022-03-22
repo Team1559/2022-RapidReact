@@ -34,7 +34,7 @@ public class Auto {
     static final int HOOP_ERROR_DEGREES = 1;
 
     static final double MAX_DRIVE = 0.2;
-    static final double MAX_TURN = 0.15;
+    static final double MAX_TURN = 0.1;
 
     double ySpeed = 0;
     double shooterSetVelocity = 0;
@@ -76,18 +76,18 @@ public class Auto {
     };
 
     public static final int[][] basicVisionAuto = {
-            { WAIT, 20 }, 
             { START_GATHERER },
             { DRIVE, 76 },
-            { WAIT, 25 },
+            { WAIT, 8 },
             { STOP_GATHERER },
             { TURN, 88 },
             { TURN, 88 },
+            { WAIT, 140 },
             { ALIGN_HOOP },
             { START_FLYWHEEL, 0 },
-            { WAIT, 100 },
+            { WAIT, 80 },
             { SHOOT },
-            { WAIT, 50 },
+            { WAIT, 30 },
             { SHOOT },
             { STOP_FLYWHEEL }
     };

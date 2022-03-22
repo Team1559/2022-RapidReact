@@ -40,7 +40,7 @@ public class VisionControl {
     private final int invalid_ball_counter_threshold = 40;
     public static double align_kP = 0;
     public static final double teleop_align_kP = 0.5;
-    public static final double auto_align_kP = 0.1;
+    public static final double auto_align_kP = 0.2;
     private FileLogging fl;
     private double counter = 0;
     private int recordCounter = 0;
