@@ -11,6 +11,7 @@ public class DTXboxController extends XboxController implements Runnable {
     public enum Side {
         LEFT, RIGHT, BOTH
     }
+
     private ArrayList<Boolean> boolsPress = new ArrayList<>();
     private ArrayList<Boolean> boolsRelease = new ArrayList<>();
     private double duration = 0;
@@ -20,7 +21,6 @@ public class DTXboxController extends XboxController implements Runnable {
     private StopWatch stopWatch = new StopWatch();
     private boolean wasDpadPressed = false;
     private boolean wasDpadReleased = false;
-
 
     /**
      * Creates a controller object on the specified port
@@ -150,26 +150,26 @@ public class DTXboxController extends XboxController implements Runnable {
      * @param id     The unique id of the button
      * @return Whether the button has just been pressed
      */
-	public boolean getPress(boolean button, int id) {
-		try {
-			if (boolsPress.get(id) == null)
-				boolsPress.set(id, false);
-		} catch (IndexOutOfBoundsException | NullPointerException e) {
-			for (int i = boolsPress.size() - 1; i < id; i++) {
-				boolsPress.add(null);
-			}
-			boolsPress.set(id, false);
-		}
-		if (button) {
+    public boolean getPress(boolean button, int id) {
+        try {
+            if (boolsPress.get(id) == null)
+                boolsPress.set(id, false);
+        } catch (IndexOutOfBoundsException | NullPointerException e) {
+            for (int i = boolsPress.size() - 1; i < id; i++) {
+                boolsPress.add(null);
+            }
+            boolsPress.set(id, false);
+        }
+        if (button) {
 
-			if (!boolsPress.get(id)) {
-				boolsPress.set(id, true);
-				return true;
-			}
-		} else
-			boolsPress.set(id, false);
-		return false;
-	}
+            if (!boolsPress.get(id)) {
+                boolsPress.set(id, true);
+                return true;
+            }
+        } else
+            boolsPress.set(id, false);
+        return false;
+    }
 
     /**
      * Returns true on the rising edge of boolean being set to false
@@ -179,30 +179,30 @@ public class DTXboxController extends XboxController implements Runnable {
      * @return Whether the button has just been released
      */
     public boolean getRelease(boolean button, int id) {
-		boolean out = false;
-		try {
-			if (boolsRelease.get(id) == null)
-				boolsRelease.set(id, false);
-		} catch (IndexOutOfBoundsException | NullPointerException e) {
-			for (int i = boolsRelease.size() - 1; i < id; i++) {
-				boolsRelease.add(null);
-			}
-			boolsRelease.set(id, false);
-		}
+        boolean out = false;
+        try {
+            if (boolsRelease.get(id) == null)
+                boolsRelease.set(id, false);
+        } catch (IndexOutOfBoundsException | NullPointerException e) {
+            for (int i = boolsRelease.size() - 1; i < id; i++) {
+                boolsRelease.add(null);
+            }
+            boolsRelease.set(id, false);
+        }
 
-		if (button) {
-			if (!boolsRelease.get(id)) {
-				boolsRelease.set(id, true);
-			}
-			out = false;
-		} else {
-			out = false;
-			if (boolsRelease.get(id))
-				out = true;
-			boolsRelease.set(id, false);
-		}
-		return out;
-	}
+        if (button) {
+            if (!boolsRelease.get(id)) {
+                boolsRelease.set(id, true);
+            }
+            out = false;
+        } else {
+            out = false;
+            if (boolsRelease.get(id))
+                out = true;
+            boolsRelease.set(id, false);
+        }
+        return out;
+    }
 
     /**
      * Sets the rumble on the controller
