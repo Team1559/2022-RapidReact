@@ -11,14 +11,16 @@ public class DTXboxController extends XboxController implements Runnable {
     public enum Side {
         LEFT, RIGHT, BOTH
     }
-
-    private ArrayList<Boolean> bools = new ArrayList<>();
+    private ArrayList<Boolean> boolsPress = new ArrayList<>();
+    private ArrayList<Boolean> boolsRelease = new ArrayList<>();
     private double duration = 0;
     private double power;
     private Side side = Side.BOTH;
     private Thread clientThread;
     private StopWatch stopWatch = new StopWatch();
     private boolean wasDpadPressed = false;
+    private boolean wasDpadReleased = false;
+
 
     /**
      * Creates a controller object on the specified port
@@ -127,16 +129,16 @@ public class DTXboxController extends XboxController implements Runnable {
      */
     public int getRawDPadRelease() {
         int out = -1;
-        if (!wasDpadPressed) {
-            wasDpadPressed = isDpadPressed();
+        if (!wasDpadReleased) {
+            wasDpadReleased = isDpadPressed();
             out = -1;
         } else {
-            if (wasDpadPressed) {
+            if (wasDpadReleased) {
                 out = getPOV();
             } else {
                 out = -1;
             }
-            wasDpadPressed = isDpadPressed();
+            wasDpadReleased = isDpadPressed();
         }
         return out;
     }
@@ -148,25 +150,26 @@ public class DTXboxController extends XboxController implements Runnable {
      * @param id     The unique id of the button
      * @return Whether the button has just been pressed
      */
-    public boolean getPress(boolean button, int id) {
-        try {
-            if (bools.get(id) == null)
-                bools.set(id, false);
-        } catch (IndexOutOfBoundsException | NullPointerException e) {
-            for (int i = bools.size() - 1; i < id; i++) {
-                bools.add(null);
-            }
-            bools.set(id, false);
-        }
-        if (button) {
-            if (!bools.get(id)) {
-                bools.set(id, true);
-                return true;
-            }
-        } else
-            bools.set(id, false);
-        return false;
-    }
+	public boolean getPress(boolean button, int id) {
+		try {
+			if (boolsPress.get(id) == null)
+				boolsPress.set(id, false);
+		} catch (IndexOutOfBoundsException | NullPointerException e) {
+			for (int i = boolsPress.size() - 1; i < id; i++) {
+				boolsPress.add(null);
+			}
+			boolsPress.set(id, false);
+		}
+		if (button) {
+
+			if (!boolsPress.get(id)) {
+				boolsPress.set(id, true);
+				return true;
+			}
+		} else
+			boolsPress.set(id, false);
+		return false;
+	}
 
     /**
      * Returns true on the rising edge of boolean being set to false
@@ -176,31 +179,30 @@ public class DTXboxController extends XboxController implements Runnable {
      * @return Whether the button has just been released
      */
     public boolean getRelease(boolean button, int id) {
-        boolean out = false;
-        try {
-            if (bools.get(id) == null)
-                bools.set(id, false);
-        } catch (IndexOutOfBoundsException | NullPointerException e) {
-            for (int i = bools.size() - 1; i < id; i++) {
-                bools.add(null);
-            }
-            bools.set(id, false);
-        }
+		boolean out = false;
+		try {
+			if (boolsRelease.get(id) == null)
+				boolsRelease.set(id, false);
+		} catch (IndexOutOfBoundsException | NullPointerException e) {
+			for (int i = boolsRelease.size() - 1; i < id; i++) {
+				boolsRelease.add(null);
+			}
+			boolsRelease.set(id, false);
+		}
 
-        if (button) {
-            if (!bools.get(id)) {
-                bools.set(id, true);
-                out = false;
-            }
-        } else {
-            if (bools.get(id))
-                out = true;
-            else
-                out = false;
-            bools.set(id, false);
-        }
-        return out;
-    }
+		if (button) {
+			if (!boolsRelease.get(id)) {
+				boolsRelease.set(id, true);
+			}
+			out = false;
+		} else {
+			out = false;
+			if (boolsRelease.get(id))
+				out = true;
+			boolsRelease.set(id, false);
+		}
+		return out;
+	}
 
     /**
      * Sets the rumble on the controller
