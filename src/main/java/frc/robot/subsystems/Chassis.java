@@ -5,8 +5,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import frc.robot.OperatorInterface;
 import frc.robot.Wiring;
 import frc.robot.components.IMU;
@@ -131,17 +129,8 @@ public class Chassis {
 
     public void main() {
         imu.updateValues();
-        SmartDashboard.putNumber("IMU", this.imu.yaw);
         drive(-oi.pilot.getLeftY(), oi.pilot.getLeftX(), oi.pilot.getRightX());
         updateEncoders();
-        if (LOGDATA) {
-            SmartDashboard.putNumber("Front left encoder velocity is: ", flEncoder.getVelocity());
-            SmartDashboard.putNumber("Front right encoder velocity is: ", frEncoder.getVelocity());
-            SmartDashboard.putNumber("Back left encoder velocity is: ", blEncoder.getVelocity());
-            SmartDashboard.putNumber("Back right encoder velocity is: ", brEncoder.getVelocity());
-            fl.addData(oi.pilot.getLeftY() + " " + oi.pilot.getRightX() + " " + flEncoder.getVelocity() + " "
-                    + frEncoder.getVelocity() + " " + blEncoder.getVelocity() + brEncoder.getVelocity() + " \n");
-        }
     }
 
     public void updateEncoders() {

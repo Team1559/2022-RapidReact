@@ -195,14 +195,13 @@ public class Shooter {
     }
 
     public void ShooterMain() {
-        SmartDashboard.putNumber("Actual shotoer", getShooterRpms());
+        SmartDashboard.putNumber("Actual shooter", getShooterRpms());
         if (oi.runFlyWheelButtonManual()) {
             // oi.copilot.startRumble(0);
 
             startShooter(getDefaultShooterRpm()); // Assume distance is 8 ft in manual mode
         } else if (oi.autoSteerToHoopButton()) {
             if (checkDependencies()) {
-                SmartDashboard.putNumber("hoopx", vc.hoopx);
                 SmartDashboard.putNumber("Shooter setpt",
                         calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
                 startShooter(calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
