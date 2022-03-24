@@ -139,7 +139,7 @@ public class Chassis {
             SmartDashboard.putNumber("Front right encoder velocity is: ", frEncoder.getVelocity());
             SmartDashboard.putNumber("Back left encoder velocity is: ", blEncoder.getVelocity());
             SmartDashboard.putNumber("Back right encoder velocity is: ", brEncoder.getVelocity());
-            fl.periodic(oi.pilot.getLeftY() + " " + oi.pilot.getRightX() + " " + flEncoder.getVelocity() + " "
+            fl.addData(oi.pilot.getLeftY() + " " + oi.pilot.getRightX() + " " + flEncoder.getVelocity() + " "
                     + frEncoder.getVelocity() + " " + blEncoder.getVelocity() + brEncoder.getVelocity() + " \n");
         }
     }
