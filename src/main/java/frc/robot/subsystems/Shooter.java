@@ -194,10 +194,7 @@ public class Shooter {
     }
 
     public void ShooterMain() {
-        SmartDashboard.putNumber("Actual shooter", getShooterRpms());
         if (oi.runFlyWheelButtonManual()) {
-            // oi.copilot.startRumble(0);
-
             startShooter(getDefaultShooterRpm()); // Assume distance is 8 ft in manual mode
         } else if (oi.autoSteerToHoopButton()) {
             if (checkDependencies()) {
@@ -339,10 +336,6 @@ public class Shooter {
 
     public boolean checkChassis() {
         return FeatureFlags.doChassis && FeatureFlags.chassisInitialized;
-    }
-
-    public void autoShoot() {
-        vc.autoShoot();
     }
 
     public double getRpmError() {
