@@ -81,7 +81,6 @@ public class Auto {
             { START_GATHERER },
             { DRIVE, 76 },
             { WAIT, 8 },
-            { STOP_GATHERER },
             { TURN, 88 },
             { TURN, 88 },
             { WAIT, 140 },
@@ -91,6 +90,7 @@ public class Auto {
             { SHOOT },
             { WAIT, 30 },
             { SHOOT },
+            { STOP_GATHERER },
             { STOP_FLYWHEEL }
     };
 
