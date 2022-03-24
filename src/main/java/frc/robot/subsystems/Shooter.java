@@ -37,7 +37,7 @@ public class Shooter {
     private final double feeder_kiz = 0.0;
     private final double feeder_kiM = 0.1;
 
-    public double feederSpeed = 3.2;
+    public double feederSpeed = 1.6;
 
     public double intakeSpeed = 1; // 0.4;
 
@@ -102,7 +102,6 @@ public class Shooter {
         feederPid.setFF(feeder_kF, 0);
         feederPid.setIZone(feeder_kiz, 0);
         feederPid.setIMaxAccum(feeder_kiM, 0);
-        feeder.setSmartCurrentLimit(500, 500);
 
         intake.set(TalonSRXControlMode.PercentOutput, 0);
 

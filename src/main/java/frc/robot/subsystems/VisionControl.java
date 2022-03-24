@@ -160,6 +160,7 @@ public class VisionControl {
         else
             invalid_ball_counter++;
         if (invalid_ball_counter < invalid_ball_counter_threshold) {
+
             drive(ySpeed, calculateBallRotation());
             return true;
         } else
@@ -183,7 +184,7 @@ public class VisionControl {
      * @deprecated
      */
     public void record(double _forwardSpeed, double _sideSpeed) {
-        fl.addData(_forwardSpeed + " " + _sideSpeed + " " + chassis.flep + " " + chassis.frep + " " + chassis.blep
+        fl.periodic(_forwardSpeed + " " + _sideSpeed + " " + chassis.flep + " " + chassis.frep + " " + chassis.blep
                 + " " + chassis.brep + " \n");
     }
 
@@ -258,26 +259,5 @@ public class VisionControl {
 
     public boolean isHoopValid() {
         return visionData.isHoopValid();
-    }
-
-    /**
-     * Interpolates between 2 values in an array of doubles
-     * 
-     * @param counter Current position in the array
-     * @param value   Array of values to interpolate between
-     * @return The interpolated value
-     */
-    public double interpolate(double counter, double[] value) {
-        int intCounter = (int) counter;
-        double percent = (counter - intCounter);
-
-        if (intCounter < value.length - 1) {
-            double interpolatedValue = (value[intCounter] + (percent * (value[intCounter + 1] - value[intCounter])));
-            return interpolatedValue;
-        }
-
-        else {
-            return value[value.length - 1];
-        }
     }
 }
