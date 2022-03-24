@@ -34,7 +34,7 @@ public class Auto {
     static final int HOOP_ERROR_DEGREES = 1;
 
     static final double MAX_DRIVE = 0.2;
-    static final double MAX_TURN = 0.15;
+    static final double MAX_TURN = 0.2;// 0.15;
 
     double ySpeed = 0;
     double shooterSetVelocity = 0;
@@ -67,7 +67,7 @@ public class Auto {
 
     public static final int[][] oneBallAuto = {
             { WAIT, 20 },
-            { DRIVE, -50 },
+            { DRIVE, -62 },
             { WAIT, 140 },
             { ALIGN_HOOP },
             { TURN, -4 },

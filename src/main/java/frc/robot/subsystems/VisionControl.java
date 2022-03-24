@@ -190,7 +190,7 @@ public class VisionControl {
 
     public void update() {
         visionData = vision.getData();
-        hoopr = visionData.hr;
+        hoopr = visionData.hr + 0.5;
         hoopx = visionData.hx;
         ballr = visionData.br;
         ballx = visionData.bx;
