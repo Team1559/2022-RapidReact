@@ -2,6 +2,7 @@ package frc.robot.components;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class IMU {
     AHRS ahrs;
@@ -53,6 +54,7 @@ public class IMU {
         roll = ahrs.getPitch();
         pitch = ahrs.getRoll();
         yaw = ahrs.getYaw();
+        SmartDashboard.putNumber("IMU", yaw);
         turnRate = ahrs.getRate();
         y_angularVelocity = ahrs.getRate();
     }

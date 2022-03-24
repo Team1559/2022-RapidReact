@@ -95,38 +95,6 @@ public class Robot extends TimedRobot {
         if (FeatureFlags.doShooter && FeatureFlags.shooterInitialized) {
             shooter.ticCounter += 1;
         }
-
-        m_autoSelected = m_chooser.getSelected();
-        switch (m_autoSelected) {
-            case NONE:
-            default:
-                SmartDashboard.putString(autoText, NONE);
-                break;
-            case BASIC_AUTO_STEPS:
-                SmartDashboard.putString(autoText, BASIC_AUTO_STEPS);
-                break;
-            case BASIC_VISION_AUTO:
-                SmartDashboard.putString(autoText, BASIC_VISION_AUTO);
-                break;
-            case MINI_AUTO:
-                SmartDashboard.putString(autoText, MINI_AUTO);
-                break;
-            case LEFT_BALL_AUTO:
-                SmartDashboard.putString(autoText, LEFT_BALL_AUTO);
-                break;
-            case RIGHT_BALL_AUTO:
-                SmartDashboard.putString(autoText, RIGHT_BALL_AUTO);
-                break;
-            case MID_BALL_AUTO:
-                SmartDashboard.putString(autoText, MID_BALL_AUTO);
-                break;
-            case TEST_AUTO:
-                SmartDashboard.putString(autoText, TEST_AUTO);
-                break;
-            case TEST_AUTO2:
-                SmartDashboard.putString(autoText, TEST_AUTO2);
-                break;
-        }
     }
 
     private void updateColor() {
@@ -259,7 +227,7 @@ public class Robot extends TimedRobot {
             shooter.zeroFeeder();
             shooter.disableManual = false;
             shooter.gatherLock = false;
-            SmartDashboard.putNumber("Shooter RPM", Shooter.DEFAULT_RPMS);
+            SmartDashboard.putNumber("Manually set Shooter RPM", Shooter.DEFAULT_RPMS);
         }
         if (FeatureFlags.doClimber && FeatureFlags.climberInitialized) {
             climber.zeroClimber();
