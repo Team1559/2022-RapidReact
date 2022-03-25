@@ -241,18 +241,11 @@ public class Auto {
     };
 
     public static final int[][] testAuto = {
-            // Get 1st ball
-            { START_GATHERER },
-            { WAIT, 20 },
-            { DRIVE_BALL, 36 },
-            { DRIVE, 20 },
-            { TURN, 90 },
-            { TURN, 60 },
-            { START_FLYWHEEL, 0 },
-            { DRIVE_HOOP, 60 },
-            { WAIT, 50 },
-            { SHOOT }
-
+            { TURN, 360 }
+            // { START_FLYWHEEL, 700 },
+            // { WAIT, 125 },
+            // { SHOOT }
+            // { WAIT, 400 }
     };
 
     public static final int[][] testVisionAutoWithNewTurningThatStopsWhenItSeesTheHoopBecauseRylanIsNotSuperBadAtLifeBabaWuestAlsoIsntWuestBad = {
@@ -470,6 +463,8 @@ public class Auto {
                     .calculateShooterRPMS(robot.vc.hoopx + Shooter.SHOOTER_DISTANCE_FROM_CAMERA + 2);
         else if (rpm == -1) {
             shooterSetVelocity = Shooter.DEFAULT_RPMS;
+        } else {
+            shooterSetVelocity = rpm;
         }
         Done();
     }

@@ -73,6 +73,7 @@ public class Robot extends TimedRobot {
         m_chooser.addOption(BASIC_VISION_AUTO, BASIC_VISION_AUTO);
         m_chooser.addOption(MINI_AUTO, MINI_AUTO);
         m_chooser.addOption(ONE_BALL_AUTO, ONE_BALL_AUTO);
+        // m_chooser.addOption(TEST_AUTO, TEST_AUTO);
 
         SmartDashboard.putData("Auto Paths", m_chooser);
     }
@@ -189,7 +190,9 @@ public class Robot extends TimedRobot {
             shooter.disableManual = false;
             shooter.gatherLock = false;
         }
-        shooter.holdFeeder();
+        if (FeatureFlags.climberInitialized && FeatureFlags.CLIMBER_INSTALLED) {
+            climber.engageSolenoid();
+        }
         switch (m_autoSelected) {
             case NONE:
             default:
