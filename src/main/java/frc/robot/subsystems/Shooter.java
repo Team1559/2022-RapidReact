@@ -37,7 +37,7 @@ public class Shooter {
     private final double feeder_kiz = 0.0;
     private final double feeder_kiM = 0.1;
 
-    public double feederSpeed = 1.6;
+    public double feederSpeed = 2.2;
 
     public double intakeSpeed = 1; // 0.4;
 
@@ -215,6 +215,8 @@ public class Shooter {
     }
 
     // FEEDER STUFF
+    boolean reversing = false;
+
     public void feederMain() {
         if (oi.shootButton()) {
             disableManual = true;
@@ -230,7 +232,7 @@ public class Shooter {
                 if (vc.hoopx <= VisionControl.maxHoopDistance) { // distance check
                     System.out.println("Distance passed");
                     if (Math.abs(chassis.rpmToFps(chassis.getFrontAverageWheelRPM())) < 2) {
-                        System.out.println("Speed passed");
+
                         if (Math.abs(Math.abs(getShooterRpms()) -
                                 Math.abs(calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA
                                         + 2))) < VisionControl.shooterThreshold) {
@@ -243,13 +245,18 @@ public class Shooter {
             }
         } else if (oi.reverseIntake()) {
             disableManual = false;
-            // startFeeder(-feederSpeed, oi.shootButtonPress());
+            feeder.set(-0.2);
+            reversing = true;
         } else if (!oi.autoCollectButton()) {
             if (disableManual) {
                 gathererState = lastState;
                 disableManual = false;
             }
             holdFeeder();
+        }
+        if (!oi.reverseIntake() && reversing) {
+            startFeeder(0, true);
+            reversing = false;
         }
     }
 
