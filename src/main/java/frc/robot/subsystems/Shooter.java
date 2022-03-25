@@ -37,7 +37,7 @@ public class Shooter {
     private final double feeder_kiz = 0.0;
     private final double feeder_kiM = 0.1;
 
-    public double feederSpeed = 2.2;
+    public double feederSpeed = 2.0;
 
     public double intakeSpeed = 1; // 0.4;
 
