@@ -195,7 +195,7 @@ public class Shooter {
 
     public void ShooterMain() {
         SmartDashboard.putNumber("Actual shotoer", getShooterRpms());
-        if (oi.runFlyWheelButtonManual()) {
+        if (oi.runFlyWheelButtonManual() && !checkDependencies()) {
             // oi.copilot.startRumble(0);
 
             startShooter(getDefaultShooterRpm()); // Assume distance is 8 ft in manual mode
