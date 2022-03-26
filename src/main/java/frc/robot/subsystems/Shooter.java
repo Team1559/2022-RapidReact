@@ -162,6 +162,9 @@ public class Shooter {
                             gathererState = gathererDown;
                         }
                         break;
+                    default:
+                        gathererState = gathererUp;
+                        break;
                 }
             }
         } else {
@@ -195,9 +198,7 @@ public class Shooter {
 
     public void ShooterMain() {
         SmartDashboard.putNumber("Actual shotoer", getShooterRpms());
-        if (oi.runFlyWheelButtonManual() && !checkDependencies()) {
-            // oi.copilot.startRumble(0);
-
+        if (oi.runFlyWheelButtonManual()) {
             startShooter(getDefaultShooterRpm()); // Assume distance is 8 ft in manual mode
         } else if (oi.autoSteerToHoopButton()) {
             if (checkDependencies()) {
@@ -267,10 +268,10 @@ public class Shooter {
             feederPid.setReference(setpoint, ControlType.kPosition);
         }
         if (!gatherLock) {
-            if (disableManual && gathererState == holding) {
-                gathererState = gathererDown;
-            } else if (disableManual) {
+            if (disableManual && gathererState == gathererUp) {
                 gathererState = upRun;
+            } else if (disableManual) {
+                gathererState = gathererDown;
             }
             gatherLock = true;
         }
