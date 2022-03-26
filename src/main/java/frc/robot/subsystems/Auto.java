@@ -241,11 +241,16 @@ public class Auto {
     };
 
     public static final int[][] testAuto = {
-            { TURN, 360 }
-            // { START_FLYWHEEL, 700 },
-            // { WAIT, 125 },
-            // { SHOOT }
-            // { WAIT, 400 }
+            { START_GATHERER },
+            { WAIT, 140 },
+            { ALIGN_HOOP },
+            { START_FLYWHEEL, 0 },
+            { WAIT, 80 },
+            { SHOOT },
+            { WAIT, 50 },
+            { SHOOT },
+            { STOP_GATHERER },
+            { STOP_FLYWHEEL }
     };
 
     public static final int[][] testVisionAutoWithNewTurningThatStopsWhenItSeesTheHoopBecauseRylanIsNotSuperBadAtLifeBabaWuestAlsoIsntWuestBad = {
