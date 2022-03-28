@@ -216,18 +216,12 @@ public class Shooter {
         if (oi.shootButton()) {
             disableManual = true;
             startFeeder(feederSpeed, oi.shootButtonPress());
-            // if (Math.abs( () - calculateShooterRPMS(DEFAULT_DISTANCE)) <
-            // vc.shooterThreshold) {
-            // disableManual = true;
-            // startFeeder(feederSpeed); // flywheel rpm check ^
-            // }
         } else if (oi.autoShootButton() && checkDependencies()) { // Shoot when ready
             if (Math.abs(vc.hoopr) <= VisionControl.hoopChassisThreshold) { // Angle check
                 System.out.println("Angle check passed");
                 if (vc.hoopx <= VisionControl.maxHoopDistance) { // distance check
                     System.out.println("Distance passed");
                     if (Math.abs(chassis.rpmToFps(chassis.getFrontAverageWheelRPM())) < 2) {
-
                         if (Math.abs(Math.abs(getShooterRpms()) -
                                 Math.abs(calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA
                                         + 2))) < VisionControl.shooterThreshold) {
@@ -276,10 +270,6 @@ public class Shooter {
             gathererState = lastState;
             disableManual = false;
         }
-        // if (ticCounter % 10 == 0 && (feederEncoder.getPosition() - encoderTics <
-        // 2.0)) {
-        // encoderTics -= 0.2;
-        // }
         gatherLock = false;
         feederPid.setReference(encoderTics, ControlType.kPosition);
     }
