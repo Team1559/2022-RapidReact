@@ -1,25 +1,17 @@
 package frc.robot.subsystems;
 
 import frc.robot.components.*;
-import frc.robot.routes.*;
 
 import com.ctre.phoenix.time.StopWatch;
 
 import frc.robot.*;
 
-@SuppressWarnings("unused")
-
 public class VisionControl {
-    public enum autoState {
-        PATH, SHOOT
-    }
-
-    public enum shooterState {
+    enum ShooterState {
         ALIGN, WAIT, SHOOT, STOP
     }
 
-    private autoState autostate = autoState.PATH;
-    public shooterState shooterstate = shooterState.ALIGN;
+    public ShooterState shooterstate = ShooterState.ALIGN;
 
     private OperatorInterface oi;
     private Vision vision = new Vision();
@@ -29,8 +21,6 @@ public class VisionControl {
     public double ballr = 0;
     public double hoopx = 0;
     public double ballx = 0;
-
-    private IntakeState gathererOldState = IntakeState.UP;
 
     private Chassis chassis;
 
@@ -44,14 +34,6 @@ public class VisionControl {
     public static final double TELEOP_MAX_TURN = 0.1;
     public double align_kP = auto_align_kP;
     public double maxTurn = AUTO_MAX_TURN;
-    private FileLogging fl;
-    private double counter = 0;
-    private int recordCounter = 0;
-    private double counterSpeed;
-    private double frontRightSpeed[] = {};
-    private double frontLeftSpeed[] = {};
-    private double backRightSpeed[] = {};
-    private double backLeftSpeed[] = {};
     private StopWatch clock = new StopWatch();
     private StopWatch sendTmer = new StopWatch();
     private UDPSender sender = new UDPSender();
@@ -59,7 +41,6 @@ public class VisionControl {
     // we need to determine what to set these to
 
     // thresholds
-    private final int MAX_SIZE = 2000;// should only need to be 750
     public static final double ballChassisThreshold = 1; // angle in degrees
     public static final double hoopChassisThreshold = 2; // angle in degrees
     public static final double maxHoopDistance = 13; // MAX distance in ft
@@ -67,39 +48,19 @@ public class VisionControl {
 
     private final boolean SQUARE_DRIVER_INPUTS = true;
 
-    // edit these
-    private final boolean RECORD_PATH = false;
-    private final String FILE_NAME = "path4";
-    private String selector;
-
     public VisionControl(OperatorInterface oi, Chassis chassis,
             Shooter shooter) {
-        this.selector = "";
         this.oi = oi;
         this.chassis = chassis;
         this.shooter = shooter;
-        fl = new FileLogging();
         sendTmer.start();
-        if (RECORD_PATH) {
-            fl.createfile(FILE_NAME);
-        }
     }
 
-    public void teleopInit() {
-        if (RECORD_PATH)
-            chassis.initOdometry();
-    }
+    public void teleopInit() {}
 
     public void teleopPeriodic() {
         update();
         // visionData.Print();
-        if (RECORD_PATH && recordCounter <= MAX_SIZE) {
-            record(-oi.pilot.getLeftY(), oi.pilot.getRightX());
-            recordCounter++;
-        } else if (RECORD_PATH && recordCounter > MAX_SIZE) {
-            System.out.println("Max recording size has been reached");
-        }
-
         if (oi.autoSteerToHoopButton()) {
             Robot.PDM.setSwitchableChannel(true);
             usingAuto = true;
@@ -109,9 +70,6 @@ public class VisionControl {
             if (!trackHoop(ySpeed))
                 chassis.main();
         } else if (oi.autoCollectButton()) { // <-- PDM not turned off in this case
-            if (!usingAuto) {
-                gathererOldState = shooter.gathererState;
-            }
             usingAuto = true;
             double ySpeed = -oi.pilot.getLeftY();
             if (SQUARE_DRIVER_INPUTS)
@@ -119,20 +77,12 @@ public class VisionControl {
             if (!trackBall(ySpeed))
                 chassis.main();
         } else {
-            // if (usingAuto && !oi.autoCollectButton()) {
-            // shooter.disableManual = false;
-            // shooter.gathererState = gathererOldState;
-            // }
             usingAuto = false;
             Robot.PDM.setSwitchableChannel(true);
         }
     }
 
-    public void disable() {
-        if (RECORD_PATH) {
-            fl.write();
-        }
-    }
+    public void disable() {}
 
     public boolean trackHoop(double ySpeed) {
         // visionData.Print();
@@ -169,23 +119,6 @@ public class VisionControl {
 
     public void drive(double fs, double r) {
         chassis.drive(fs, r, false);
-    }
-
-    /**
-     * @deprecated
-     * @param selector Auto path to select
-     */
-    public void setAutoPath(String selector) {
-        this.selector = selector;
-        System.out.println("Current Path is " + this.selector);
-    }
-
-    /**
-     * @deprecated
-     */
-    public void record(double _forwardSpeed, double _sideSpeed) {
-        fl.periodic(_forwardSpeed + " " + _sideSpeed + " " + chassis.flep + " " + chassis.frep + " " + chassis.blep
-                + " " + chassis.brep + " \n");
     }
 
     public void update() {
@@ -227,7 +160,7 @@ public class VisionControl {
             case ALIGN:
                 trackHoop(0);
                 if (Math.abs(hoopr) <= hoopChassisThreshold) {
-                    shooterstate = shooterState.WAIT;
+                    shooterstate = ShooterState.WAIT;
                 }
                 break;
             case WAIT:
@@ -235,7 +168,7 @@ public class VisionControl {
                 double rpm = visionData.isHoopValid() ? shooter.calculateShooterRPMS(hoopx) : 0;
                 shooter.startShooter(rpm);
                 if (Math.abs(shooter.getShooterRpms() - rpm) < shooterThreshold) {
-                    shooterstate = shooterState.SHOOT;
+                    shooterstate = ShooterState.SHOOT;
                     clock.start();
                 }
                 break;
@@ -245,7 +178,7 @@ public class VisionControl {
                 shooter.startShooter(rpms);
                 shooter.startFeeder(shooter.feederSpeed, !shooter.disableManual);
                 if (clock.getDuration() == 2) {
-                    shooterstate = shooterState.STOP;
+                    shooterstate = ShooterState.STOP;
                 }
                 break;
             case STOP:

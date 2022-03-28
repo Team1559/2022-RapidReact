@@ -11,7 +11,6 @@ import frc.robot.OperatorInterface;
 import frc.robot.Wiring;
 import frc.robot.components.IMU;
 import frc.robot.components.DevilDrive;
-import frc.robot.components.FileLogging;
 
 public class Chassis {
     private static final int TIMEOUT = 20;
@@ -36,7 +35,6 @@ public class Chassis {
     public double brep;
     private OperatorInterface oi;
     public IMU imu;
-    private FileLogging fl;
 
     public static final double AUTO_RAMP_RATE = 0.05;
     public static final double TELEOP_RAMP_RATE = 0.0;
@@ -123,10 +121,6 @@ public class Chassis {
         // back = new SplitDrive(CANSparkMax3, CANSparkMax4);
         drive = new DevilDrive(CANSparkMax1, CANSparkMax3, CANSparkMax2, CANSparkMax4);
         drive.setMaxOutput(30000);
-        fl = new FileLogging();
-        if (LOGDATA) {
-            fl.createfile("encoders");
-        }
     }
 
     public void main() {
@@ -134,14 +128,6 @@ public class Chassis {
         SmartDashboard.putNumber("IMU", this.imu.yaw);
         drive(-oi.pilot.getLeftY(), oi.pilot.getLeftX(), oi.pilot.getRightX());
         updateEncoders();
-        if (LOGDATA) {
-            SmartDashboard.putNumber("Front left encoder velocity is: ", flEncoder.getVelocity());
-            SmartDashboard.putNumber("Front right encoder velocity is: ", frEncoder.getVelocity());
-            SmartDashboard.putNumber("Back left encoder velocity is: ", blEncoder.getVelocity());
-            SmartDashboard.putNumber("Back right encoder velocity is: ", brEncoder.getVelocity());
-            fl.periodic(oi.pilot.getLeftY() + " " + oi.pilot.getRightX() + " " + flEncoder.getVelocity() + " "
-                    + frEncoder.getVelocity() + " " + blEncoder.getVelocity() + brEncoder.getVelocity() + " \n");
-        }
     }
 
     public void updateEncoders() {
@@ -290,9 +276,5 @@ public class Chassis {
         brEncoder.setPosition(0);
     }
 
-    public void disable() {
-        if (LOGDATA) {
-            fl.write();
-        }
-    }
+    public void disable() {}
 }
