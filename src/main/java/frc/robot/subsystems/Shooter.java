@@ -57,7 +57,6 @@ public class Shooter {
     private SparkMaxPIDController feederPid;
     private Robot robot;
 
-    public boolean RESET_ENCODER = true;
     public boolean disableManual = false;
 
     public boolean gatherLock = false;
@@ -257,7 +256,7 @@ public class Shooter {
     }
 
     public void startFeeder(double setpoint, boolean setNewTarget) {
-        RESET_ENCODER = true;
+        this.zeroFeeder();
         if (setNewTarget) {
             feederEncoder.setPosition(0);
             feederPid.setReference(setpoint, ControlType.kPosition);
@@ -273,11 +272,6 @@ public class Shooter {
     }
 
     public void holdFeeder() {
-        if (RESET_ENCODER) {
-            feederEncoder.setPosition(0);
-            encoderTics = 0;
-            RESET_ENCODER = false;
-        }
         if (disableManual && !oi.autoCollectButton() && DriverStation.isTeleop()) {
             gathererState = lastState;
             disableManual = false;

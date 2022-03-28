@@ -7,7 +7,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -37,7 +36,6 @@ public class Robot extends TimedRobot {
     public Climber climber;
     public static PowerDistribution PDM = new PowerDistribution(Wiring.PDP, ModuleType.kRev);
     public static DriverStation ds;
-    private static Alliance alliance;
 
     private static final String NONE = "No Auto";
     private static final String BASIC_AUTO_STEPS = "Basic Auto";
@@ -50,8 +48,8 @@ public class Robot extends TimedRobot {
     private static final String TEST_AUTO2 = "Better Basic Vision Auto";
     private static final String ONE_BALL_AUTO = "One Ball Auto";
 
-    private static final String autoText = "Selected Auto";
-    private static final String colorText = "Current Allience Color";
+    private static final String autoLabel = "Selected Auto";
+    private static final String allianceLabel = "Current Allience Color";
 
     public Shooter shooter;
 
@@ -100,49 +98,48 @@ public class Robot extends TimedRobot {
         switch (m_autoSelected) {
             case NONE:
             default:
-                SmartDashboard.putString(autoText, NONE);
+                SmartDashboard.putString(autoLabel, NONE);
                 break;
             case BASIC_AUTO_STEPS:
-                SmartDashboard.putString(autoText, BASIC_AUTO_STEPS);
+                SmartDashboard.putString(autoLabel, BASIC_AUTO_STEPS);
                 break;
             case BASIC_VISION_AUTO:
-                SmartDashboard.putString(autoText, BASIC_VISION_AUTO);
+                SmartDashboard.putString(autoLabel, BASIC_VISION_AUTO);
                 break;
             case MINI_AUTO:
-                SmartDashboard.putString(autoText, MINI_AUTO);
+                SmartDashboard.putString(autoLabel, MINI_AUTO);
                 break;
             case LEFT_BALL_AUTO:
-                SmartDashboard.putString(autoText, LEFT_BALL_AUTO);
+                SmartDashboard.putString(autoLabel, LEFT_BALL_AUTO);
                 break;
             case RIGHT_BALL_AUTO:
-                SmartDashboard.putString(autoText, RIGHT_BALL_AUTO);
+                SmartDashboard.putString(autoLabel, RIGHT_BALL_AUTO);
                 break;
             case MID_BALL_AUTO:
-                SmartDashboard.putString(autoText, MID_BALL_AUTO);
+                SmartDashboard.putString(autoLabel, MID_BALL_AUTO);
                 break;
             case TEST_AUTO:
-                SmartDashboard.putString(autoText, TEST_AUTO);
+                SmartDashboard.putString(autoLabel, TEST_AUTO);
                 break;
             case TEST_AUTO2:
-                SmartDashboard.putString(autoText, TEST_AUTO2);
+                SmartDashboard.putString(autoLabel, TEST_AUTO2);
                 break;
         }
     }
 
     private void updateColor() {
-        alliance = DriverStation.getAlliance();
-        switch (alliance) {
+        switch (DriverStation.getAlliance()) {
             case Red:
                 vc.periodic("red");
-                SmartDashboard.putString(colorText, "Red");
+                SmartDashboard.putString(allianceLabel, "Red");
                 break;
             case Blue:
                 vc.periodic("blue");
-                SmartDashboard.putString(colorText, "Blue");
+                SmartDashboard.putString(allianceLabel, "Blue");
                 break;
             case Invalid:
                 vc.periodic("invalid");
-                SmartDashboard.putString(colorText, "Invalid");
+                SmartDashboard.putString(allianceLabel, "Invalid");
                 break;
         }
     }
@@ -164,7 +161,7 @@ public class Robot extends TimedRobot {
         vc.align_kP = VisionControl.auto_align_kP;
         vc.maxTurn = VisionControl.AUTO_MAX_TURN;
 
-        shooter.RESET_ENCODER = true;
+        shooter.zeroFeeder();
         shooter.holdFeeder();
         m_autoSelected = m_chooser.getSelected();
         PDM.setSwitchableChannel(true);
