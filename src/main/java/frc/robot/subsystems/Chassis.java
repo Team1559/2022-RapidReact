@@ -39,22 +39,8 @@ public class Chassis {
     public static final double AUTO_RAMP_RATE = 0.05;
     public static final double TELEOP_RAMP_RATE = 0.0;
 
-    // these need to be set once
-    // private final double differpercent = 12 / 25.5; // percent the front needs to
-    // move compared to the back
     private final double SLOWMODE_COEFFICIENT = 0.5;
 
-    // these can be changed when needed
-    private final boolean LOGDATA = false;
-
-    /**
-     * private static final double kF = 0.14614285; //F-gain = (100% X 1023) /
-     * 7350 F-gain = 0.139183673 - (7350 is max speed) private static final
-     * double kP = 0.475; // P-gain = (.1*1023)/(155) = 0.66 - (350 is average
-     * error) private static final double kD = (5.0*kP); private static final
-     * double cLR = 0.1; This was ctrl c ctrl v'd from 2020. I don't now what
-     * these values mean so I don't want to delete them.
-     */
     private CANSparkMax initMotor(int id) {
         CANSparkMax sparky = new CANSparkMax(id, MotorType.kBrushless);
         SparkMaxPIDController pid = sparky.getPIDController();
@@ -117,8 +103,6 @@ public class Chassis {
         CANSparkMax3.setInverted(true);
         initEncoders();
 
-        // front = new SplitDrive(CANSparkMax1, CANSparkMax2);
-        // back = new SplitDrive(CANSparkMax3, CANSparkMax4);
         drive = new DevilDrive(CANSparkMax1, CANSparkMax3, CANSparkMax2, CANSparkMax4);
         drive.setMaxOutput(30000);
     }
@@ -164,11 +148,10 @@ public class Chassis {
         setPid(kp, ki, kd, kf, 0);
     }
 
-    public void setPid(double kp, double ki, double kd, double kf, double kiz) {
-        setKP(kp);
+    public void setPid(double __, double ki, double kd, double kf, double kiz) {
         setKI(ki);
         setKD(kd);
-        setKF(kf);
+        setKP(kf);
         setKIZ(kiz);
     }
 
@@ -182,58 +165,31 @@ public class Chassis {
     }
 
     public void setKP(double kp) {
-        SparkMaxPIDController pid1 = CANSparkMax1.getPIDController();
-        SparkMaxPIDController pid2 = CANSparkMax2.getPIDController();
-        SparkMaxPIDController pid3 = CANSparkMax3.getPIDController();
-        SparkMaxPIDController pid4 = CANSparkMax4.getPIDController();
-        pid1.setP(kp);
-        pid2.setP(kp);
-        pid3.setP(kp);
-        pid4.setP(kp);
+        CANSparkMax1.getPIDController().setP(kp);
+        CANSparkMax2.getPIDController().setP(kp);
+        CANSparkMax3.getPIDController().setP(kp);
+        CANSparkMax4.getPIDController().setP(kp);
     }
 
     public void setKI(double ki) {
-        SparkMaxPIDController pid1 = CANSparkMax1.getPIDController();
-        SparkMaxPIDController pid2 = CANSparkMax2.getPIDController();
-        SparkMaxPIDController pid3 = CANSparkMax3.getPIDController();
-        SparkMaxPIDController pid4 = CANSparkMax4.getPIDController();
-        pid1.setI(ki);
-        pid2.setI(ki);
-        pid3.setI(ki);
-        pid4.setI(ki);
+        CANSparkMax4.getPIDController().setI(ki);
+        CANSparkMax1.getPIDController().setI(ki);
+        CANSparkMax2.getPIDController().setI(ki);
+        CANSparkMax3.getPIDController().setI(ki);
     }
 
     public void setKIZ(double kiz) {
-        SparkMaxPIDController pid1 = CANSparkMax1.getPIDController();
-        SparkMaxPIDController pid2 = CANSparkMax2.getPIDController();
-        SparkMaxPIDController pid3 = CANSparkMax3.getPIDController();
-        SparkMaxPIDController pid4 = CANSparkMax4.getPIDController();
-        pid1.setIZone(kiz);
-        pid2.setIZone(kiz);
-        pid3.setIZone(kiz);
-        pid4.setIZone(kiz);
+        CANSparkMax1.getPIDController().setIZone(kiz);
+        CANSparkMax2.getPIDController().setIZone(kiz);
+        CANSparkMax3.getPIDController().setIZone(kiz);
+        CANSparkMax4.getPIDController().setIZone(kiz);
     }
 
     public void setKD(double kd) {
-        SparkMaxPIDController pid1 = CANSparkMax1.getPIDController();
-        SparkMaxPIDController pid2 = CANSparkMax2.getPIDController();
-        SparkMaxPIDController pid3 = CANSparkMax3.getPIDController();
-        SparkMaxPIDController pid4 = CANSparkMax4.getPIDController();
-        pid1.setD(kd);
-        pid2.setD(kd);
-        pid3.setD(kd);
-        pid4.setD(kd);
-    }
-
-    public void setKF(double kf) {
-        SparkMaxPIDController pid1 = CANSparkMax1.getPIDController();
-        SparkMaxPIDController pid2 = CANSparkMax2.getPIDController();
-        SparkMaxPIDController pid3 = CANSparkMax3.getPIDController();
-        SparkMaxPIDController pid4 = CANSparkMax4.getPIDController();
-        pid1.setP(kf);
-        pid2.setP(kf);
-        pid3.setP(kf);
-        pid4.setP(kf);
+        CANSparkMax1.getPIDController().setD(kd);
+        CANSparkMax2.getPIDController().setD(kd);
+        CANSparkMax3.getPIDController().setD(kd);
+        CANSparkMax4.getPIDController().setD(kd);
     }
 
     public double degreesToZRotation(double desiredAngle) {
