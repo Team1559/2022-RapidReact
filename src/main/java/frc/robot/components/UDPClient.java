@@ -29,7 +29,7 @@ public class UDPClient implements Runnable {
         }
 
         catch (Exception e) {
-            System.out.println(e.toString());
+            e.printStackTrace();
         }
 
         clientThread.start();
@@ -38,7 +38,6 @@ public class UDPClient implements Runnable {
     @Override
     public void run() {
         running = true;
-        System.out.println("UDPClient thread running");
         while (running) {
             String rec = receive();
 
@@ -62,11 +61,10 @@ public class UDPClient implements Runnable {
             BufferedReader bfReader = new BufferedReader(new InputStreamReader(is));
 
             ret = bfReader.readLine();
-            // System.out.println(ret);
         }
 
         catch (Exception e) {
-            System.out.println(e.toString());
+            e.printStackTrace(System.err);
         }
 
         return ret;

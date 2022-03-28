@@ -217,14 +217,11 @@ public class Shooter {
             startFeeder(feederSpeed, oi.shootButtonPress());
         } else if (oi.autoShootButton() && checkDependencies()) { // Shoot when ready
             if (Math.abs(vc.hoopr) <= VisionControl.hoopChassisThreshold) { // Angle check
-                System.out.println("Angle check passed");
                 if (vc.hoopx <= VisionControl.maxHoopDistance) { // distance check
-                    System.out.println("Distance passed");
                     if (Math.abs(chassis.rpmToFps(chassis.getFrontAverageWheelRPM())) < 2) {
                         if (Math.abs(Math.abs(getShooterRpms()) -
                                 Math.abs(calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA
                                         + 2))) < VisionControl.shooterThreshold) {
-                            System.out.println("RPM check " + disableManual);
                             startFeeder(feederSpeed, !disableManual); // flywheel rpm check ^
                             disableManual = true;
                         }

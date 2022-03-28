@@ -362,7 +362,6 @@ public class Auto {
     }
 
     private void Wait(int cycles) {
-        // System.out.println("Wait: " + stepCounter + "/" + cycles);
         if (stepCounter >= cycles)
             Done();
     }
@@ -427,14 +426,12 @@ public class Auto {
 
     private void StartGatherer() {
         robot.shooter.disableManual = true;
-        System.out.println("StartGatherer set gathererDown");
         robot.shooter.gathererState = IntakeState.DOWN;
         Done();
     }
 
     private void StopGatherer() {
         robot.shooter.disableManual = false;
-        System.out.println("StopGatherer set holding");
         robot.shooter.gathererState = IntakeState.HOLDING;
         robot.shooter.gathererState();
 
@@ -478,7 +475,6 @@ public class Auto {
             ySpeed = positionError * 0.04;
             if (ySpeed > MAX_DRIVE)
                 ySpeed = MAX_DRIVE;
-            System.out.println("Drive value: " + ySpeed);
         }
         if (!robot.vc.trackBall(-ySpeed))
             Fail("No ball found");
@@ -491,17 +487,13 @@ public class Auto {
         }
     }
 
-    private void DriveHoop(int desiredDistanceFromTarget) { // in inches
-        // double positionError = desiredDistanceFromTarget - robot.vc.hoopx * 12;
-        // double ySpeed = positionError * 0.04;
+    private void DriveHoop(int desiredDistanceFromTarget) {
         double positionError = 1000;
-        System.out.println("Hoop x: " + robot.vc.hoopx);
         if (robot.vc.hoopx != 0) {
             positionError = robot.vc.hoopx * 12 - desiredDistanceFromTarget;
             ySpeed = positionError * 0.04;
             if (ySpeed > MAX_DRIVE)
                 ySpeed = MAX_DRIVE;
-            System.out.println("Drive value: " + ySpeed);
         }
 
         if (ySpeed > MAX_DRIVE) {
@@ -521,7 +513,5 @@ public class Auto {
             Fail("No hoop found");
         } else if (robot.vc.isHoopValid() && Math.abs(robot.vc.hoopr) <= VisionControl.hoopChassisThreshold)
             Done();
-        System.out.println("I'm trying to align hoop");
-        System.out.println("Hoopr: " + robot.vc.hoopr);
     }
 }
