@@ -185,7 +185,7 @@ public class Robot extends TimedRobot {
             chassis.autoInit();
         }
         if (FeatureFlags.shooterInitialized && FeatureFlags.SHOOTER_INSTALLED) {
-            shooter.gathererState = Shooter.gathererUp;
+            shooter.gathererState = IntakeState.UP;
             shooter.zeroFeeder();
             shooter.disableManual = false;
             shooter.gatherLock = false;
@@ -258,7 +258,7 @@ public class Robot extends TimedRobot {
 
         if (FeatureFlags.doShooter && FeatureFlags.shooterInitialized) {
             System.out.println("teleopInit set gathererUp");
-            shooter.gathererState = Shooter.gathererUp;
+            shooter.gathererState = IntakeState.UP;
             shooter.zeroFeeder();
             shooter.disableManual = false;
             shooter.gatherLock = false;

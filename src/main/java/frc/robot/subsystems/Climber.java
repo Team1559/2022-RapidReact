@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import frc.robot.OperatorInterface;
+import frc.robot.components.IntakeState;
+
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
 import com.ctre.phoenix.time.StopWatch;
@@ -196,18 +198,18 @@ public class Climber {
 
     public void extendPistons() {
         shooter.disableManual = true;
-        shooter.gathererState = shooter.gathererDown;
+        shooter.gathererState = IntakeState.DOWN;
         climberSolenoid.set(true);
     }
 
     public void retractPistons() {
         shooter.disableManual = true;
-        shooter.gathererState = shooter.gathererUp;
+        shooter.gathererState = IntakeState.UP;
         climberSolenoid.set(false);
     }
 
     public void disable() {
-        shooter.gathererState = Shooter.gathererUp;
+        shooter.gathererState = IntakeState.UP;
     }
 
     public void testPeriodic() {

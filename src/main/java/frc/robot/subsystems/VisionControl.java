@@ -30,7 +30,7 @@ public class VisionControl {
     public double hoopx = 0;
     public double ballx = 0;
 
-    private int gathererOldState = 0;
+    private IntakeState gathererOldState = IntakeState.UP;
 
     private Chassis chassis;
 
@@ -151,8 +151,8 @@ public class VisionControl {
 
     public boolean trackBall(double ySpeed) {
         shooter.disableManual = true;
-        if (shooter.gathererState != Shooter.holding && shooter.gathererState != Shooter.gathererDown) {
-            shooter.gathererState = Shooter.holding;
+        if (shooter.gathererState != IntakeState.HOLDING && shooter.gathererState != IntakeState.DOWN) {
+            shooter.gathererState = IntakeState.HOLDING;
         }
 
         if (visionData.isBallValid())

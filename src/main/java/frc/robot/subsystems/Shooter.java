@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import frc.robot.OperatorInterface;
+import frc.robot.components.IntakeState;
+
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
 
@@ -58,17 +60,11 @@ public class Shooter {
     public boolean RESET_ENCODER = true;
     public boolean disableManual = false;
 
-    // States for gatherer
-    public static final int gathererUp = 0;
-    public static final int gathererDown = 1;
-    public static final int holding = 2;
-    public static final int upRun = 3;
-
     public boolean gatherLock = false;
 
-    public int gathererState = gathererUp;
+    public IntakeState gathererState = IntakeState.UP;
 
-    public int lastState = holding;
+    public IntakeState lastState = IntakeState.HOLDING;
 
     public Shooter(OperatorInterface operatorinterface, Chassis chassis, Robot robot) {
         oi = operatorinterface;
@@ -145,25 +141,25 @@ public class Shooter {
         if (!disableManual) {
             if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
                 switch (gathererState) {
-                    case gathererUp:
+                    case UP:
                         if (oi.manualIntakeButtonPress()) { // Lower intake if button pressed else stop the intakes
-                            gathererState = gathererDown;
+                            gathererState = IntakeState.DOWN;
                         }
                         break;
-                    case gathererDown:
+                    case DOWN:
                         if (!oi.manualIntakeButton()) { // Stop the intake and hold ball when button is released
-                            gathererState = holding;
+                            gathererState = IntakeState.HOLDING;
                         }
                         break;
-                    case holding:
+                    case HOLDING:
                         if (oi.raiseIntakeButton()) { // intake when the button is pressed again
-                            gathererState = gathererUp;
+                            gathererState = IntakeState.UP;
                         } else if (oi.manualIntakeButton()) {
-                            gathererState = gathererDown;
+                            gathererState = IntakeState.DOWN;
                         }
                         break;
                     default:
-                        gathererState = gathererUp;
+                        gathererState = IntakeState.UP;
                         break;
                 }
             }
@@ -176,20 +172,19 @@ public class Shooter {
             lastState = gathererState;
         }
         switch (gathererState) {
-            case gathererUp:
+            case UP:
                 stopIntake();
                 raiseIntake();
                 break;
-            case gathererDown:
+            case DOWN:
                 lowerIntake();
                 startIntake(intakeSpeed);
                 break;
-            case holding:
+            case HOLDING:
                 stopIntake();
                 lowerIntake();
                 break;
-
-            case upRun:
+            case UP_RUN:
                 startIntake(intakeSpeed);
                 raiseIntake();
                 break;
@@ -268,10 +263,10 @@ public class Shooter {
             feederPid.setReference(setpoint, ControlType.kPosition);
         }
         if (!gatherLock) {
-            if (disableManual && gathererState == gathererUp) {
-                gathererState = upRun;
+            if (disableManual && gathererState == IntakeState.UP) {
+                gathererState = IntakeState.UP_RUN;
             } else if (disableManual) {
-                gathererState = gathererDown;
+                gathererState = IntakeState.DOWN;
             }
             gatherLock = true;
         }
@@ -296,7 +291,7 @@ public class Shooter {
     }
 
     public void stopFeeder() {
-        gathererState = gathererUp;
+        gathererState = IntakeState.UP; // REVIEW: is this needed
         feederPid.setReference(0, ControlType.kDutyCycle);
     }
 

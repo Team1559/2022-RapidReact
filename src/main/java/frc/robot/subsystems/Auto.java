@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.*;
+import frc.robot.components.IntakeState;
 
 // @SuppressWarnings("unused")
 public class Auto {
@@ -449,14 +450,14 @@ public class Auto {
     private void StartGatherer() {
         robot.shooter.disableManual = true;
         System.out.println("StartGatherer set gathererDown");
-        robot.shooter.gathererState = Shooter.gathererDown;
+        robot.shooter.gathererState = IntakeState.DOWN;
         Done();
     }
 
     private void StopGatherer() {
         robot.shooter.disableManual = false;
         System.out.println("StopGatherer set holding");
-        robot.shooter.gathererState = Shooter.holding;
+        robot.shooter.gathererState = IntakeState.HOLDING;
         robot.shooter.gathererState();
 
         Done();
