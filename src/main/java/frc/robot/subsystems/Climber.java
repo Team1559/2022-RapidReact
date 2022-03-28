@@ -12,8 +12,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 public class Climber {
 
     private OperatorInterface oi;
@@ -114,13 +112,8 @@ public class Climber {
     }
 
     public void main() {
-
         solenoidMain();
         climber.setNeutralMode(NeutralMode.Brake);
-
-        SmartDashboard.putBoolean("Upper Limit Switch", upperLimitSwitch.get());
-        SmartDashboard.putBoolean("Lower Limit Switch", lowerLimitSwitch.get());
-        SmartDashboard.putNumber("Climber rpm", climber.getSelectedSensorVelocity() * 10 * 60 / 2048);
 
         // Control for Winch
         if (oi.climberEnableButton()) {

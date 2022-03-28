@@ -191,12 +191,11 @@ public class Shooter {
     }
 
     public void ShooterMain() {
-        SmartDashboard.putNumber("Actual shotoer", getShooterRpms());
+        SmartDashboard.putNumber("Current Flywheel Speed: ", getShooterRpms());
         if (oi.runFlyWheelButtonManual()) {
             startShooter(getDefaultShooterRpm()); // Assume distance is 8 ft in manual mode
         } else if (oi.autoSteerToHoopButton()) {
             if (checkDependencies()) {
-                SmartDashboard.putNumber("hoopx", vc.hoopx);
                 SmartDashboard.putNumber("Shooter setpt",
                         calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
                 startShooter(calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
@@ -338,16 +337,11 @@ public class Shooter {
     }
 
     public double getDefaultShooterRpm() {
-        // return DEFAULT_RPMS;
         return SmartDashboard.getNumber("Shooter RPM", DEFAULT_RPMS);
     }
 
     public double calculateShooterRPMS(double distance) {
-        // RPM vs. distance fit from
-        // https://docs.google.com/spreadsheets/d/1l1Nxlk29b2KL5FwVklSFhfuychKHfztRSNRqPUuQUIs/edit#gid=1365511344
-        // return 4476 + 158 * distance;
         return 1750 + 20.2 * distance + 1.85 * Math.pow(distance, 2);
-        // return getDefaultShooterRpm();
     }
 
     public void disable() {

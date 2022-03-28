@@ -6,6 +6,7 @@ import frc.robot.components.IntakeState;
 
 // @SuppressWarnings("unused")
 public class Auto {
+    public static String[] stateLabels = {"WAIT","DRIVE","TURN","START_GATHERER","STOP_GATHERER","START_FLYWHEEL","STOP_FLYWHEEL","SHOOT","DRIVE_BALL","DRIVE_HOOP","ALIGN_HOOP","TURN_HOOP"};
 
     private int stepNumber = 0;
     private int stepCounter = 0;
@@ -30,6 +31,7 @@ public class Auto {
 
     private static final int MAX_TURN_SECONDS = 3;
     private static final int MAX_BALL_SECONDS = 5;
+    private static final int MAX_DRIVE_SECONDS = 5;
 
     static final int HOOP_ERROR_INCHES = 3;
     static final int HOOP_ERROR_DEGREES = 1;
@@ -44,7 +46,6 @@ public class Auto {
 
     private int[][] steps;
 
-    // No Auto
     public static final int[][] noAuto = {};
 
     // Start gatherer, drive X feet, stop gatherer, start flywheel at known RPM,
@@ -304,7 +305,7 @@ public class Auto {
         } else {
             robot.shooter.startShooter(shooterSetVelocity);
         }
-        SmartDashboard.putNumber("Auto state", type);
+        SmartDashboard.putString("Auto state", stateLabels[type]);
         switch (type) {
             case WAIT:
                 Wait((int) value);
@@ -369,33 +370,14 @@ public class Auto {
     private void Drive(int inches) {
         robot.chassis.updateEncoders();
         double revs = robot.chassis.inchesToRevolutions(inches);
-        SmartDashboard.putNumber("Revs", revs);
         double kP = 1.0 / 25.0;
-        if (stepCounter == 1) {
-            // establish setpoints for end of travel
+        if (stepCounter == 1)
             rightTarget = robot.chassis.frep + revs;
-        }
         double remaining = rightTarget - robot.chassis.frep;
         double driveValue = remaining * kP;
-        SmartDashboard.clearPersistent("FLEP");
-        SmartDashboard.clearPersistent("FREP");
-        SmartDashboard.clearPersistent("Remaining");
-        SmartDashboard.clearPersistent("Drive value: ");
-        SmartDashboard.clearPersistent("FLEV");
-        SmartDashboard.clearPersistent("FREV");
-        SmartDashboard.clearPersistent("Revs");
-        SmartDashboard.putNumber("FLEP", robot.chassis.flep);
-        SmartDashboard.putNumber("FREP", robot.chassis.frep);
-        SmartDashboard.putNumber("Remaining", remaining);
-        SmartDashboard.putNumber("Drive value: ", driveValue);
-        SmartDashboard.putNumber("FLEV", robot.chassis.flEncoder.getVelocity());
-        SmartDashboard.putNumber("FREV", robot.chassis.frEncoder.getVelocity());
-        double done = revs - remaining;
-        System.out.println("Done:" + done);
-        int inchesDone = (int) robot.chassis.revolutionsToInches(done);
+        int inchesDone = (int) robot.chassis.revolutionsToInches(revs - remaining);
         System.out.println("Drive: " + inchesDone + "/" + inches);
-        System.out.println("stepCounter: " + stepCounter);
-        if (stepCounter <= 50.0 * 4.5) {
+        if (stepCounter <= 50.0 * MAX_DRIVE_SECONDS) {
             robot.chassis.drive(Math.abs(driveValue) > MAX_DRIVE ? Math.copySign(MAX_DRIVE, driveValue) : driveValue, 0,
                     false);
         } else {
@@ -416,9 +398,7 @@ public class Auto {
         }
         double rotation = robot.chassis.degreesToZRotation(degrees);
         robot.chassis.imu.updateValues();
-        SmartDashboard.putNumber("IMU", robot.chassis.imu.yaw);
         double turnValue = Math.abs(rotation) > MAX_TURN ? Math.copySign(MAX_TURN, rotation) : rotation;
-        SmartDashboard.putNumber("turnValue", turnValue);
         robot.chassis.drive(0, turnValue);
         System.out.println(robot.chassis.imu.yaw + " <-- YAW, TARGET --> " + degrees);
         if (Math.abs(degrees - robot.chassis.imu.yaw) % 360 < 2) {
@@ -433,9 +413,7 @@ public class Auto {
         }
         double rotation = robot.chassis.degreesToZRotation(degrees);
         robot.chassis.imu.updateValues();
-        SmartDashboard.putNumber("IMU", robot.chassis.imu.yaw);
         double turnValue = Math.abs(rotation) > MAX_TURN ? Math.copySign(MAX_TURN, rotation) : rotation;
-        SmartDashboard.putNumber("turnValue", turnValue);
         robot.chassis.drive(0, turnValue);
         System.out.println(robot.chassis.imu.yaw + " <-- YAW, TARGET --> " + degrees);
         if (Math.abs(degrees - robot.chassis.imu.yaw) % 360 < 2) {
