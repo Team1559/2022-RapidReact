@@ -508,7 +508,6 @@ public class Auto {
     }
 
     private void AlignHoop() {
-        robot.vc.visionData.Print();
         if (!robot.vc.trackHoop(0)) {
             Fail("No hoop found");
         } else if (robot.vc.isHoopValid() && Math.abs(robot.vc.hoopr) <= VisionControl.hoopChassisThreshold)

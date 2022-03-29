@@ -15,7 +15,6 @@ public class VisionControl {
 
     private OperatorInterface oi;
     private Vision vision = new Vision();
-    public VisionData visionData;
 
     private Shooter shooter;
     private Chassis chassis;
@@ -90,7 +89,7 @@ public class VisionControl {
 
     public boolean trackHoop(double ySpeed) {
         // visionData.Print();
-        if (visionData.isHoopValid()) {
+        if (vision.isHoopValid()) {
             invalid_ball_counter = 0;
         } else {
             invalid_ball_counter++;
@@ -109,7 +108,7 @@ public class VisionControl {
             shooter.gathererState = IntakeState.HOLDING;
         }
 
-        if (visionData.isBallValid())
+        if (vision.isBallValid())
             invalid_ball_counter = 0;
         else
             invalid_ball_counter++;
@@ -126,11 +125,11 @@ public class VisionControl {
     }
 
     public void update() {
-        visionData = vision.getData();
-        hoopr = visionData.hr + 0.5;
-        hoopx = visionData.hx;
-        ballr = visionData.br;
-        ballx = visionData.bx;
+        vision.update();
+        hoopr = vision.hr + 0.5;
+        hoopx = vision.hx;
+        ballr = vision.br;
+        ballx = vision.bx;
         chassis.updateEncoders();
     }
 
@@ -169,7 +168,7 @@ public class VisionControl {
                 break;
             case WAIT:
                 drive(0, 0);
-                double rpm = visionData.isHoopValid() ? shooter.calculateShooterRPMS(hoopx) : 0;
+                double rpm = vision.isHoopValid() ? shooter.calculateShooterRPMS(hoopx) : 0;
                 shooter.startShooter(rpm);
                 if (Math.abs(shooter.getShooterRpms() - rpm) < shooterThreshold) {
                     shooterstate = ShooterState.SHOOT;
@@ -178,7 +177,7 @@ public class VisionControl {
                 break;
             case SHOOT:
                 drive(0, 0);
-                double rpms = visionData.isHoopValid() ? shooter.calculateShooterRPMS(hoopx) : 0;
+                double rpms = vision.isHoopValid() ? shooter.calculateShooterRPMS(hoopx) : 0;
                 shooter.startShooter(rpms);
                 shooter.startFeeder(shooter.feederSpeed, !shooter.disableManual);
                 if (clock.getDuration() == 2) {
@@ -195,6 +194,6 @@ public class VisionControl {
     }
 
     public boolean isHoopValid() {
-        return visionData.isHoopValid();
+        return vision.isHoopValid();
     }
 }

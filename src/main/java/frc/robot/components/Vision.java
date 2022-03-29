@@ -3,26 +3,23 @@ package frc.robot.components;
 public class Vision {
     private UDPClient client;
     private static Vision instance;
-    private VisionData VData;
-    double hoopCameraYOffset = 0;
-    double hoopCameraXOffset = 0;
-    double hoopCameraROffset = 0;
-    double ballCameraYOffset = 0;
-    double ballCameraXOffset = 0;
-    double ballCameraROffset = 0;
+
+    public int ballStatus = 2;
+    public int hoopStatus = 2;
+    public double hx;
+    public double hy;
+    public double hr;
+    public double bx;
+    public double by;
+    public double br;
 
     public Vision() {
-        client = new UDPClient();
-        VData = new VisionData();
-        VData.hoopStatus = 0;
-        VData.ballStatus = 0;
     }
 
     public void update() {
         try {
-            VisionData NewData = new VisionData();
-            NewData.hoopStatus = 2;
-            NewData.ballStatus = 2;
+            this.hoopStatus = 2;
+            this.ballStatus = 2;
             String in = client.get();
 
             if (in != null) {
@@ -30,48 +27,41 @@ public class Vision {
                 String[] parameters = in.split(" ");
 
                 if (parameters.length >= 9) {
-                    NewData.ballStatus = Integer.parseInt(parameters[7]);
-                    NewData.hoopStatus = Integer.parseInt(parameters[6]);
+                    this.ballStatus = Integer.parseInt(parameters[7]);
+                    this.hoopStatus = Integer.parseInt(parameters[6]);
 
-                    if (NewData.ballStatus == 1) {
-                        NewData.br = -(Double.parseDouble(parameters[3]) - ballCameraXOffset);
-                        NewData.bx = Double.parseDouble(parameters[5]) - ballCameraYOffset;
-                        NewData.by = Double.parseDouble(parameters[4]) - ballCameraYOffset;
+                    if (this.ballStatus == 1) {
+                        this.br = -Double.parseDouble(parameters[3]);
+                        this.bx = Double.parseDouble(parameters[5]);
+                        this.by = Double.parseDouble(parameters[4]);
                     }
 
-                    if (NewData.hoopStatus == 1) {
-                        NewData.hx = Double.parseDouble(parameters[0]) - hoopCameraXOffset;
-                        NewData.hy = Double.parseDouble(parameters[2]) - hoopCameraYOffset; // Always 0
-                        NewData.hr = Double.parseDouble(parameters[1]) - hoopCameraROffset;
-                    }
-
-                    if (Integer.parseInt(parameters[8]) == 1) {
-                        NewData.waitForOtherRobot = true;
-                    }
-
-                    else {
-                        NewData.waitForOtherRobot = false;
+                    if (this.hoopStatus == 1) {
+                        this.hx = Double.parseDouble(parameters[0]);
+                        this.hy = Double.parseDouble(parameters[2]); // Always 0
+                        this.hr = Double.parseDouble(parameters[1]);
                     }
                 }
             }
-            VData = NewData;
         } catch (NumberFormatException | NullPointerException e) {
             e.printStackTrace(System.err);
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
-    }
-
-    public VisionData getData() {
-        update();
-        return VData;
     }
 
     public static Vision getInstance() {
         if (instance == null) {
             instance = new Vision();
         }
-
         return instance;
+    }
+
+    public boolean isHoopValid(){
+        return this.hoopStatus == 1;
+    }
+
+    public boolean isBallValid(){
+        return this.ballStatus == 1;
     }
 }
