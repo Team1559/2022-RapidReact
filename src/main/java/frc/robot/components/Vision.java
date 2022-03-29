@@ -2,7 +2,6 @@ package frc.robot.components;
 
 public class Vision {
     private UDPClient client;
-    private static Vision instance;
 
     public int ballStatus = 2;
     public int hoopStatus = 2;
@@ -48,13 +47,6 @@ public class Vision {
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }
-    }
-
-    public static Vision getInstance() {
-        if (instance == null) {
-            instance = new Vision();
-        }
-        return instance;
     }
 
     public boolean isHoopValid(){
