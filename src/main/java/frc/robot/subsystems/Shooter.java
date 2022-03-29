@@ -58,11 +58,9 @@ public class Shooter {
     private Robot robot;
 
     public boolean disableManual = false;
-
     public boolean gatherLock = false;
 
     public IntakeState gathererState = IntakeState.UP;
-
     public IntakeState lastState = IntakeState.HOLDING;
 
     public Shooter(OperatorInterface operatorinterface, Chassis chassis, Robot robot) {
@@ -136,32 +134,29 @@ public class Shooter {
     }
 
     public void gathererMain() {
-        if (!disableManual) {
-            if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
-                switch (gathererState) {
-                    case UP:
-                        if (oi.manualIntakeButtonPress()) { // Lower intake if button pressed else stop the intakes
-                            gathererState = IntakeState.DOWN;
-                        }
-                        break;
-                    case DOWN:
-                        if (!oi.manualIntakeButton()) { // Stop the intake and hold ball when button is released
-                            gathererState = IntakeState.HOLDING;
-                        }
-                        break;
-                    case HOLDING:
-                        if (oi.raiseIntakeButton()) { // intake when the button is pressed again
-                            gathererState = IntakeState.UP;
-                        } else if (oi.manualIntakeButton()) {
-                            gathererState = IntakeState.DOWN;
-                        }
-                        break;
-                    default:
-                        gathererState = IntakeState.UP;
-                        break;
+        if(disableManual || !FeatureFlags.doCompressor || !FeatureFlags.compressorInitialized)
+            return;
+        switch (gathererState) {
+            case UP:
+                if (oi.manualIntakeButtonPress()) { // Lower intake if button pressed else stop the intakes
+                    gathererState = IntakeState.DOWN;
                 }
-            }
-        } else {
+                break;
+            case DOWN:
+                if (!oi.manualIntakeButton()) { // Stop the intake and hold ball when button is released
+                    gathererState = IntakeState.HOLDING;
+                }
+                break;
+            case HOLDING:
+                if (oi.raiseIntakeButton()) { // intake when the button is pressed again
+                    gathererState = IntakeState.UP;
+                } else if (oi.manualIntakeButton()) {
+                    gathererState = IntakeState.DOWN;
+                }
+                break;
+            default:
+                gathererState = IntakeState.UP;
+                break;
         }
     }
 
