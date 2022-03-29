@@ -5,10 +5,10 @@ public class OperatorInterface {
     private static final int COPILOT_PORT = 1;
     public final DTXboxController pilot;
     public final DTXboxController copilot;
-    public final int DPadRight = 90;
-    public final int DPadUp = 0;
-    public final int DPadLeft = 270;
-    public final int DPadDown = 180;
+    public static final int DPadRight = 90;
+    public static final int DPadUp = 0;
+    public static final int DPadLeft = 270;
+    public static final int DPadDown = 180;
 
     public OperatorInterface() {
         pilot = new DTXboxController(PILOT_PORT);

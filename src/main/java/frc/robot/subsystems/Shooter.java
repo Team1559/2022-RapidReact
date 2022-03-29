@@ -45,7 +45,6 @@ public class Shooter {
 
     public static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
     public static final double DEFAULT_RPMS = 2150; // 4 ft from front of robot to face of target
-    private final boolean TESTING = true;
 
     private TalonFX shooter;
     private CANSparkMax feeder;
@@ -199,7 +198,7 @@ public class Shooter {
                 SmartDashboard.putNumber("Shooter setpt",
                         calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
                 startShooter(calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
-            } else if (TESTING) {
+            } else {
                 startShooter(getDefaultShooterRpm());
             }
         } else {

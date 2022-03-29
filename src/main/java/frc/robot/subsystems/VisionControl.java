@@ -16,13 +16,16 @@ public class VisionControl {
     private OperatorInterface oi;
     private Vision vision = new Vision();
     public VisionData visionData;
+
     private Shooter shooter;
+    private Chassis chassis;
+    private Robot robot;
+
     public double hoopr = 0;
     public double ballr = 0;
     public double hoopx = 0;
     public double ballx = 0;
 
-    private Chassis chassis;
 
     // other variables
     public boolean usingAuto = false;
@@ -48,8 +51,9 @@ public class VisionControl {
 
     private final boolean SQUARE_DRIVER_INPUTS = true;
 
-    public VisionControl(OperatorInterface oi, Chassis chassis,
+    public VisionControl(Robot robot, OperatorInterface oi, Chassis chassis,
             Shooter shooter) {
+        this.robot = robot;
         this.oi = oi;
         this.chassis = chassis;
         this.shooter = shooter;
@@ -62,7 +66,7 @@ public class VisionControl {
         update();
         // visionData.Print();
         if (oi.autoSteerToHoopButton()) {
-            Robot.PDM.setSwitchableChannel(true);
+            robot.PDM.setSwitchableChannel(true);
             usingAuto = true;
             double ySpeed = -oi.pilot.getLeftY();
             if (SQUARE_DRIVER_INPUTS)
@@ -78,7 +82,7 @@ public class VisionControl {
                 chassis.main();
         } else {
             usingAuto = false;
-            Robot.PDM.setSwitchableChannel(true);
+            robot.PDM.setSwitchableChannel(true);
         }
     }
 

@@ -34,8 +34,8 @@ public class Robot extends TimedRobot {
 
     public Chassis chassis;
     public Climber climber;
-    public static PowerDistribution PDM = new PowerDistribution(Wiring.PDP, ModuleType.kRev);
-    public static DriverStation ds;
+    public PowerDistribution PDM = new PowerDistribution(Wiring.PDP, ModuleType.kRev);
+    public DriverStation ds;
 
     private static final String NONE = "No Auto";
     private static final String BASIC_AUTO_STEPS = "Basic Auto";
@@ -376,7 +376,7 @@ public class Robot extends TimedRobot {
         }
 
         if (FeatureFlags.doVision && !FeatureFlags.visionInitialized) {
-            vc = new VisionControl(oi, chassis, shooter);
+            vc = new VisionControl(this, oi, chassis, shooter);
             shooter.initVision();
             FeatureFlags.visionInitialized = true;
         }
