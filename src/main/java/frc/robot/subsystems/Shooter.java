@@ -48,6 +48,7 @@ public class Shooter {
 
     private TalonFX shooter;
     private CANSparkMax feeder;
+    private boolean reversing = false;
     private Solenoid lowerIntake;
     private TalonSRX intake;
     private VisionControl vc;
@@ -124,7 +125,6 @@ public class Shooter {
         // Control for FlyWheel
         ShooterMain();
         feederMain();
-
         // Control for lowering intake
         gathererMain();
         gathererState();
@@ -194,20 +194,12 @@ public class Shooter {
         if (oi.runFlyWheelButtonManual()) {
             startShooter(getDefaultShooterRpm()); // Assume distance is 8 ft in manual mode
         } else if (oi.autoSteerToHoopButton()) {
-            if (checkDependencies()) {
-                SmartDashboard.putNumber("Shooter setpt",
-                        calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
-                startShooter(calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
-            } else {
-                startShooter(getDefaultShooterRpm());
-            }
+            SmartDashboard.putNumber("Shooter setpt", calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
+            startShooter(checkDependencies() ? calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2) : getDefaultShooterRpm());
         } else {
             stopShooter();
         }
     }
-
-    // FEEDER STUFF
-    boolean reversing = false;
 
     public void feederMain() {
         if (oi.shootButton()) {
@@ -226,10 +218,6 @@ public class Shooter {
                     }
                 }
             }
-        } else if (oi.reverseIntake()) {
-            disableManual = false;
-            feeder.set(-0.2);
-            reversing = true;
         } else if (!oi.autoCollectButton()) {
             if (disableManual) {
                 gathererState = lastState;
@@ -237,8 +225,12 @@ public class Shooter {
             }
             holdFeeder();
         }
-        if (!oi.reverseIntake() && reversing) {
-            startFeeder(0, true);
+        if (oi.reverseIntake()) {
+            disableManual = false;
+            feeder.set(-0.2);
+            reversing = true;
+        } else if (reversing){
+            startFeeder(0, true); // REVIEW: (should be the same as zeroFeeder())
             reversing = false;
         }
     }
