@@ -3,7 +3,7 @@ package frc.robot.subsystems;
 import frc.robot.components.*;
 
 import com.ctre.phoenix.time.StopWatch;
-
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.*;
 
 public class VisionControl {
@@ -24,11 +24,10 @@ public class VisionControl {
     public boolean usingAuto = false;
     private int invalid_ball_counter = 0;
     private final int invalid_ball_counter_threshold = 40;
-    public static final double teleop_align_kP = 0.5;
-    public static final double auto_align_kP = 0.19;
+    public static final double TELEOP_ALIGN_KP = 0.5;
+    public static final double AUTO_ALIGN_KP = 0.19;
     public static final double AUTO_MAX_TURN = 0.05;
     public static final double TELEOP_MAX_TURN = 0.1;
-    public double align_kP = auto_align_kP;
     public double maxTurn = AUTO_MAX_TURN;
     private StopWatch sendTmer = new StopWatch();
     private UDPSender sender = new UDPSender();
@@ -122,12 +121,14 @@ public class VisionControl {
     }
 
     private double calculateHoopRotation() {
-        double hoop_rotation = Math.abs(hoopr) <= hoopChassisThreshold ? 0D : -align_kP*hoopr/34D;
+        double hoop_rotation = Math.abs(hoopr) <= hoopChassisThreshold ? 0D : -getAlignKP()*hoopr/34D;
         return Math.abs(hoop_rotation) < maxTurn ? hoop_rotation : Math.copySign(maxTurn, hoop_rotation);
     }
 
     private double calculateBallRotation() {
-        return Math.abs(ballr) <= ballChassisThreshold ? 0D : align_kP*ballr/34D;
+        double ball_rotation = Math.abs(ballr) <= ballChassisThreshold ? 0D : getAlignKP()*ballr/34D;
+        return Math.abs(ball_rotation) < maxTurn ? ball_rotation : Math.copySign(maxTurn, ball_rotation);
+
     }
 
     public void periodic(String color) {
@@ -135,6 +136,14 @@ public class VisionControl {
             sender.send(color);
             sendTmer.start();
         }
+    }
+
+    public double getAlignKP(){
+        return DriverStation.isTeleop() ? TELEOP_ALIGN_KP : AUTO_ALIGN_KP;
+    }
+
+    public double getMaxTurn(){
+        return DriverStation.isTeleop() ? TELEOP_MAX_TURN : AUTO_MAX_TURN;
     }
 
     public boolean isHoopValid() {

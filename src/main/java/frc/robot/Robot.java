@@ -155,9 +155,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        vc.align_kP = VisionControl.auto_align_kP;
-        vc.maxTurn = VisionControl.AUTO_MAX_TURN;
-
         shooter.zeroFeeder();
         shooter.holdFeeder();
         m_autoSelected = m_chooser.getSelected();
@@ -233,9 +230,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        vc.align_kP = VisionControl.teleop_align_kP;
-        vc.maxTurn = VisionControl.TELEOP_MAX_TURN;
-
         if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
             compressorControl.enable();
         }
