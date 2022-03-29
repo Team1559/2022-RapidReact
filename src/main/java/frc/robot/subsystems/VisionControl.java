@@ -22,8 +22,8 @@ public class VisionControl {
 
     // other variables
     public boolean usingAuto = false;
-    private int invalid_ball_counter = 0;
-    private final int invalid_ball_counter_threshold = 40;
+    private int invalid_frame_counter = 0;
+    private final int invalid_frame_counter_threshold = 40;
     public static final double TELEOP_ALIGN_KP = 0.5;
     public static final double AUTO_ALIGN_KP = 0.19;
     public static final double AUTO_MAX_TURN = 0.05;
@@ -78,11 +78,11 @@ public class VisionControl {
     public boolean trackHoop(double ySpeed) {
         // visionData.Print();
         if (vision.isHoopValid()) {
-            invalid_ball_counter = 0;
+            invalid_frame_counter = 0;
         } else {
-            invalid_ball_counter++;
+            invalid_frame_counter++;
         }
-        if (invalid_ball_counter < invalid_ball_counter_threshold) {
+        if (invalid_frame_counter < invalid_frame_counter_threshold) {
             drive(ySpeed, calculateHoopRotation());
             return true;
         } else {
@@ -97,10 +97,10 @@ public class VisionControl {
         }
 
         if (vision.isBallValid())
-            invalid_ball_counter = 0;
+            invalid_frame_counter = 0;
         else
-            invalid_ball_counter++;
-        if (invalid_ball_counter < invalid_ball_counter_threshold) {
+            invalid_frame_counter++;
+        if (invalid_frame_counter < invalid_frame_counter_threshold) {
             drive(ySpeed, calculateBallRotation());
             return true;
         } else
