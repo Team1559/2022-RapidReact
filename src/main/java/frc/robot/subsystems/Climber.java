@@ -46,7 +46,7 @@ public class Climber {
     private final double pkI = 0.000;
     private final double pkiz = 0;
     private StopWatch watch = new StopWatch();
-    private final double MAX_WAIT = 0.125;
+    private final double MAX_WAIT = 0.5;
     private boolean disengageSolenoid = false;
 
     private TalonFX climber;
@@ -113,7 +113,6 @@ public class Climber {
 
     public void main() {
 
-        solenoidMain();
         climber.setNeutralMode(NeutralMode.Brake);
 
         SmartDashboard.putBoolean("Upper Limit Switch", upperLimitSwitch.get());
@@ -147,6 +146,8 @@ public class Climber {
         } else {
             holdRobot();
         }
+
+        solenoidMain();
 
     }
 

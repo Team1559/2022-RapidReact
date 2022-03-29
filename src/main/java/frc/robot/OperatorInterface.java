@@ -1,5 +1,7 @@
 package frc.robot;
 
+import frc.robot.components.DTXboxController;
+
 public class OperatorInterface {
     private static final int PILOT_PORT = 0;
     private static final int COPILOT_PORT = 1;
@@ -26,7 +28,11 @@ public class OperatorInterface {
     }
 
     public boolean autoCollectButtonRelease() {
-        return pilot.getAButtonReleased();
+        return pilot.getRelease(autoCollectButton(), 0);
+    }
+
+    public boolean autoCollectButtonPress() {
+        return pilot.getPress(autoCollectButton(), 0);
     }
 
     public boolean compressorToggle() {
@@ -44,7 +50,7 @@ public class OperatorInterface {
     }
 
     public boolean runFlyWheelButtonManualPress() {
-        return copilot.getRightBumperPressed();
+        return copilot.getPress(runFlyWheelButtonManual(), 1);
     }
 
     public boolean shootButton() {
@@ -64,11 +70,11 @@ public class OperatorInterface {
     }
 
     public boolean manualIntakeButtonPress() {
-        return pilot.getLeftBumperPressed();
+        return pilot.getPress(manualIntakeButtonRelease(), 3);
     }
 
     public boolean manualIntakeButtonRelease() {
-        return pilot.getLeftBumperReleased();
+        return pilot.getRelease(manualIntakeButtonRelease(), 3);
     }
 
     public boolean raiseIntakeButton() {

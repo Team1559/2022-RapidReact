@@ -102,6 +102,7 @@ public class Shooter {
         feederPid.setFF(feeder_kF, 0);
         feederPid.setIZone(feeder_kiz, 0);
         feederPid.setIMaxAccum(feeder_kiM, 0);
+        feeder.setSmartCurrentLimit(500, 500);
 
         intake.set(TalonSRXControlMode.PercentOutput, 0);
 
