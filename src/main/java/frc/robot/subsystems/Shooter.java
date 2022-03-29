@@ -202,7 +202,6 @@ public class Shooter {
                 startShooter(getDefaultShooterRpm());
             }
         } else {
-            oi.copilot.stopRumble();
             stopShooter();
         }
     }
@@ -322,10 +321,6 @@ public class Shooter {
 
     public boolean checkChassis() {
         return FeatureFlags.doChassis && FeatureFlags.chassisInitialized;
-    }
-
-    public void autoShoot() {
-        vc.autoShoot();
     }
 
     public double getRpmError() {

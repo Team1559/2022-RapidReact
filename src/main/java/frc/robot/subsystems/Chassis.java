@@ -228,6 +228,4 @@ public class Chassis {
         blEncoder.setPosition(0);
         brEncoder.setPosition(0);
     }
-
-    public void disable() {}
 }

@@ -86,10 +86,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotPeriodic() {
-        oi.copilot.stopRumble();
         updateColor();
-        oi.pilot.rumblePeriodic();
-        oi.copilot.rumblePeriodic();
         if (FeatureFlags.doShooter && FeatureFlags.shooterInitialized) {
             shooter.ticCounter += 1;
         }
@@ -244,7 +241,6 @@ public class Robot extends TimedRobot {
         }
 
         if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
-            vc.teleopInit();
             usingVision = vc.usingAuto;
         }
 
@@ -289,21 +285,12 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
-        oi.copilot.stopRumble();
-
         if (FeatureFlags.doClimber && FeatureFlags.climberInitialized) {
             climber.disable();
             climber.engageSolenoid();
         }
-
-        if (FeatureFlags.doChassis && FeatureFlags.chassisInitialized && !usingVision) {
-            chassis.disable();
-        }
         if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
             compressorControl.disable();
-        }
-        if (FeatureFlags.doVision && FeatureFlags.visionInitialized) {
-            vc.disable();
         }
     }
 

@@ -7,12 +7,6 @@ import com.ctre.phoenix.time.StopWatch;
 import frc.robot.*;
 
 public class VisionControl {
-    enum ShooterState {
-        ALIGN, WAIT, SHOOT, STOP
-    }
-
-    public ShooterState shooterstate = ShooterState.ALIGN;
-
     private OperatorInterface oi;
     private Vision vision = new Vision();
 
@@ -36,7 +30,6 @@ public class VisionControl {
     public static final double TELEOP_MAX_TURN = 0.1;
     public double align_kP = auto_align_kP;
     public double maxTurn = AUTO_MAX_TURN;
-    private StopWatch clock = new StopWatch();
     private StopWatch sendTmer = new StopWatch();
     private UDPSender sender = new UDPSender();
 
@@ -58,8 +51,6 @@ public class VisionControl {
         this.shooter = shooter;
         sendTmer.start();
     }
-
-    public void teleopInit() {}
 
     public void teleopPeriodic() {
         update();
@@ -84,8 +75,6 @@ public class VisionControl {
             robot.PDM.setSwitchableChannel(true);
         }
     }
-
-    public void disable() {}
 
     public boolean trackHoop(double ySpeed) {
         // visionData.Print();
@@ -113,7 +102,6 @@ public class VisionControl {
         else
             invalid_ball_counter++;
         if (invalid_ball_counter < invalid_ball_counter_threshold) {
-
             drive(ySpeed, calculateBallRotation());
             return true;
         } else
@@ -134,62 +122,18 @@ public class VisionControl {
     }
 
     private double calculateHoopRotation() {
-        double hoop_rotation = -align_kP * (hoopr / 34.0);
-
-        if (Math.abs(hoopr) <= hoopChassisThreshold) {
-            hoop_rotation = 0D;
-        }
+        double hoop_rotation = Math.abs(hoopr) <= hoopChassisThreshold ? 0D : -align_kP*hoopr/34D;
         return Math.abs(hoop_rotation) < maxTurn ? hoop_rotation : Math.copySign(maxTurn, hoop_rotation);
     }
 
     private double calculateBallRotation() {
-        double ball_rotation = align_kP * (ballr / 34.0);
-        if (Math.abs(ballr) <= ballChassisThreshold) {
-            ball_rotation = 0D;
-        }
-
-        return ball_rotation;
+        return Math.abs(ballr) <= ballChassisThreshold ? 0D : align_kP*ballr/34D;
     }
 
     public void periodic(String color) {
         if (sendTmer.getDuration() >= 1) {
             sender.send(color);
             sendTmer.start();
-        }
-    }
-
-    public void autoShoot() {
-        switch (shooterstate) {
-            case ALIGN:
-                trackHoop(0);
-                if (Math.abs(hoopr) <= hoopChassisThreshold) {
-                    shooterstate = ShooterState.WAIT;
-                }
-                break;
-            case WAIT:
-                drive(0, 0);
-                double rpm = vision.isHoopValid() ? shooter.calculateShooterRPMS(hoopx) : 0;
-                shooter.startShooter(rpm);
-                if (Math.abs(shooter.getShooterRpms() - rpm) < shooterThreshold) {
-                    shooterstate = ShooterState.SHOOT;
-                    clock.start();
-                }
-                break;
-            case SHOOT:
-                drive(0, 0);
-                double rpms = vision.isHoopValid() ? shooter.calculateShooterRPMS(hoopx) : 0;
-                shooter.startShooter(rpms);
-                shooter.startFeeder(shooter.feederSpeed, !shooter.disableManual);
-                if (clock.getDuration() == 2) {
-                    shooterstate = ShooterState.STOP;
-                }
-                break;
-            case STOP:
-                drive(0, 0);
-                shooter.holdFeeder();
-                shooter.stopShooter();
-                shooter.stopIntake();
-                break;
         }
     }
 

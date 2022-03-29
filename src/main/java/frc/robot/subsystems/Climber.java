@@ -176,7 +176,6 @@ public class Climber {
     }
 
     public void holdRobot() {
-        oi.copilot.stopRumble();
         if (resetEncoder) {
             climber.setSelectedSensorPosition(0);
             resetEncoder = false;
