@@ -28,7 +28,6 @@ public class VisionControl {
     public static final double AUTO_ALIGN_KP = 0.19;
     public static final double AUTO_MAX_TURN = 0.05;
     public static final double TELEOP_MAX_TURN = 0.1;
-    public double maxTurn = AUTO_MAX_TURN;
     private StopWatch sendTmer = new StopWatch();
     private UDPSender sender = new UDPSender();
 
@@ -122,12 +121,12 @@ public class VisionControl {
 
     private double calculateHoopRotation() {
         double hoop_rotation = Math.abs(hoopr) <= hoopChassisThreshold ? 0D : -getAlignKP()*hoopr/34D;
-        return Math.abs(hoop_rotation) < maxTurn ? hoop_rotation : Math.copySign(maxTurn, hoop_rotation);
+        return Math.abs(hoop_rotation) < getMaxTurn() ? hoop_rotation : Math.copySign(getMaxTurn(), hoop_rotation);
     }
 
     private double calculateBallRotation() {
         double ball_rotation = Math.abs(ballr) <= ballChassisThreshold ? 0D : getAlignKP()*ballr/34D;
-        return Math.abs(ball_rotation) < maxTurn ? ball_rotation : Math.copySign(maxTurn, ball_rotation);
+        return Math.abs(ball_rotation) < getMaxTurn() ? ball_rotation : Math.copySign(getMaxTurn(), ball_rotation);
 
     }
 
