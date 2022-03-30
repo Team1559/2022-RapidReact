@@ -57,6 +57,8 @@ public class Vision {
             VData = NewData;
         } catch (NumberFormatException | NullPointerException e) {
             System.err.println(e.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

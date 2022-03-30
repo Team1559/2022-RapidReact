@@ -28,13 +28,14 @@ public class Climber {
     private boolean disable = false;
     private boolean press = false;
 
-    private double climberRpms = 7500;
+    private final double CLIMBER_DOWN_RPMS = 2000;
+    private final double CLIMBER_UP_RPMS = 1600;
 
     private boolean resetEncoder = true;
 
     // TODO Tune this PID controller, It will need an I value
     private final double kF = 0.015;
-    private final double kP = 0.1;
+    private final double kP = 0.15;
     private final double kD = 0.06;
     private final double kI = 0.000;
     private final double kiz = 0;
@@ -116,10 +117,11 @@ public class Climber {
 
         SmartDashboard.putBoolean("Upper Limit Switch", upperLimitSwitch.get());
         SmartDashboard.putBoolean("Lower Limit Switch", lowerLimitSwitch.get());
+        SmartDashboard.putNumber("Climber rpm", climber.getSelectedSensorVelocity() * 10 * 60 / 2048);
+
         // Control for Winch
         if (oi.climberEnableButton()) {
-            // disengageSolenoid(); // disengage the solenoid once enabled
-
+            disengageSolenoid(); // disengage the solenoid once enabled
             if (oi.extendClimberPistonsButton()) {
                 extendPistons();
             } else if (oi.retractClimberPistonsButton()) {
@@ -164,7 +166,7 @@ public class Climber {
             climber.selectProfileSlot(0, 0);
             resetEncoder = true;
         }
-        climber.set(TalonFXControlMode.Velocity, climberRpms);
+        climber.set(TalonFXControlMode.Velocity, CLIMBER_UP_RPMS * 2048 / 10 / 60);
     }
 
     public void lowerRobot() {
@@ -172,7 +174,7 @@ public class Climber {
             climber.selectProfileSlot(0, 0);
             resetEncoder = true;
         }
-        climber.set(TalonFXControlMode.Velocity, -climberRpms);
+        climber.set(TalonFXControlMode.Velocity, -CLIMBER_DOWN_RPMS * 2048 / 10 / 60);
     }
 
     public void zeroClimber() {
@@ -194,10 +196,14 @@ public class Climber {
     }
 
     public void extendPistons() {
+        shooter.disableManual = true;
+        shooter.gathererState = shooter.gathererDown;
         climberSolenoid.set(true);
     }
 
     public void retractPistons() {
+        shooter.disableManual = true;
+        shooter.gathererState = shooter.gathererUp;
         climberSolenoid.set(false);
     }
 

@@ -28,7 +28,6 @@ public class Robot extends TimedRobot {
     private OperatorInterface oi = new OperatorInterface();
     private Auto auto;
     private IMU imu;
-    private VisionData vData = new VisionData();
     public VisionControl vc;
     public boolean usingVision = false;
 
@@ -50,6 +49,7 @@ public class Robot extends TimedRobot {
     private static final String MID_BALL_AUTO = "Mid Ball Auto";
     private static final String TEST_AUTO = "Test Auto";
     private static final String TEST_AUTO2 = "Better Basic Vision Auto";
+    private static final String ONE_BALL_AUTO = "One Ball Auto";
 
     private static final String autoText = "Selected Auto";
     private static final String colorText = "Current Allience Color";
@@ -68,15 +68,12 @@ public class Robot extends TimedRobot {
         initialize();
         PDM.setSwitchableChannel(false);
 
-        m_chooser.setDefaultOption(MINI_AUTO, MINI_AUTO);
+        m_chooser.setDefaultOption(BASIC_VISION_AUTO, BASIC_VISION_AUTO);
         m_chooser.addOption(BASIC_AUTO_STEPS, BASIC_AUTO_STEPS);
         m_chooser.addOption(BASIC_VISION_AUTO, BASIC_VISION_AUTO);
         m_chooser.addOption(MINI_AUTO, MINI_AUTO);
-        m_chooser.addOption(LEFT_BALL_AUTO, LEFT_BALL_AUTO);
-        m_chooser.addOption(RIGHT_BALL_AUTO, RIGHT_BALL_AUTO);
-        m_chooser.addOption(MID_BALL_AUTO, MID_BALL_AUTO);
-        m_chooser.addOption(TEST_AUTO, TEST_AUTO);
-        m_chooser.addOption(TEST_AUTO2, TEST_AUTO2);
+        m_chooser.addOption(ONE_BALL_AUTO, ONE_BALL_AUTO);
+        // m_chooser.addOption(TEST_AUTO, TEST_AUTO);
 
         SmartDashboard.putData("Auto Paths", m_chooser);
     }
@@ -165,6 +162,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        vc.align_kP = VisionControl.auto_align_kP;
+        vc.maxTurn = VisionControl.AUTO_MAX_TURN;
+
         shooter.RESET_ENCODER = true;
         shooter.holdFeeder();
         m_autoSelected = m_chooser.getSelected();
@@ -184,7 +184,15 @@ public class Robot extends TimedRobot {
         if (FeatureFlags.doChassis && FeatureFlags.chassisInitialized) {
             chassis.autoInit();
         }
-        shooter.holdFeeder();
+        if (FeatureFlags.shooterInitialized && FeatureFlags.SHOOTER_INSTALLED) {
+            shooter.gathererState = Shooter.gathererUp;
+            shooter.zeroFeeder();
+            shooter.disableManual = false;
+            shooter.gatherLock = false;
+        }
+        if (FeatureFlags.climberInitialized && FeatureFlags.CLIMBER_INSTALLED) {
+            climber.engageSolenoid();
+        }
         switch (m_autoSelected) {
             case NONE:
             default:
@@ -215,6 +223,9 @@ public class Robot extends TimedRobot {
                 auto = new Auto(this,
                         Auto.testVisionAutoWithNewTurningThatStopsWhenItSeesTheHoopBecauseRylanIsNotSuperBadAtLifeBabaWuestAlsoIsntWuestBad);
                 break;
+            case ONE_BALL_AUTO:
+                auto = new Auto(this, Auto.oneBallAuto);
+                break;
         }
     }
 
@@ -229,6 +240,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
+        vc.align_kP = VisionControl.teleop_align_kP;
+        vc.maxTurn = VisionControl.TELEOP_MAX_TURN;
+
         if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
             compressorControl.enable();
         }
@@ -248,6 +262,7 @@ public class Robot extends TimedRobot {
             shooter.zeroFeeder();
             shooter.disableManual = false;
             shooter.gatherLock = false;
+            SmartDashboard.putNumber("Shooter RPM", Shooter.DEFAULT_RPMS);
         }
         if (FeatureFlags.doClimber && FeatureFlags.climberInitialized) {
             climber.zeroClimber();
@@ -280,7 +295,6 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         oi.copilot.stopRumble();
-        PDM.setSwitchableChannel(false);
 
         if (FeatureFlags.doClimber && FeatureFlags.climberInitialized) {
             climber.disable();
@@ -367,7 +381,7 @@ public class Robot extends TimedRobot {
         }
 
         if (FeatureFlags.doVision && !FeatureFlags.visionInitialized) {
-            vc = new VisionControl(vData, oi, chassis, shooter);
+            vc = new VisionControl(oi, chassis, shooter);
             shooter.initVision();
             FeatureFlags.visionInitialized = true;
         }

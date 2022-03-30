@@ -13,23 +13,11 @@ public class VisionData {
     public boolean waitForOtherRobot;
 
     public boolean isHoopValid() {
-        if (hoopStatus != 1) {
-            return false;
-        }
-
-        else {
-            return true;
-        }
+        return hoopStatus == 1;
     }
 
     public boolean isBallValid() {
-        if (ballStatus != 1) {
-            return false;
-        }
-
-        else {
-            return true;
-        }
+        return ballStatus == 1;
     }
 
     public void Print() {

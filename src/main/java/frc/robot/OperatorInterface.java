@@ -54,11 +54,11 @@ public class OperatorInterface {
     }
 
     public boolean shootButton() {
-        return copilot.getBButton();
+        return pilot.getRightBumper();
     }
 
     public boolean shootButtonPress() {
-        return copilot.getPress(shootButton(), 2);
+        return pilot.getRightBumperPressed();
     }
 
     public boolean autoShootButton() {
@@ -78,7 +78,7 @@ public class OperatorInterface {
     }
 
     public boolean raiseIntakeButton() {
-        return pilot.getRightBumper();
+        return pilot.getRightTriggerAxis() > 0.25;
     }
 
     public boolean reverseIntake() {

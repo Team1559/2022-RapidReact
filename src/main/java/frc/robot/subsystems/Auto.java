@@ -24,7 +24,7 @@ public class Auto {
     private static final int ALIGN_HOOP = 10;
     private static final int TURN_HOOP = 11;
 
-    private static final int FEEDER_CYCLES = 200;
+    private static final int FEEDER_CYCLES = 50;
     boolean holdFeeder = true;
 
     private static final int MAX_TURN_SECONDS = 5;
@@ -34,9 +34,10 @@ public class Auto {
     static final int HOOP_ERROR_DEGREES = 1;
 
     static final double MAX_DRIVE = 0.2;
-    static final double MAX_TURN = 0.6;
+    static final double MAX_TURN = 0.15;
 
     double ySpeed = 0;
+    double shooterSetVelocity = 0;
 
     private Robot robot;
 
@@ -48,10 +49,9 @@ public class Auto {
     // Start gatherer, drive X feet, stop gatherer, start flywheel at known RPM,
     // turn 180, shoot, stop flywheel
     public static final int[][] basicAutoSteps = {
-            { WAIT, 100 },
+            { WAIT, 20 },
             { START_GATHERER },
             { DRIVE, 69 },
-            // { WAIT, 25 },
             { STOP_GATHERER },
             { START_FLYWHEEL, -1 },
             { TURN, 88 },
@@ -65,18 +65,32 @@ public class Auto {
             { STOP_GATHERER },
     };
 
-    public static final int[][] basicVisionAuto = {
-            { WAIT, 50 },
-            { DRIVE_BALL, 48 },
-            { START_GATHERER },
-            { DRIVE, 48 + 3 },
-            { WAIT, 30 },
-            { STOP_GATHERER },
-            { TURN, 180 },
-            { START_FLYWHEEL, 0 },
+    public static final int[][] oneBallAuto = {
+            { WAIT, 20 },
+            { DRIVE, -50 },
+            { WAIT, 140 },
             { ALIGN_HOOP },
-            { WAIT, 50 },
+            { TURN, -4 },
+            { START_FLYWHEEL, 0 },
+            { WAIT, 100 },
             { SHOOT },
+            { STOP_FLYWHEEL }
+    };
+
+    public static final int[][] basicVisionAuto = {
+            { START_GATHERER },
+            { DRIVE, 76 },
+            { WAIT, 8 },
+            { TURN, 88 },
+            { TURN, 88 },
+            { WAIT, 140 },
+            { ALIGN_HOOP },
+            { START_FLYWHEEL, 0 },
+            { WAIT, 80 },
+            { SHOOT },
+            { WAIT, 30 },
+            { SHOOT },
+            { STOP_GATHERER },
             { STOP_FLYWHEEL }
     };
 
@@ -227,32 +241,35 @@ public class Auto {
     };
 
     public static final int[][] testAuto = {
-            // Get 1st ball
             { START_GATHERER },
-            { WAIT, 20 },
-            { DRIVE_BALL, 36 },
-            { DRIVE, 20 },
-            { TURN, 90 },
-            { TURN, 60 },
+            { WAIT, 140 },
+            { ALIGN_HOOP },
             { START_FLYWHEEL, 0 },
-            { DRIVE_HOOP, 60 },
+            { WAIT, 80 },
+            { SHOOT },
             { WAIT, 50 },
-            { SHOOT }
-
+            { SHOOT },
+            { STOP_GATHERER },
+            { STOP_FLYWHEEL }
     };
 
     public static final int[][] testVisionAutoWithNewTurningThatStopsWhenItSeesTheHoopBecauseRylanIsNotSuperBadAtLifeBabaWuestAlsoIsntWuestBad = {
-            // Get 1st ball
-            { START_GATHERER },
             { WAIT, 20 },
-            { DRIVE_BALL, 36 },
-            { DRIVE, 20 },
-            { TURN_HOOP, 90 },
-            { TURN_HOOP, 60 },
+            { START_GATHERER },
+            { DRIVE, 30 },
+            { DRIVE_BALL, 24 },
+            { DRIVE, 22 },
+            { WAIT, 25 },
+            { STOP_GATHERER },
+            { TURN, 88 },
+            { TURN, 88 },
+            { ALIGN_HOOP },
             { START_FLYWHEEL, 0 },
-            { DRIVE_HOOP, 60 },
+            { WAIT, 100 },
+            { SHOOT },
             { WAIT, 50 },
-            { SHOOT }
+            { SHOOT },
+            { STOP_FLYWHEEL }
 
     };
 
@@ -281,6 +298,12 @@ public class Auto {
         if (holdFeeder) {
             robot.shooter.holdFeeder();
         }
+        if (shooterSetVelocity == 0) {
+            robot.shooter.stopShooter();
+        } else {
+            robot.shooter.startShooter(shooterSetVelocity);
+        }
+        SmartDashboard.putNumber("Auto state", type);
         switch (type) {
             case WAIT:
                 Wait((int) value);
@@ -337,7 +360,7 @@ public class Auto {
     }
 
     private void Wait(int cycles) {
-        System.out.println("Wait: " + stepCounter + "/" + cycles);
+        // System.out.println("Wait: " + stepCounter + "/" + cycles);
         if (stepCounter >= cycles)
             Done();
     }
@@ -351,28 +374,28 @@ public class Auto {
             // establish setpoints for end of travel
             rightTarget = robot.chassis.frep + revs;
         }
-        double remaining = (rightTarget - robot.chassis.frep);
-        double driveValue = -(remaining * kP);
-        // SmartDashboard.clearPersistent("FLEP");
-        // SmartDashboard.clearPersistent("FREP");
-        // SmartDashboard.clearPersistent("Remaining");
+        double remaining = rightTarget - robot.chassis.frep;
+        double driveValue = remaining * kP;
+        SmartDashboard.clearPersistent("FLEP");
+        SmartDashboard.clearPersistent("FREP");
+        SmartDashboard.clearPersistent("Remaining");
         SmartDashboard.clearPersistent("Drive value: ");
-        // SmartDashboard.clearPersistent("FLEV");
-        // SmartDashboard.clearPersistent("FREV");
-        // SmartDashboard.clearPersistent("Revs");
-        // SmartDashboard.putNumber("FLEP", robot.chassis.flep);
-        // SmartDashboard.putNumber("FREP", robot.chassis.frep);
-        // SmartDashboard.putNumber("Remaining", remaining);
+        SmartDashboard.clearPersistent("FLEV");
+        SmartDashboard.clearPersistent("FREV");
+        SmartDashboard.clearPersistent("Revs");
+        SmartDashboard.putNumber("FLEP", robot.chassis.flep);
+        SmartDashboard.putNumber("FREP", robot.chassis.frep);
+        SmartDashboard.putNumber("Remaining", remaining);
         SmartDashboard.putNumber("Drive value: ", driveValue);
-        // SmartDashboard.putNumber("FLEV", robot.chassis.flEncoder.getVelocity());
-        // SmartDashboard.putNumber("FREV", robot.chassis.frEncoder.getVelocity());
+        SmartDashboard.putNumber("FLEV", robot.chassis.flEncoder.getVelocity());
+        SmartDashboard.putNumber("FREV", robot.chassis.frEncoder.getVelocity());
         double done = revs - remaining;
         System.out.println("Done:" + done);
         int inchesDone = (int) robot.chassis.revolutionsToInches(done);
         System.out.println("Drive: " + inchesDone + "/" + inches);
         System.out.println("stepCounter: " + stepCounter);
         if (stepCounter <= 50.0 * 4.5) {
-            robot.chassis.drive(-Math.abs(Math.abs(driveValue) > MAX_DRIVE ? MAX_DRIVE : driveValue), 0,
+            robot.chassis.drive(Math.abs(driveValue) > MAX_DRIVE ? Math.copySign(MAX_DRIVE, driveValue) : driveValue, 0,
                     false);
         } else {
             robot.chassis.drive(0, 0, false);
@@ -434,27 +457,32 @@ public class Auto {
         robot.shooter.disableManual = false;
         System.out.println("StopGatherer set holding");
         robot.shooter.gathererState = Shooter.holding;
+        robot.shooter.gathererState();
+
         Done();
     }
 
     private void StartFlywheel(double rpm) {
         if (rpm == 0)
-            rpm = robot.shooter.calculateShooterRPMS(robot.vc.hoopx);
+            shooterSetVelocity = robot.shooter
+                    .calculateShooterRPMS(robot.vc.hoopx + Shooter.SHOOTER_DISTANCE_FROM_CAMERA + 2);
         else if (rpm == -1) {
-            rpm = Shooter.DEFAULT_RPMS;
+            shooterSetVelocity = Shooter.DEFAULT_RPMS;
+        } else {
+            shooterSetVelocity = rpm;
         }
-        robot.shooter.startShooter(rpm);
         Done();
     }
 
     private void StopFlywheel() {
-        robot.shooter.stopShooter();
+        shooterSetVelocity = 0;
         Done();
     }
 
     private void Shoot() {
         holdFeeder = false;
         robot.shooter.disableManual = true;
+        robot.shooter.gatherLock = false;
         robot.shooter.startFeeder(robot.shooter.feederSpeed, stepCounter == 1);
 
         if (stepCounter >= FEEDER_CYCLES) {
@@ -465,7 +493,7 @@ public class Auto {
     }
 
     private void DriveBall(int desiredDistanceFromBall) { // in inches
-        double positionError = 0;
+        double positionError = 1000;
         if (robot.vc.ballx != 0) {
             positionError = robot.vc.ballx * 12 - desiredDistanceFromBall;
             ySpeed = positionError * 0.04;
@@ -473,7 +501,7 @@ public class Auto {
                 ySpeed = MAX_DRIVE;
             System.out.println("Drive value: " + ySpeed);
         }
-        if (!robot.vc.trackBall(-Math.abs(ySpeed)))
+        if (!robot.vc.trackBall(-ySpeed))
             Fail("No ball found");
         if (positionError < 0 && robot.vc.ballx != 0) {
             robot.chassis.drive(0, 0, false);
@@ -509,9 +537,12 @@ public class Auto {
     }
 
     private void AlignHoop() {
-        if (!robot.vc.trackHoop(0))
+        robot.vc.visionData.Print();
+        if (!robot.vc.trackHoop(0)) {
             Fail("No hoop found");
-        else if (Math.abs(robot.vc.hoopr) < HOOP_ERROR_DEGREES)
+        } else if (robot.vc.isHoopValid() && Math.abs(robot.vc.hoopr) <= VisionControl.hoopChassisThreshold)
             Done();
+        System.out.println("I'm trying to align hoop");
+        System.out.println("Hoopr: " + robot.vc.hoopr);
     }
 }

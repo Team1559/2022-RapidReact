@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter {
     private OperatorInterface oi;
@@ -36,12 +37,12 @@ public class Shooter {
     private final double feeder_kiz = 0.0;
     private final double feeder_kiM = 0.1;
 
-    public double feederSpeed = 3.2;
+    public double feederSpeed = 2.0;
 
     public double intakeSpeed = 1; // 0.4;
 
-    private static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
-    public static final double DEFAULT_RPMS = 5000; // 4 ft from front of robot to face of target
+    public static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
+    public static final double DEFAULT_RPMS = 2150; // 4 ft from front of robot to face of target
     private final boolean TESTING = true;
 
     private TalonFX shooter;
@@ -162,6 +163,9 @@ public class Shooter {
                             gathererState = gathererDown;
                         }
                         break;
+                    default:
+                        gathererState = gathererUp;
+                        break;
                 }
             }
         } else {
@@ -194,14 +198,17 @@ public class Shooter {
     }
 
     public void ShooterMain() {
+        SmartDashboard.putNumber("Actual shotoer", getShooterRpms());
         if (oi.runFlyWheelButtonManual()) {
-            // oi.copilot.startRumble(0);
-            startShooter(DEFAULT_RPMS); // Assume distance is 8 ft in manual mode
+            startShooter(getDefaultShooterRpm()); // Assume distance is 8 ft in manual mode
         } else if (oi.autoSteerToHoopButton()) {
             if (checkDependencies()) {
+                SmartDashboard.putNumber("hoopx", vc.hoopx);
+                SmartDashboard.putNumber("Shooter setpt",
+                        calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
                 startShooter(calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
             } else if (TESTING) {
-                startShooter(calculateShooterRPMS(DEFAULT_RPMS));
+                startShooter(getDefaultShooterRpm());
             }
         } else {
             oi.copilot.stopRumble();
@@ -210,6 +217,8 @@ public class Shooter {
     }
 
     // FEEDER STUFF
+    boolean reversing = false;
+
     public void feederMain() {
         if (oi.shootButton()) {
             disableManual = true;
@@ -220,13 +229,16 @@ public class Shooter {
             // startFeeder(feederSpeed); // flywheel rpm check ^
             // }
         } else if (oi.autoShootButton() && checkDependencies()) { // Shoot when ready
-            if (Math.abs(vc.hoopr) <= vc.hoopChassisThreshold) { // Angle check
-                if (vc.hoopx <= vc.maxHoopDistance) { // distance check
-                    if (oi.pilot.getLeftY() < 0.05
-                            && Math.abs(chassis.rpmToFps(chassis.getFrontAverageWheelRPM())) < 2) {
-                        // Speed check ^^
-                        if (Math.abs(getShooterRpms() - calculateShooterRPMS(
-                                vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2)) < vc.shooterThreshold) {
+            if (Math.abs(vc.hoopr) <= VisionControl.hoopChassisThreshold) { // Angle check
+                System.out.println("Angle check passed");
+                if (vc.hoopx <= VisionControl.maxHoopDistance) { // distance check
+                    System.out.println("Distance passed");
+                    if (Math.abs(chassis.rpmToFps(chassis.getFrontAverageWheelRPM())) < 2) {
+
+                        if (Math.abs(Math.abs(getShooterRpms()) -
+                                Math.abs(calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA
+                                        + 2))) < VisionControl.shooterThreshold) {
+                            System.out.println("RPM check " + disableManual);
                             startFeeder(feederSpeed, !disableManual); // flywheel rpm check ^
                             disableManual = true;
                         }
@@ -235,7 +247,8 @@ public class Shooter {
             }
         } else if (oi.reverseIntake()) {
             disableManual = false;
-            // startFeeder(-feederSpeed, oi.shootButtonPress());
+            feeder.set(-0.2);
+            reversing = true;
         } else if (!oi.autoCollectButton()) {
             if (disableManual) {
                 gathererState = lastState;
@@ -243,21 +256,23 @@ public class Shooter {
             }
             holdFeeder();
         }
+        if (!oi.reverseIntake() && reversing) {
+            startFeeder(0, true);
+            reversing = false;
+        }
     }
 
     public void startFeeder(double setpoint, boolean setNewTarget) {
-        double target = setpoint;
         RESET_ENCODER = true;
         if (setNewTarget) {
             feederEncoder.setPosition(0);
-            feederPid.setReference(target, ControlType.kPosition);
+            feederPid.setReference(setpoint, ControlType.kPosition);
         }
-
         if (!gatherLock) {
-            if (disableManual && gathererState == holding) {
-                gathererState = gathererDown;
-            } else if (disableManual) {
+            if (disableManual && gathererState == gathererUp) {
                 gathererState = upRun;
+            } else if (disableManual) {
+                gathererState = gathererDown;
             }
             gatherLock = true;
         }
@@ -273,9 +288,10 @@ public class Shooter {
             gathererState = lastState;
             disableManual = false;
         }
-        if (ticCounter % 10 == 0 && (feederEncoder.getPosition() - encoderTics < 2.0)) {
-            encoderTics -= 0.2;
-        }
+        // if (ticCounter % 10 == 0 && (feederEncoder.getPosition() - encoderTics <
+        // 2.0)) {
+        // encoderTics -= 0.2;
+        // }
         gatherLock = false;
         feederPid.setReference(encoderTics, ControlType.kPosition);
     }
@@ -287,6 +303,10 @@ public class Shooter {
 
     // Get and Set shooter states
     public void startShooter(double rpms) {
+        if (rpms > 2700)
+            rpms = 2700;
+        else if (rpms < 2000)
+            rpms = 2050;
         shooter.set(TalonFXControlMode.Velocity, rpms / 10 / 60 * 2048);
         // shooter.set(TalonFXControlMode.Velocity, 6000 / 10 / 60 * 2048);
     }
@@ -339,12 +359,17 @@ public class Shooter {
         return shooter.getClosedLoopError() * 10 / 2048 * 60;
     }
 
+    public double getDefaultShooterRpm() {
+        // return DEFAULT_RPMS;
+        return SmartDashboard.getNumber("Shooter RPM", DEFAULT_RPMS);
+    }
+
     public double calculateShooterRPMS(double distance) {
         // RPM vs. distance fit from
-        // https://docs.google.com/spreadsheets/d/1l1Nxlk29b2KL5FwVklSFhfuychKHfztRSNRqPUuQUIs/edit#gid=695645693
+        // https://docs.google.com/spreadsheets/d/1l1Nxlk29b2KL5FwVklSFhfuychKHfztRSNRqPUuQUIs/edit#gid=1365511344
         // return 4476 + 158 * distance;
-        // return distance;
-        return 5000; // FIXME: return to old formula
+        return 1750 + 20.2 * distance + 1.85 * Math.pow(distance, 2);
+        // return getDefaultShooterRpm();
     }
 
     public void disable() {

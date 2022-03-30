@@ -20,15 +20,15 @@ public class UDPSender {
     }
 
     public UDPSender(String address) {
-        this(address, 5005);
+        this(address, 5802);
     }
 
     public UDPSender(int port) {
-        this("10.15.59.17", port);
+        this("10.15.59.217", port);
     }
 
     public UDPSender() {
-        this("10.15.59.17", 5005);
+        this("10.15.59.217", 5802);
     }
 
     public void send(String text) {

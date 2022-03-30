@@ -23,7 +23,7 @@ public class VisionControl {
 
     private OperatorInterface oi;
     private Vision vision = new Vision();
-    private VisionData visionData;
+    public VisionData visionData;
     private Shooter shooter;
     public double hoopr = 0;
     public double ballr = 0;
@@ -37,8 +37,13 @@ public class VisionControl {
     // other variables
     public boolean usingAuto = false;
     private int invalid_ball_counter = 0;
-    private final int invalid_ball_counter_threshold = 60;
-    private final double align_kP = 0.5;
+    private final int invalid_ball_counter_threshold = 40;
+    public static final double teleop_align_kP = 0.5;
+    public static final double auto_align_kP = 0.19;
+    public static final double AUTO_MAX_TURN = 0.05;
+    public static final double TELEOP_MAX_TURN = 0.1;
+    public double align_kP = auto_align_kP;
+    public double maxTurn = AUTO_MAX_TURN;
     private FileLogging fl;
     private double counter = 0;
     private int recordCounter = 0;
@@ -55,10 +60,10 @@ public class VisionControl {
 
     // thresholds
     private final int MAX_SIZE = 2000;// should only need to be 750
-    public final double ballChassisThreshold = 1; // angle in degrees
-    public final double hoopChassisThreshold = 2; // angle in degrees
-    public final double maxHoopDistance = 12; // MAX distance in ft
-    public final double shooterThreshold = 50; // threshold in rpm
+    public static final double ballChassisThreshold = 1; // angle in degrees
+    public static final double hoopChassisThreshold = 2; // angle in degrees
+    public static final double maxHoopDistance = 13; // MAX distance in ft
+    public static final double shooterThreshold = 50; // threshold in rpm
 
     private final boolean SQUARE_DRIVER_INPUTS = true;
 
@@ -67,77 +72,16 @@ public class VisionControl {
     private final String FILE_NAME = "path4";
     private String selector;
 
-    public VisionControl(VisionData visionData, OperatorInterface oi, Chassis chassis,
+    public VisionControl(OperatorInterface oi, Chassis chassis,
             Shooter shooter) {
         this.selector = "";
         this.oi = oi;
-        this.visionData = visionData;
         this.chassis = chassis;
         this.shooter = shooter;
         fl = new FileLogging();
         sendTmer.start();
         if (RECORD_PATH) {
             fl.createfile(FILE_NAME);
-        }
-    }
-
-    /**
-     * @deprecated
-     */
-    public void autoInit() {
-        path4 p1 = new path4();
-        double skip[] = { 0 };
-        double kP = 0;
-        double kI = 0;
-        double kD = 0;
-        double kF = 0;
-        chassis.initOdometry();
-        counter = 0;
-
-        if (selector == "path1") {
-            kP = 0.005;
-            kI = 0.0;
-            kD = 0.0;
-            kF = 0.0;
-            frontRightSpeed = p1.frontRightEncoderPositions;
-            frontLeftSpeed = p1.frontLeftEncoderPositions;
-            backRightSpeed = p1.backRightEncoderPositions;
-            backLeftSpeed = p1.backLeftEncoderPositions;
-            counterSpeed = 1.0;
-        }
-
-        else {
-            kP = 0.0;
-            kI = 0.0;
-            kD = 0.0;
-            kF = 0.0;
-            frontRightSpeed = skip;
-            frontLeftSpeed = skip;
-            backRightSpeed = skip;
-            backLeftSpeed = skip;
-            counterSpeed = 0.0;
-        }
-
-        chassis.setPid(kP, kI, kD, kF);
-    }
-
-    /**
-     * @deprecated
-     */
-    public void autoPeriodic() {
-        switch (autostate) {
-            case PATH:
-                if (!RECORD_PATH) {
-                    update();
-                    followPath();
-                }
-
-                else {
-                    System.out.println("Please enable in teleop to record a new path");
-                }
-                break;
-            case SHOOT:
-                break;
         }
     }
 
@@ -150,7 +94,7 @@ public class VisionControl {
         update();
         // visionData.Print();
         if (RECORD_PATH && recordCounter <= MAX_SIZE) {
-            record(oi.pilot.getLeftY(), oi.pilot.getRightX());
+            record(-oi.pilot.getLeftY(), oi.pilot.getRightX());
             recordCounter++;
         } else if (RECORD_PATH && recordCounter > MAX_SIZE) {
             System.out.println("Max recording size has been reached");
@@ -161,7 +105,7 @@ public class VisionControl {
             usingAuto = true;
             double ySpeed = -oi.pilot.getLeftY();
             if (SQUARE_DRIVER_INPUTS)
-                ySpeed = -Math.copySign(ySpeed * ySpeed, ySpeed);
+                ySpeed = Math.copySign(ySpeed * ySpeed, ySpeed);
             if (!trackHoop(ySpeed))
                 chassis.main();
         } else if (oi.autoCollectButton()) { // <-- PDM not turned off in this case
@@ -175,27 +119,12 @@ public class VisionControl {
             if (!trackBall(ySpeed))
                 chassis.main();
         } else {
-            if (usingAuto && !oi.autoCollectButton()) {
-                shooter.disableManual = false;
-                shooter.gathererState = gathererOldState;
-            }
+            // if (usingAuto && !oi.autoCollectButton()) {
+            // shooter.disableManual = false;
+            // shooter.gathererState = gathererOldState;
+            // }
             usingAuto = false;
             Robot.PDM.setSwitchableChannel(true);
-        }
-    }
-
-    /**
-     * Follows a preplanned path using encoder positions
-     * 
-     * @deprecated
-     */
-    public void followPath() {
-        if (counter < frontLeftSpeed.length) {
-            chassis.pathDrive(interpolate(counter, frontLeftSpeed), interpolate(counter, frontRightSpeed),
-                    interpolate(counter, backLeftSpeed), interpolate(counter, backRightSpeed));
-            counter += counterSpeed;
-        } else {
-            chassis.drive(0, 0, false);
         }
     }
 
@@ -260,7 +189,7 @@ public class VisionControl {
 
     public void update() {
         visionData = vision.getData();
-        hoopr = visionData.hr;
+        hoopr = visionData.hr + 0.5;
         hoopx = visionData.hx;
         ballr = visionData.br;
         ballx = visionData.bx;
@@ -273,8 +202,7 @@ public class VisionControl {
         if (Math.abs(hoopr) <= hoopChassisThreshold) {
             hoop_rotation = 0D;
         }
-
-        return hoop_rotation;
+        return Math.abs(hoop_rotation) < maxTurn ? hoop_rotation : Math.copySign(maxTurn, hoop_rotation);
     }
 
     private double calculateBallRotation() {
