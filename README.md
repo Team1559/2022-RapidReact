@@ -11,10 +11,10 @@ Visit us on the web at https://victorrobotics.org
 * Gene Petilli
 
 **Lead**
-* [Airic Marcheti](https://github.com/Eric-Marchetti)
+* [Eric Marchetti](https://github.com/Eric-Marchetti)
 
 **Vision**
-* [Eric Marketti](https://github.com/Eric-Marchetti)
+* [Eric Marchetti](https://github.com/Eric-Marchetti)
 * [Jack Dunfey](https://github.com/pyjshtml)
 * [Rylan Meilutis](https://github.com/rylan-meilutis)
 
@@ -24,11 +24,11 @@ Visit us on the web at https://victorrobotics.org
 
 **Autonomous**
 * [Jack Dunfey](https://github.com/pyjshtml)
-* [Anna Marketi](https://github.com/Anna-Marchetti)
-* [Eric Marcheti](https://github.com/Eric-Marchetti)
+* [Anna Marchetti](https://github.com/Anna-Marchetti)
+* [Eric Marchetti](https://github.com/Eric-Marchetti)
 
 **Shooter**
-* [Jor Jor Cieslinski](https://github.com/JordanCieslinski)
+* [Jordan Cieslinski](https://github.com/JordanCieslinski)
 * [Anna Marchetti](https://github.com/Anna-Marchetti)
 
 **Climber**
@@ -37,7 +37,7 @@ Visit us on the web at https://victorrobotics.org
 * [Doug Tavolette](https://github.com/Doug-Tavolette)
 
 **Chassis**
-* [Jason Leader-Hosen](https://github.com/Jason-VL)
+* [Jason Vanderlinden](https://github.com/Jason-VL)
 * [Rylan Meilutis](https://github.com/rylan-meilutis)
 
 
