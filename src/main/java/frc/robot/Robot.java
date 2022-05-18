@@ -329,7 +329,6 @@ public class Robot extends TimedRobot {
             climber.testInit();
             climber.zeroClimber();
         }
-
         if (FeatureFlags.doShooter && FeatureFlags.shooterInitialized) {
             shooter.disable();
         }
