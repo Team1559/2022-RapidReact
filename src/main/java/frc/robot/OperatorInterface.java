@@ -48,7 +48,7 @@ public class OperatorInterface {
     }
 
     public boolean shootButton() {
-        return pilot.getRightBumper();
+        return pilot.getRightBumper() || pilot.getRightTriggerAxis() > 0.25;
     }
 
     public boolean shootButtonPress() {
@@ -60,11 +60,11 @@ public class OperatorInterface {
     }
 
     public boolean manualIntakeButton() {
-        return pilot.getLeftBumper();
+        return pilot.getLeftBumper() || copilot.getLeftBumper();
     }
 
     public boolean manualIntakeButtonPress() {
-        return pilot.getLeftBumperPressed();
+        return pilot.getLeftBumperPressed() || copilot.getLeftBumperPressed();
     }
 
     public boolean manualIntakeButtonRelease() {
@@ -72,7 +72,8 @@ public class OperatorInterface {
     }
 
     public boolean raiseIntakeButton() {
-        return pilot.getRightTriggerAxis() > 0.25;
+        return false;
+        // return pilot.getRightTriggerAxis() > 0.25;
     }
 
     public boolean reverseIntake() {

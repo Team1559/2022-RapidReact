@@ -171,7 +171,7 @@ public class Chassis {
             ySpeed = Math.copySign(ySpeed * ySpeed, ySpeed);
             xSpeed = Math.copySign(xSpeed * xSpeed, xSpeed);
         }
-        drive.driveCartesian(ySpeed, xSpeed, zRotation);
+        drive.driveCartesian(ySpeed, 0, zRotation / 4);
     }
 
     public void setPid(double kp, double ki, double kd, double kf) {

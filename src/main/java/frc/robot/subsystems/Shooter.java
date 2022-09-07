@@ -42,7 +42,7 @@ public class Shooter {
     public double intakeSpeed = 1; // 0.4;
 
     public static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
-    public static final double DEFAULT_RPMS = 2150; // 4 ft from front of robot to face of target
+    public static final double DEFAULT_RPMS = 7000; // 2150; // 4 ft from front of robot to face of target
     private final boolean TESTING = true;
 
     private TalonFX shooter;
@@ -255,10 +255,10 @@ public class Shooter {
 
     public void startFeeder(double setpoint, boolean setNewTarget) {
         RESET_ENCODER = true;
-        if (setNewTarget) {
-            feederEncoder.setPosition(0);
-            feederPid.setReference(setpoint, ControlType.kPosition);
-        }
+        // if (setNewTarget) {
+        //     feederEncoder.setPosition(0);
+        //     feederPid.setReference(setpoint, ControlType.kPosition);
+        // }
         if (!gatherLock) {
             if (disableManual && gathererState == holding) {
                 gathererState = gathererDown;
@@ -267,6 +267,7 @@ public class Shooter {
             }
             gatherLock = true;
         }
+        feederPid.setReference(0.4, ControlType.kDutyCycle);
     }
 
     public void holdFeeder() {
@@ -294,10 +295,10 @@ public class Shooter {
 
     // Get and Set shooter states
     public void startShooter(double rpms) {
-        if (rpms > 2700)
-            rpms = 2700;
-        else if (rpms < 2000)
-            rpms = 2050;
+        // if (rpms > 2700)
+        // rpms = 2700;
+        // else if (rpms < 2000)
+        // rpms = 2050;
         shooter.set(TalonFXControlMode.Velocity, rpms / 10 / 60 * 2048);
         // shooter.set(TalonFXControlMode.Velocity, 6000 / 10 / 60 * 2048);
     }
@@ -351,8 +352,8 @@ public class Shooter {
     }
 
     public double getDefaultShooterRpm() {
-        // return DEFAULT_RPMS;
-        return SmartDashboard.getNumber("Shooter RPM", DEFAULT_RPMS);
+        return DEFAULT_RPMS;
+        // return SmartDashboard.getNumber("Shooter RPM", DEFAULT_RPMS);
     }
 
     public double calculateShooterRPMS(double distance) {
