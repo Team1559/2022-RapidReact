@@ -51,6 +51,7 @@ public class Climber {
 
     private TalonFX climber;
     private Solenoid climberSolenoid;
+    private boolean hasBeenEnabled;
 
     public Climber(OperatorInterface oi, Shooter shooter) {
         this.oi = oi;
@@ -123,6 +124,11 @@ public class Climber {
         // Control for Winch
         if (oi.climberEnableButton()) {
             disengageSolenoid(); // disengage the solenoid once enabled
+            if (!hasBeenEnabled) {
+                hasBeenEnabled = true;
+                climber.setSelectedSensorPosition(0);
+                climber.set(TalonFXControlMode.Position, 64);
+            }
             if (oi.extendClimberPistonsButton()) {
                 extendPistons();
             } else if (oi.retractClimberPistonsButton()) {
