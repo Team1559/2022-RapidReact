@@ -15,8 +15,10 @@ public class Wiring {
     public static final int BRMOTOR = 14;
 
     // Cargo
+
     public static final int SHOOTER_MOTOR = 16;
     public static final int FEEDER_MOTOR = 15;
+    public static final int SHOOTER_ATTACHMENT_MOTOR = 9999; // TODO: set id
 
     public static final int INTAKE_SOLENOID = 15;
     public static final int INTAKE_MOTOR = 17;

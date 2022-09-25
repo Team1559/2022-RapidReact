@@ -70,6 +70,9 @@ public class Shooter {
 
     public int lastState = holding;
 
+    private TalonFX shooterAttachment;
+    private static final double shooterAttachmentRatio = 1D;
+
     public Shooter(OperatorInterface operatorinterface, Chassis chassis, Robot robot) {
         oi = operatorinterface;
         this.chassis = chassis;
@@ -77,6 +80,7 @@ public class Shooter {
 
         // MotorController Config
         shooter = new TalonFX(Wiring.SHOOTER_MOTOR);
+        shooterAttachment = new TalonFX(Wiring.SHOOTER_ATTACHMENT_MOTOR);
         intake = new TalonSRX(Wiring.INTAKE_MOTOR);
         feeder = new CANSparkMax(Wiring.FEEDER_MOTOR, MotorType.kBrushless);
 
@@ -119,6 +123,19 @@ public class Shooter {
         shooter.setNeutralMode(NeutralMode.Coast);
         shooter.config_IntegralZone(0, shooter_kiz, TIMEOUT);
         shooter.configSupplyCurrentLimit(shooterLimit, TIMEOUT);
+        shooter.configClosedloopRamp(cLR, TIMEOUT);
+        shooterAttachment.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, TIMEOUT);
+        shooterAttachment.config_kF(0, shooter_kF, TIMEOUT);
+        shooterAttachment.config_kP(0, shooter_kP, TIMEOUT);
+        shooterAttachment.config_kD(0, shooter_kD, TIMEOUT);
+        shooterAttachment.config_kI(0, shooter_kI, TIMEOUT);
+        shooterAttachment.configNominalOutputForward(0, TIMEOUT);
+        shooterAttachment.configNominalOutputReverse(0, TIMEOUT);
+        shooterAttachment.configPeakOutputForward(1, TIMEOUT);
+        shooterAttachment.configPeakOutputReverse(-1, TIMEOUT);
+        shooterAttachment.setNeutralMode(NeutralMode.Coast);
+        shooterAttachment.config_IntegralZone(0, shooter_kiz, TIMEOUT);
+        shooterAttachment.configSupplyCurrentLimit(shooterLimit, TIMEOUT);
 
     }
 
@@ -295,11 +312,12 @@ public class Shooter {
         else if (rpms < 2000)
             rpms = 2050;
         shooter.set(TalonFXControlMode.Velocity, rpms / 10 / 60 * 2048);
-        // shooter.set(TalonFXControlMode.Velocity, 6000 / 10 / 60 * 2048);
+        shooterAttachment.set(TalonFXControlMode.Velocity, rpms * shooterAttachmentRatio / 10 / 60 * 2048);
     }
 
     public void stopShooter() {
         shooter.set(TalonFXControlMode.PercentOutput, 0);
+        shooterAttachment.set(TalonFXControlMode.PercentOutput, 0);
     }
 
     public double getShooterRpms() {
