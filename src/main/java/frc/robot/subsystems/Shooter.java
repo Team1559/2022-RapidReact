@@ -29,7 +29,6 @@ public class Shooter {
 
     private double encoderTics = 0;
 
-    // TODO: Tune these
     private final double feeder_kF = 0.00;
     private final double feeder_kP = 0.06;
     private final double feeder_kD = 0.2;
@@ -37,12 +36,18 @@ public class Shooter {
     private final double feeder_kiz = 0.0;
     private final double feeder_kiM = 0.1;
 
+    private final double shooterAttachment_kF = 0.02;
+    private final double shooterAttachment_kP = 0.0;
+    private final double shooterAttachment_kD = 0;
+    private final double shooterAttachment_kI = 0;
+    private final double shooterAttachment_kiz = 0.0;
+
     public double feederSpeed = 1.6;
 
     public double intakeSpeed = 1; // 0.4;
 
     public static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
-    public static final double DEFAULT_RPMS = 2150; // 4 ft from front of robot to face of target
+    public static final double DEFAULT_RPMS = 800; // 4 ft from front of robot to face of target
     private final boolean TESTING = true;
 
     private TalonFX shooter;
@@ -71,7 +76,7 @@ public class Shooter {
     public int lastState = holding;
 
     private TalonFX shooterAttachment;
-    private static final double shooterAttachmentRatio = 1D;
+    private static final double shooterAttachmentRatio = 4D;
 
     public Shooter(OperatorInterface operatorinterface, Chassis chassis, Robot robot) {
         oi = operatorinterface;
@@ -125,16 +130,16 @@ public class Shooter {
         shooter.configSupplyCurrentLimit(shooterLimit, TIMEOUT);
         shooter.configClosedloopRamp(cLR, TIMEOUT);
         shooterAttachment.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, TIMEOUT);
-        shooterAttachment.config_kF(0, shooter_kF, TIMEOUT);
-        shooterAttachment.config_kP(0, shooter_kP, TIMEOUT);
-        shooterAttachment.config_kD(0, shooter_kD, TIMEOUT);
-        shooterAttachment.config_kI(0, shooter_kI, TIMEOUT);
+        shooterAttachment.config_kF(0, shooterAttachment_kF, TIMEOUT);
+        shooterAttachment.config_kP(0, shooterAttachment_kP, TIMEOUT);
+        shooterAttachment.config_kD(0, shooterAttachment_kD, TIMEOUT);
+        shooterAttachment.config_kI(0, shooterAttachment_kI, TIMEOUT);
         shooterAttachment.configNominalOutputForward(0, TIMEOUT);
         shooterAttachment.configNominalOutputReverse(0, TIMEOUT);
         shooterAttachment.configPeakOutputForward(1, TIMEOUT);
         shooterAttachment.configPeakOutputReverse(-1, TIMEOUT);
         shooterAttachment.setNeutralMode(NeutralMode.Coast);
-        shooterAttachment.config_IntegralZone(0, shooter_kiz, TIMEOUT);
+        shooterAttachment.config_IntegralZone(0, shooterAttachment_kiz, TIMEOUT);
         shooterAttachment.configSupplyCurrentLimit(shooterLimit, TIMEOUT);
 
     }
@@ -199,6 +204,7 @@ public class Shooter {
                 startIntake(intakeSpeed);
                 break;
             case holding:
+
                 stopIntake();
                 lowerIntake();
                 break;
@@ -225,6 +231,7 @@ public class Shooter {
             oi.copilot.stopRumble();
             stopShooter();
         }
+        SmartDashboard.putNumber("Attachment RPMs", shooterAttachment.getSelectedSensorVelocity() / 3.3);
     }
 
     // FEEDER STUFF
