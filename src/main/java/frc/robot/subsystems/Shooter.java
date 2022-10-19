@@ -36,8 +36,8 @@ public class Shooter {
     private final double feeder_kiz = 0.0;
     private final double feeder_kiM = 0.1;
 
-    private final double shooterAttachment_kF = 0.02;
-    private final double shooterAttachment_kP = 0.0;
+    private final double shooterAttachment_kF = 0.0;
+    private final double shooterAttachment_kP = 0.1;
     private final double shooterAttachment_kD = 0;
     private final double shooterAttachment_kI = 0;
     private final double shooterAttachment_kiz = 0.0;
@@ -231,7 +231,8 @@ public class Shooter {
             oi.copilot.stopRumble();
             stopShooter();
         }
-        SmartDashboard.putNumber("Attachment RPMs", shooterAttachment.getSelectedSensorVelocity() / 3.3);
+        //SmartDashboard.putNumber("Attachment setPT", shooterAttachment.)
+        SmartDashboard.putNumber("Attachment RPMs", shooterAttachment.getSelectedSensorVelocity() * 10 * 60 / 2048);
     }
 
     // FEEDER STUFF
@@ -318,8 +319,8 @@ public class Shooter {
             rpms = 2700;
         else if (rpms < 2000)
             rpms = 2050;
-        shooter.set(TalonFXControlMode.Velocity, rpms / 10 / 60 * 2048);
-        shooterAttachment.set(TalonFXControlMode.Velocity, rpms * shooterAttachmentRatio / 10 / 60 * 2048);
+        shooter.set(TalonFXControlMode.Velocity, rpms * 2048 /10 /60);
+        shooterAttachment.set(TalonFXControlMode.Velocity, rpms * shooterAttachmentRatio * 2048 / 10 / 60);
     }
 
     public void stopShooter() {
