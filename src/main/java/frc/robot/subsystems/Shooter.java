@@ -15,31 +15,32 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter {
-    private OperatorInterface oi;
-    private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(true, 60, 40, 2);
-    private final int TIMEOUT = 0;
-    private final double cLR = 0.75;
+    private OperatorInterface               oi;
+    private SupplyCurrentLimitConfiguration shooterLimit = new SupplyCurrentLimitConfiguration(
+            true, 60, 40, 2);
+    private final int                       TIMEOUT      = 0;
+    private final double                    cLR          = 0.75;
 
-    private final double shooter_kF = 0.045;
-    private final double shooter_kP = 0.4;
-    private final double shooter_kD = 0;
-    private final double shooter_kI = 0.000;
+    private final double shooter_kF  = 0.045;
+    private final double shooter_kP  = 0.4;
+    private final double shooter_kD  = 0;
+    private final double shooter_kI  = 0.000;
     private final double shooter_kiz = 0.0;
-    public int ticCounter = 0;
+    public int           ticCounter  = 0;
 
     private double encoderTics = 0;
 
-    private final double feeder_kF = 0.00;
-    private final double feeder_kP = 0.06;
-    private final double feeder_kD = 0.2;
-    private final double feeder_kI = 0.0003;
+    private final double feeder_kF  = 0.00;
+    private final double feeder_kP  = 0.06;
+    private final double feeder_kD  = 0.2;
+    private final double feeder_kI  = 0.0003;
     private final double feeder_kiz = 0.0;
     private final double feeder_kiM = 0.1;
 
-    private final double shooterAttachment_kF = 0.0;
-    private final double shooterAttachment_kP = 0.1;
-    private final double shooterAttachment_kD = 0;
-    private final double shooterAttachment_kI = 0;
+    private final double shooterAttachment_kF  = 0.05;
+    private final double shooterAttachment_kP  = 0.05;
+    private final double shooterAttachment_kD  = 0;
+    private final double shooterAttachment_kI  = 0;
     private final double shooterAttachment_kiz = 0.0;
 
     public double feederSpeed = 1.6;
@@ -47,27 +48,31 @@ public class Shooter {
     public double intakeSpeed = 1; // 0.4;
 
     public static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
-    public static final double DEFAULT_RPMS = 800; // 4 ft from front of robot to face of target
-    private final boolean TESTING = true;
+    public static final double DEFAULT_RPMS                 = 800; // 4 ft from
+                                                                   // front of
+                                                                   // robot to
+                                                                   // face of
+                                                                   // target
+    private final boolean      TESTING                      = true;
 
-    private TalonFX shooter;
-    private CANSparkMax feeder;
-    private Solenoid lowerIntake;
-    private TalonSRX intake;
-    private VisionControl vc;
-    private Chassis chassis;
-    private RelativeEncoder feederEncoder;
+    private TalonFX               shooter;
+    private CANSparkMax           feeder;
+    private Solenoid              lowerIntake;
+    private TalonSRX              intake;
+    private VisionControl         vc;
+    private Chassis               chassis;
+    private RelativeEncoder       feederEncoder;
     private SparkMaxPIDController feederPid;
-    private Robot robot;
+    private Robot                 robot;
 
     public boolean RESET_ENCODER = true;
     public boolean disableManual = false;
 
     // States for gatherer
-    public static final int gathererUp = 0;
+    public static final int gathererUp   = 0;
     public static final int gathererDown = 1;
-    public static final int holding = 2;
-    public static final int upRun = 3;
+    public static final int holding      = 2;
+    public static final int upRun        = 3;
 
     public boolean gatherLock = false;
 
@@ -75,10 +80,11 @@ public class Shooter {
 
     public int lastState = holding;
 
-    private TalonFX shooterAttachment;
-    private static final double shooterAttachmentRatio = 4D;
+    private TalonFX             shooterAttachment;
+    private static double shooterAttachmentRatio = 2.5;
 
-    public Shooter(OperatorInterface operatorinterface, Chassis chassis, Robot robot) {
+    public Shooter(OperatorInterface operatorinterface, Chassis chassis,
+            Robot robot) {
         oi = operatorinterface;
         this.chassis = chassis;
         this.robot = robot;
@@ -97,7 +103,8 @@ public class Shooter {
         // PneumaticsModuleType.CTREPCM for ctre stuff
         // PneumaticsModuleType.REVPH for rev stuff
         if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
-            lowerIntake = new Solenoid(Wiring.PNEUMATICS_HUB, PneumaticsModuleType.REVPH, Wiring.INTAKE_SOLENOID);
+            lowerIntake = new Solenoid(Wiring.PNEUMATICS_HUB,
+                    PneumaticsModuleType.REVPH, Wiring.INTAKE_SOLENOID);
             lowerIntake.set(false);
         }
 
@@ -116,7 +123,8 @@ public class Shooter {
 
         // Shooter Velocity mode configs
         shooter.configClosedloopRamp(cLR, TIMEOUT);
-        shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, TIMEOUT);
+        shooter.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0,
+                TIMEOUT);
         shooter.config_kF(0, shooter_kF, TIMEOUT);
         shooter.config_kP(0, shooter_kP, TIMEOUT);
         shooter.config_kD(0, shooter_kD, TIMEOUT);
@@ -129,7 +137,8 @@ public class Shooter {
         shooter.config_IntegralZone(0, shooter_kiz, TIMEOUT);
         shooter.configSupplyCurrentLimit(shooterLimit, TIMEOUT);
         shooter.configClosedloopRamp(cLR, TIMEOUT);
-        shooterAttachment.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, TIMEOUT);
+        shooterAttachment.configSelectedFeedbackSensor(
+                FeedbackDevice.IntegratedSensor, 0, TIMEOUT);
         shooterAttachment.config_kF(0, shooterAttachment_kF, TIMEOUT);
         shooterAttachment.config_kP(0, shooterAttachment_kP, TIMEOUT);
         shooterAttachment.config_kD(0, shooterAttachment_kD, TIMEOUT);
@@ -139,9 +148,12 @@ public class Shooter {
         shooterAttachment.configPeakOutputForward(1, TIMEOUT);
         shooterAttachment.configPeakOutputReverse(-1, TIMEOUT);
         shooterAttachment.setNeutralMode(NeutralMode.Coast);
-        shooterAttachment.config_IntegralZone(0, shooterAttachment_kiz, TIMEOUT);
+        shooterAttachment.config_IntegralZone(0, shooterAttachment_kiz,
+                TIMEOUT);
         shooterAttachment.configSupplyCurrentLimit(shooterLimit, TIMEOUT);
 
+        SmartDashboard.putNumber("WHYYYYY", DEFAULT_RPMS);
+        SmartDashboard.putNumber("Attachment Ratio", shooterAttachmentRatio);
     }
 
     public void initVision() {
@@ -165,20 +177,27 @@ public class Shooter {
 
     public void gathererMain() {
         if (!disableManual) {
-            if (FeatureFlags.doCompressor && FeatureFlags.compressorInitialized) {
+            if (FeatureFlags.doCompressor
+                    && FeatureFlags.compressorInitialized) {
                 switch (gathererState) {
                     case gathererUp:
-                        if (oi.manualIntakeButtonPress()) { // Lower intake if button pressed else stop the intakes
+                        if (oi.manualIntakeButtonPress()) { // Lower intake if
+                                                            // button pressed
+                                                            // else stop the
+                                                            // intakes
                             gathererState = gathererDown;
                         }
                         break;
                     case gathererDown:
-                        if (!oi.manualIntakeButton()) { // Stop the intake and hold ball when button is released
+                        if (!oi.manualIntakeButton()) { // Stop the intake and
+                                                        // hold ball when button
+                                                        // is released
                             gathererState = holding;
                         }
                         break;
                     case holding:
-                        if (oi.raiseIntakeButton()) { // intake when the button is pressed again
+                        if (oi.raiseIntakeButton()) { // intake when the button
+                                                      // is pressed again
                             gathererState = gathererUp;
                         } else if (oi.manualIntakeButton()) {
                             gathererState = gathererDown;
@@ -218,12 +237,14 @@ public class Shooter {
 
     public void ShooterMain() {
         if (oi.runFlyWheelButtonManual()) {
-            startShooter(getDefaultShooterRpm()); // Assume distance is 8 ft in manual mode
+            startShooter(getDefaultShooterRpm()); // Assume distance is 8 ft in
+                                                  // manual mode
         } else if (oi.autoSteerToHoopButton()) {
             if (checkDependencies()) {
-                SmartDashboard.putNumber("Shooter setpt",
-                        calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
-                startShooter(calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
+                SmartDashboard.putNumber("Shooter setpt", calculateShooterRPMS(
+                        vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
+                startShooter(calculateShooterRPMS(
+                        vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
             } else if (TESTING) {
                 startShooter(getDefaultShooterRpm());
             }
@@ -231,8 +252,9 @@ public class Shooter {
             oi.copilot.stopRumble();
             stopShooter();
         }
-        //SmartDashboard.putNumber("Attachment setPT", shooterAttachment.)
-        SmartDashboard.putNumber("Attachment RPMs", shooterAttachment.getSelectedSensorVelocity() * 10 * 60 / 2048);
+        SmartDashboard.putNumber("Attachment RPMs",
+                shooterAttachment.getSelectedSensorVelocity() * 10 * 60 / 2048);
+        SmartDashboard.putNumber("Attachment setPT", shooterAttachmentSetpoint);
     }
 
     // FEEDER STUFF
@@ -245,18 +267,25 @@ public class Shooter {
             // disableManual = true;
             // startFeeder(feederSpeed); // flywheel rpm check ^
             // }
-        } else if (oi.autoShootButton() && checkDependencies()) { // Shoot when ready
-            if (Math.abs(vc.hoopr) <= VisionControl.hoopChassisThreshold) { // Angle check
+        } else if (oi.autoShootButton() && checkDependencies()) { // Shoot when
+                                                                  // ready
+            if (Math.abs(vc.hoopr) <= VisionControl.hoopChassisThreshold) { // Angle
+                                                                            // check
                 System.out.println("Angle check passed");
-                if (vc.hoopx <= VisionControl.maxHoopDistance) { // distance check
+                if (vc.hoopx <= VisionControl.maxHoopDistance) { // distance
+                                                                 // check
                     System.out.println("Distance passed");
-                    if (Math.abs(chassis.rpmToFps(chassis.getFrontAverageWheelRPM())) < 2) {
+                    if (Math.abs(chassis.rpmToFps(
+                            chassis.getFrontAverageWheelRPM())) < 2) {
                         System.out.println("Speed passed");
-                        if (Math.abs(Math.abs(getShooterRpms()) -
-                                Math.abs(calculateShooterRPMS(vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA
+                        if (Math.abs(Math.abs(getShooterRpms())
+                                - Math.abs(calculateShooterRPMS(vc.hoopx
+                                        + SHOOTER_DISTANCE_FROM_CAMERA
                                         + 2))) < VisionControl.shooterThreshold) {
                             System.out.println("RPM check " + disableManual);
-                            startFeeder(feederSpeed, !disableManual); // flywheel rpm check ^
+                            startFeeder(feederSpeed, !disableManual); // flywheel
+                                                                      // rpm
+                                                                      // check ^
                             disableManual = true;
                         }
                     }
@@ -296,11 +325,13 @@ public class Shooter {
             encoderTics = 0;
             RESET_ENCODER = false;
         }
-        if (disableManual && !oi.autoCollectButton() && DriverStation.isTeleop()) {
+        if (disableManual && !oi.autoCollectButton()
+                && DriverStation.isTeleop()) {
             gathererState = lastState;
             disableManual = false;
         }
-        // if (ticCounter % 10 == 0 && (feederEncoder.getPosition() - encoderTics <
+        // if (ticCounter % 10 == 0 && (feederEncoder.getPosition() -
+        // encoderTics <
         // 2.0)) {
         // encoderTics -= 0.2;
         // }
@@ -313,18 +344,28 @@ public class Shooter {
         feederPid.setReference(0, ControlType.kDutyCycle);
     }
 
+    // TODO: TEMPORARY VARIABLE
+    public double shooterAttachmentSetpoint = 0;
+
     // Get and Set shooter states
     public void startShooter(double rpms) {
-        if (rpms > 2700)
-            rpms = 2700;
-        else if (rpms < 2000)
-            rpms = 2050;
-        shooter.set(TalonFXControlMode.Velocity, rpms * 2048 /10 /60);
-        shooterAttachment.set(TalonFXControlMode.Velocity, rpms * shooterAttachmentRatio * 2048 / 10 / 60);
+        // if (rpms > 2700)
+        //     rpms = 2700;
+        // else if (rpms < 2000)
+        //     rpms = 2050;
+        shooter.set(TalonFXControlMode.Velocity, rpms * 2048 / 10 / 60);
+
+        shooterAttachmentRatio = SmartDashboard.getNumber("Attachment Ratio",
+                shooterAttachmentRatio);
+
+        shooterAttachmentSetpoint = rpms * shooterAttachmentRatio;
+        shooterAttachment.set(TalonFXControlMode.Velocity,
+                shooterAttachmentSetpoint * 2048 / 10 / 60);
     }
 
     public void stopShooter() {
         shooter.set(TalonFXControlMode.PercentOutput, 0);
+        shooterAttachmentSetpoint = 0;
         shooterAttachment.set(TalonFXControlMode.PercentOutput, 0);
     }
 
@@ -357,7 +398,8 @@ public class Shooter {
 
     // Validate hoop vision
     public boolean checkHoopVision() {
-        return FeatureFlags.doVision && FeatureFlags.visionInitialized && vc.isHoopValid();
+        return FeatureFlags.doVision && FeatureFlags.visionInitialized
+                && vc.isHoopValid();
     }
 
     public boolean checkChassis() {
@@ -370,7 +412,7 @@ public class Shooter {
 
     public double getDefaultShooterRpm() {
         // return DEFAULT_RPMS;
-        return SmartDashboard.getNumber("Shooter RPM", DEFAULT_RPMS);
+        return SmartDashboard.getNumber("WHYYYYY", DEFAULT_RPMS);
     }
 
     public double calculateShooterRPMS(double distance) {
