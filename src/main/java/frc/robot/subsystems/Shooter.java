@@ -48,7 +48,7 @@ public class Shooter {
     public double intakeSpeed = 1; // 0.4;
 
     public static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
-    public static final double DEFAULT_RPMS                 = 800; // 4 ft from
+    public static final double DEFAULT_RPMS                 = 1957; // 4 ft from
                                                                    // front of
                                                                    // robot to
                                                                    // face of
