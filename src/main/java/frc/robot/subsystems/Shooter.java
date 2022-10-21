@@ -47,8 +47,8 @@ public class Shooter {
 
     public double intakeSpeed = 1; // 0.4;
 
-    public static final double SHOOTER_DISTANCE_FROM_CAMERA = 3.5;
-    public static final double DEFAULT_RPMS                 = 800; // 4 ft from
+    public static final double SHOOTER_DISTANCE_FROM_CAMERA = 1.5;
+    public static final double DEFAULT_RPMS                 = 1957; // 4 ft from
                                                                    // front of
                                                                    // robot to
                                                                    // face of
@@ -81,7 +81,9 @@ public class Shooter {
     public int lastState = holding;
 
     private TalonFX             shooterAttachment;
-    private static double shooterAttachmentRatio = 2.5;
+    private double shooterAttachmentRatio = 3.53333333;
+
+    private double rangeAdjustment = 0D;
 
     public Shooter(OperatorInterface operatorinterface, Chassis chassis,
             Robot robot) {
@@ -154,6 +156,7 @@ public class Shooter {
 
         SmartDashboard.putNumber("WHYYYYY", DEFAULT_RPMS);
         SmartDashboard.putNumber("Attachment Ratio", shooterAttachmentRatio);
+        SmartDashboard.putNumber("Shooter Adjustment", rangeAdjustment);
     }
 
     public void initVision() {
@@ -241,10 +244,10 @@ public class Shooter {
                                                   // manual mode
         } else if (oi.autoSteerToHoopButton()) {
             if (checkDependencies()) {
-                SmartDashboard.putNumber("Shooter setpt", calculateShooterRPMS(
-                        vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
-                startShooter(calculateShooterRPMS(
-                        vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2));
+                double distance = vc.hoopx + SHOOTER_DISTANCE_FROM_CAMERA + 2;
+                SmartDashboard.putNumber("Measured distance to hoop", distance);
+                double setPoint = calculateShooterRPMS(distance);
+                startShooter(setPoint);
             } else if (TESTING) {
                 startShooter(getDefaultShooterRpm());
             }
@@ -354,6 +357,7 @@ public class Shooter {
         // else if (rpms < 2000)
         //     rpms = 2050;
         shooter.set(TalonFXControlMode.Velocity, rpms * 2048 / 10 / 60);
+        SmartDashboard.putNumber("Current Shooter Setpoint", rpms);
 
         shooterAttachmentRatio = SmartDashboard.getNumber("Attachment Ratio",
                 shooterAttachmentRatio);
@@ -364,6 +368,7 @@ public class Shooter {
     }
 
     public void stopShooter() {
+        SmartDashboard.putNumber("Current Shooter Setpoint", 0);
         shooter.set(TalonFXControlMode.PercentOutput, 0);
         shooterAttachmentSetpoint = 0;
         shooterAttachment.set(TalonFXControlMode.PercentOutput, 0);
@@ -416,10 +421,14 @@ public class Shooter {
     }
 
     public double calculateShooterRPMS(double distance) {
+        rangeAdjustment = SmartDashboard.getNumber("Shooter Adjustment", rangeAdjustment);
+        distance += rangeAdjustment - 2.5;
+        
         // RPM vs. distance fit from
         // https://docs.google.com/spreadsheets/d/1l1Nxlk29b2KL5FwVklSFhfuychKHfztRSNRqPUuQUIs/edit#gid=1365511344
         // return 4476 + 158 * distance;
-        return 1750 + 20.2 * distance + 1.85 * Math.pow(distance, 2);
+        double rpm = 1750 + 20.2 * distance + 1.85 * Math.pow(distance, 2);
+        return rpm;
         // return getDefaultShooterRpm();
     }
 

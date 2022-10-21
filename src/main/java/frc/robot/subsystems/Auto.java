@@ -89,9 +89,11 @@ public class Auto {
             { START_FLYWHEEL, 0 },
             { WAIT, 80 },
             { SHOOT },
-            { WAIT, 30 },
+            { WAIT, 60 },
             { SHOOT },
-            { STOP_FLYWHEEL }
+            { STOP_GATHERER },
+            { STOP_FLYWHEEL },
+            { WAIT, 1 }
     };
 
     public static final int[][] minAuto = {
@@ -348,6 +350,7 @@ public class Auto {
     }
 
     private void Done() {
+        System.out.println("Done with step: " + stepNumber);
         stepNumber++;
         stepCounter = 0;
     }
@@ -362,7 +365,7 @@ public class Auto {
     }
 
     private void Wait(int cycles) {
-        // System.out.println("Wait: " + stepCounter + "/" + cycles);
+        System.out.println("Wait: " + stepCounter + "/" + cycles);
         if (stepCounter >= cycles)
             Done();
     }
@@ -459,6 +462,7 @@ public class Auto {
 
     private void StopFlywheel() {
         shooterSetVelocity = 0;
+        System.out.println("Stopping flywheel");
         Done();
     }
 
@@ -471,7 +475,10 @@ public class Auto {
         if (stepCounter >= FEEDER_CYCLES) {
             robot.shooter.disableManual = false;
             holdFeeder = true;
+            System.out.println("Done shooting");
             Done();
+        } else {
+            System.out.println("Still shooting");
         }
     }
 

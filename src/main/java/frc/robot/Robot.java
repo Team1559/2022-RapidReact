@@ -74,7 +74,7 @@ public class Robot extends TimedRobot {
         m_chooser.addOption(MINI_AUTO, MINI_AUTO);
         m_chooser.addOption(ONE_BALL_AUTO, ONE_BALL_AUTO);
 
-        SmartDashboard.putData("Auto Paths", m_chooser);
+        SmartDashboard.putData("Choose auto", m_chooser);
     }
 
     /**

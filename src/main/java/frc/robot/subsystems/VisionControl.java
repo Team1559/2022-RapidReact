@@ -38,7 +38,7 @@ public class VisionControl {
     private int invalid_ball_counter = 0;
     private final int invalid_ball_counter_threshold = 40;
     public static final double teleop_align_kP = 0.5;
-    public static final double auto_align_kP = 0.19;
+    public static final double auto_align_kP = 0.25;
     public static final double AUTO_MAX_TURN = 0.05;
     public static final double TELEOP_MAX_TURN = 0.1;
     public double align_kP = auto_align_kP;
