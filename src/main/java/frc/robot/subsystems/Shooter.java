@@ -419,7 +419,8 @@ public class Shooter {
         // RPM vs. distance fit from
         // https://docs.google.com/spreadsheets/d/1l1Nxlk29b2KL5FwVklSFhfuychKHfztRSNRqPUuQUIs/edit#gid=1365511344
         // return 4476 + 158 * distance;
-        return 1750 + 20.2 * distance + 1.85 * Math.pow(distance, 2);
+        // return 1750 + 20.2 * distance + 1.85 * Math.pow(distance, 2);
+        return 20.9 * distance + 1740;
         // return getDefaultShooterRpm();
     }
 
